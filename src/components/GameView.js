@@ -58,32 +58,70 @@ export default class Home extends Component {
         return piece || {};
     };
 
+    selectSquare = ({ x, y }) => {
+        this.setState({ selected: { x, y } });
+    };
+
+    isSelectedSquare = ({ x, y }) => {
+        const { selected } = this.state;
+        if (!selected) {
+            return null;
+        }
+
+        return selected.x === x && selected.y === y;
+    };
+
     renderSquares = () => {
         let squares = [];
         for (let y = 0; y <= BOARD_SIDE_SIZE + 2; y++) {
             for (let x = 0; x <= BOARD_SIDE_SIZE + 2; x++) {
                 if (x === 0 && y === 0) {
-                    squares.push(<div key={`${x}-${y}`} />);
-                } else if (x === 9 || y === 9) {
-                    squares.push(<div key={`${x}-${y}`} />);
+                    squares.push(<Side key={`${x}-${y}`} />);
+                } else if (x === 9) {
+                    squares.push(
+                        <Side
+                            key={`${x}-${y}`}
+                            border={y > 0 && y < 9 && 'left'}
+                        />
+                    );
+                } else if (y === 9) {
+                    squares.push(
+                        <Side key={`${x}-${y}`} border={x > 0 && 'top'} />
+                    );
                 } else if (x === 0) {
-                    squares.push(<Side key={`${x}-${y}`}>{y}</Side>);
+                    squares.push(
+                        <Side key={`${x}-${y}`} border="right">
+                            {y}
+                        </Side>
+                    );
                 } else if (y === 0) {
                     squares.push(
-                        <Side key={`${x}-${y}`}>
+                        <Side key={`${x}-${y}`} border="bottom">
                             {String.fromCharCode(96 + x)}
                         </Side>
                     );
                 } else {
+                    const adjustedX = x - 1;
+                    const adjustedY = y - 1;
                     const { type, player } = this.getPieceAt({
-                        x: x - 1,
-                        y: y - 1
+                        x: adjustedX,
+                        y: adjustedY
                     });
                     squares.push(
                         <Square
                             key={`${x}-${y}`}
                             even={(x + y) % 2 === 0}
                             player={player}
+                            onClick={() =>
+                                this.selectSquare({
+                                    x: adjustedX,
+                                    y: adjustedY
+                                })
+                            }
+                            selected={this.isSelectedSquare({
+                                x: adjustedX,
+                                y: adjustedY
+                            })}
                         >
                             {type}
                         </Square>
@@ -109,6 +147,7 @@ const View = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
+    user-select: none;
 `;
 
 const Board = styled.div`
@@ -121,8 +160,8 @@ const Board = styled.div`
 `;
 
 const Square = styled.div`
-    border: 1px solid black;
-    background: ${props => (props.even ? 'white' : 'black')};
+    background: ${props =>
+        props.selected ? 'green' : props.even ? 'white' : 'black'};
     color: ${props => (props.player === 0 ? 'white' : 'black')};
     display: flex;
     justify-content: center;
@@ -133,4 +172,6 @@ const Side = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    ${props =>
+        props.border ? `border-${props.border}: 1px solid black;` : null}
 `;
