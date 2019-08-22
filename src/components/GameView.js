@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import Piece from '../models/Piece';
+import icons from './icons';
 
 const BOARD_SIDE_SIZE = 7;
 
@@ -40,7 +41,6 @@ const initPieces = () => {
             }
         );
     });
-    console.log({ pieces });
     return pieces;
 };
 
@@ -69,6 +69,27 @@ export default class Home extends Component {
         }
 
         return selected.x === x && selected.y === y;
+    };
+
+    renderPieceIcon = ({ type, player }) => {
+        if (!type) {
+            return null;
+        }
+
+        const Icon = icons[type];
+
+        if (Icon) {
+            return (
+                <IconContainer title={type}>
+                    <Icon
+                        color1={player ? 'black' : 'white'}
+                        color2={player ? 'white' : 'black'}
+                    />
+                </IconContainer>
+            );
+        }
+
+        return type;
     };
 
     renderSquares = () => {
@@ -123,7 +144,7 @@ export default class Home extends Component {
                                 y: adjustedY
                             })}
                         >
-                            {type}
+                            {this.renderPieceIcon({ type, player })}
                         </Square>
                     );
                 }
@@ -152,20 +173,29 @@ const View = styled.div`
 
 const Board = styled.div`
     display: grid;
-    grid-template: repeat(10, calc(95vw / 10)) / repeat(10, calc(95vw / 10));
+    grid-template: repeat(10, calc(100vw / 10)) / repeat(10, calc(100vw / 10));
 
     @media screen and (orientation: landscape) {
-        grid-template: repeat(10, calc(95vh / 10)) / repeat(10, calc(95vh / 10));
+        grid-template: repeat(10, calc(100vh / 10)) / repeat(
+                10,
+                calc(100vh / 10)
+            );
     }
 `;
 
 const Square = styled.div`
     background: ${props =>
-        props.selected ? 'green' : props.even ? 'white' : 'black'};
-    color: ${props => (props.player === 0 ? 'white' : 'black')};
+        props.selected
+            ? 'green'
+            : props.even
+            ? 'rgb(210, 210, 210)'
+            : 'rgb(150, 150, 150)'};
+    color: ${props => (props.player ? 'black' : 'white')};
+    text-shadow: 0 0 2px ${props => (props.player ? 'white' : 'black')};
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 `;
 
 const Side = styled.div`
@@ -174,4 +204,12 @@ const Side = styled.div`
     align-items: center;
     ${props =>
         props.border ? `border-${props.border}: 1px solid black;` : null}
+    font-size: 14px;
+`;
+
+const IconContainer = styled.div`
+    svg {
+        width: 100%;
+        height: 100%;
+    }
 `;
