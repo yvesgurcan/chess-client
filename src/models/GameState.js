@@ -71,7 +71,6 @@ export default class GameState {
     select = ({ x, y, piece }) => {
         if (piece) {
             const { x: discardX, y: discardY, ...pieceProperties } = piece;
-            console.log({ pieceProperties });
             this.selected = { x, y, piece: pieceProperties };
         } else {
             this.selected = { x, y };
@@ -109,7 +108,7 @@ export default class GameState {
                 ) {
                     if (
                         this.isLegalMove({
-                            origin: { x: piece.x, y: piece.y },
+                            origin: { x: piece.x, y: piece.y, id: piece.id },
                             destination: { x, y },
                             type: selectedPiece.type,
                             player: selectedPiece.player,
@@ -145,6 +144,40 @@ export default class GameState {
         );
     };
 
+    isRookMoveFree = ({ origin, vector }) => {
+        const axis = vector.x ? 'y' : 'x';
+        const otherAxis = vector.x ? 'x' : 'y';
+        const lineToCheck = origin[axis];
+        const target = origin[otherAxis] + vector[otherAxis];
+        const pieceIsInTheWay = this.pieces.some(piece => {
+            if (piece[axis] !== lineToCheck || piece.id === origin.id) {
+                return false;
+            }
+
+            if (vector[otherAxis] > 0) {
+                if (
+                    piece[otherAxis] >= origin[otherAxis] &&
+                    piece[otherAxis] <= target
+                ) {
+                    return true;
+                }
+            }
+
+            if (vector[otherAxis] < 0) {
+                if (
+                    piece[otherAxis] <= origin[otherAxis] &&
+                    piece[otherAxis] >= target
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        return !pieceIsInTheWay;
+    };
+
     isPiecePattern = ({
         destination: { x, y },
         origin,
@@ -171,7 +204,13 @@ export default class GameState {
                 );
             }
             case ROOK: {
-                return this.isRookPattern({ vectorX, vectorY });
+                return (
+                    this.isRookPattern({ vectorX, vectorY }) &&
+                    this.isRookMoveFree({
+                        origin,
+                        vector: { x: vectorX, y: vectorY }
+                    })
+                );
             }
             case KNIGHT: {
                 if (
