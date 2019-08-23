@@ -10,17 +10,30 @@ export default class Home extends Component {
         const gameState = new GameState();
         gameState.initPieces();
         this.state = { gameState };
+        window.gameState = gameState;
     }
 
     updateGameState = gameState => this.setState({ gameState });
 
-    selectSquare = ({ x, y }) => {
+    handleSelect = ({ x, y, piece }) => {
         const { gameState } = this.state;
-        gameState.selectSquare({ x, y });
+        const { selected } = gameState;
+        if (selected) {
+            if (selected.x === x && selected.y === y) {
+                gameState.unselect();
+            } else if (selected.piece) {
+                gameState.moveSelectedPiece({ x, y });
+            } else {
+                gameState.select({ x, y, piece });
+            }
+        } else {
+            gameState.select({ x, y, piece });
+        }
+
         this.updateGameState(gameState);
     };
 
-    renderPieceIcon = ({ type, player }) => {
+    renderPieceIcon = ({ id, type, player }) => {
         if (!type) {
             return null;
         }
@@ -74,7 +87,7 @@ export default class Home extends Component {
                 } else {
                     const adjustedX = x - 1;
                     const adjustedY = y - 1;
-                    const { type, player } = gameState.getPieceAt({
+                    const piece = gameState.getPieceAt({
                         x: adjustedX,
                         y: adjustedY
                     });
@@ -82,11 +95,12 @@ export default class Home extends Component {
                         <Square
                             key={`${x}-${y}`}
                             even={(x + y) % 2 === 0}
-                            player={player}
+                            player={piece && piece.player}
                             onClick={() =>
-                                this.selectSquare({
+                                this.handleSelect({
                                     x: adjustedX,
-                                    y: adjustedY
+                                    y: adjustedY,
+                                    piece
                                 })
                             }
                             selected={gameState.isSelectedSquare({
@@ -94,7 +108,7 @@ export default class Home extends Component {
                                 y: adjustedY
                             })}
                         >
-                            {this.renderPieceIcon({ type, player })}
+                            {this.renderPieceIcon({ ...piece })}
                         </Square>
                     );
                 }
