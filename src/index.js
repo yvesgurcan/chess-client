@@ -2,7 +2,9 @@ import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import { Switch } from 'react-router';
 import { HashRouter, Route } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
+import { ThemeProvider, createGlobalStyle } from 'styled-components';
+
+import darkTheme from './themes/dark';
 
 import GameView from './components/GameView';
 
@@ -13,13 +15,15 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 ReactDOM.render(
-    <Fragment>
-        <GlobalStyle />
-        <HashRouter>
-            <Switch>
-                <Route path="/" component={GameView} />
-            </Switch>
-        </HashRouter>
-    </Fragment>,
+    <ThemeProvider theme={darkTheme}>
+        <div>
+            <GlobalStyle />
+            <HashRouter>
+                <Switch>
+                    <Route path="/" component={GameView} />
+                </Switch>
+            </HashRouter>
+        </div>
+    </ThemeProvider>,
     document.getElementById('app')
 );

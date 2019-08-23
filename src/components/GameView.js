@@ -169,6 +169,8 @@ const View = styled.div`
     align-items: center;
     height: 100vh;
     user-select: none;
+    background: ${props => props.theme.background1};
+    color: ${props => props.theme.color1};
 `;
 
 const Board = styled.div`

@@ -38,7 +38,11 @@ export default ({ color1, color2 }) => (
             />
             <path
                 d="M 24.55,10.4 L 24.1,11.85 L 24.6,12 C 27.75,13 30.25,14.49 32.5,18.75 C 34.75,23.01 35.75,29.06 35.25,39 L 35.2,39.5 L 37.45,39.5 L 37.5,39 C 38,28.94 36.62,22.15 34.25,17.66 C 31.88,13.17 28.46,11.02 25.06,10.5 L 24.55,10.4 z "
-                style={{ fill: color2, stroke: color1, strokeWidth: 0.5 }}
+                style={{
+                    fill: color2,
+                    stroke: color1 === 'black' ? color1 : color2,
+                    strokeWidth: 0.5
+                }}
             />
         </g>
     </svg>
