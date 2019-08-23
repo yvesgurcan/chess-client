@@ -27,7 +27,9 @@ export default class GameState {
                         x: index,
                         y: player ? 0 : BOARD_SIDE_SIZE,
                         player,
-                        type
+                        type,
+                        firstMove:
+                            type === ROOK || type === KING ? true : undefined
                     });
                     const pawn = new Piece({
                         id: uuid(),
@@ -180,6 +182,16 @@ export default class GameState {
                 ) {
                     return true;
                 }
+
+                // TODO: check if this is castling
+                /*
+                    The king and the chosen rook are on the player's first rank.
+                    Neither the king nor the chosen rook has previously moved.
+                    There are no pieces between the king and the chosen rook.
+                    The king is not currently in check.
+                    The king does not pass through a square that is attacked by an enemy piece.
+                    The king does not end up in check. (True of any legal move.)
+                */
                 break;
             }
             case BISHOP: {
@@ -187,13 +199,14 @@ export default class GameState {
             }
             case PAWN: {
                 if (player === PLAYER2) {
+                    // TODO: check if pawn is taking a piece
                     return (
                         vectorY > 0 && vectorY <= 1 + firstMove && vectorX === 0
                     );
                 }
 
                 if (player === PLAYER1) {
-                    console.log({ vectorY });
+                    // TODO: check if pawn is taking a piece
                     return (
                         vectorY < 0 &&
                         vectorY >= -1 - firstMove &&
