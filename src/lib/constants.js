@@ -10,6 +10,9 @@ export const KNIGHT = 'knight';
 export const BISHOP = 'bishop';
 export const PAWN = 'pawn';
 
+export const KNIGHT_MOVE_DIMENSION1 = 2;
+export const KNIGHT_MOVE_DIMENSION2 = 1;
+
 export const LATERAL_BACK_ROW_PIECES = [ROOK, KNIGHT, BISHOP];
 export const LEFT_BACK_ROW_PIECES = [...LATERAL_BACK_ROW_PIECES, QUEEN];
 export const RIGHT_BACK_ROW_PIECES = [
