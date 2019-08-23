@@ -1,74 +1,23 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import Piece from '../models/Piece';
 import icons from './icons';
-
-const BOARD_SIDE_SIZE = 7;
-
-const PLAYER1 = 0;
-const PLAYER2 = 1;
-
-const ROOK = 'rook';
-const KNIGHT = 'knight';
-const BISHOP = 'bishop';
-const QUEEN = 'queen';
-const KING = 'king';
-const PAWN = 'pawn';
-
-const LATERAL_BACK_ROW_PIECES = [ROOK, KNIGHT, BISHOP];
-const LEFT_BACK_ROW_PIECES = [...LATERAL_BACK_ROW_PIECES, QUEEN];
-const RIGHT_BACK_ROW_PIECES = [KING, ...LATERAL_BACK_ROW_PIECES.reverse()];
-
-const initPieces = () => {
-    let pieces = [];
-    [PLAYER1, PLAYER2].forEach(player => {
-        [...LEFT_BACK_ROW_PIECES, ...RIGHT_BACK_ROW_PIECES].forEach(
-            (type, index) => {
-                const piece = new Piece({
-                    x: index,
-                    y: player ? 0 : BOARD_SIDE_SIZE,
-                    player,
-                    type
-                });
-                const pawn = new Piece({
-                    x: index,
-                    y: player ? 1 : BOARD_SIDE_SIZE - 1,
-                    player,
-                    type: PAWN
-                });
-                pieces.push(pawn);
-                pieces.push(piece);
-            }
-        );
-    });
-    return pieces;
-};
+import GameState from '../models/GameState';
+import { BOARD_SIDE_SIZE } from '../lib/constants';
 
 export default class Home extends Component {
     constructor() {
         super();
-        this.state = { pieces: initPieces() };
+        const gameState = new GameState();
+        gameState.initPieces();
+        this.state = { gameState };
     }
 
-    getPieceAt = ({ x, y }) => {
-        const piece = this.state.pieces.find(
-            piece => piece.x === x && piece.y === y
-        );
-
-        return piece || {};
-    };
+    updateGameState = gameState => this.setState({ gameState });
 
     selectSquare = ({ x, y }) => {
-        this.setState({ selected: { x, y } });
-    };
-
-    isSelectedSquare = ({ x, y }) => {
-        const { selected } = this.state;
-        if (!selected) {
-            return null;
-        }
-
-        return selected.x === x && selected.y === y;
+        const { gameState } = this.state;
+        gameState.selectSquare({ x, y });
+        this.updateGameState(gameState);
     };
 
     renderPieceIcon = ({ type, player }) => {
@@ -93,6 +42,7 @@ export default class Home extends Component {
     };
 
     renderSquares = () => {
+        const { gameState } = this.state;
         let squares = [];
         for (let y = 0; y <= BOARD_SIDE_SIZE + 2; y++) {
             for (let x = 0; x <= BOARD_SIDE_SIZE + 2; x++) {
@@ -124,7 +74,7 @@ export default class Home extends Component {
                 } else {
                     const adjustedX = x - 1;
                     const adjustedY = y - 1;
-                    const { type, player } = this.getPieceAt({
+                    const { type, player } = gameState.getPieceAt({
                         x: adjustedX,
                         y: adjustedY
                     });
@@ -139,7 +89,7 @@ export default class Home extends Component {
                                     y: adjustedY
                                 })
                             }
-                            selected={this.isSelectedSquare({
+                            selected={gameState.isSelectedSquare({
                                 x: adjustedX,
                                 y: adjustedY
                             })}
