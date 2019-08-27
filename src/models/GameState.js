@@ -1,5 +1,8 @@
-import Piece from '../models/Piece';
 import uuid from 'uuid/v4';
+import moment from 'moment';
+import momentDurationFormatSetup from 'moment-duration-format';
+
+import Piece from '../models/Piece';
 import {
     BOARD_SIDE_SIZE,
     PLAYER1,
@@ -16,7 +19,33 @@ import {
     KNIGHT_MOVE_DIMENSION2
 } from '../lib/constants';
 
+momentDurationFormatSetup(moment);
+
 export default class GameState {
+    constructor() {
+        this.gameStartedAt = moment(); // timestamp
+        this.sessionStartedAt = moment(); // point of reference for time played in current session
+        this.totalTimePlayed = moment.duration(
+            moment().diff(moment()),
+            'milliseconds'
+        ); // keeps time spent across multiple sessions
+        this.currentPlayer = PLAYER1;
+        this.currentTurn = 0;
+    }
+
+    updateTimePlayed = () => {
+        const sessionTimePlayed = moment.duration(
+            moment().diff(this.sessionStartedAt),
+            'milliseconds'
+        );
+        this.totalTimePlayed = sessionTimePlayed;
+    };
+
+    nextTurn = () => {
+        this.currentPlayer = +!this.currentPlayer;
+        this.currentTurn += 1;
+    };
+
     initPieces = () => {
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
@@ -89,51 +118,6 @@ export default class GameState {
         return this.selected.x === x && this.selected.y === y;
     };
 
-    moveSelectedPiece = ({ x, y }) => {
-        if (!this.selected) {
-            return false;
-        }
-
-        const {
-            x: selectedX,
-            y: selectedY,
-            piece: selectedPiece
-        } = this.selected;
-        if (selectedPiece) {
-            this.pieces = this.pieces.map(piece => {
-                if (
-                    piece.x === selectedX &&
-                    piece.y === selectedY &&
-                    piece.id === selectedPiece.id
-                ) {
-                    if (
-                        this.isLegalMove({
-                            origin: { x: piece.x, y: piece.y, id: piece.id },
-                            destination: { x, y },
-                            type: selectedPiece.type,
-                            player: selectedPiece.player,
-                            firstMove: selectedPiece.firstMove
-                        })
-                    ) {
-                        this.select({
-                            x,
-                            y,
-                            piece: { ...piece, firstMove: false }
-                        });
-                        return new Piece({ ...piece, x, y, firstMove: false });
-                    } else {
-                        this.select({ x, y });
-                        return piece;
-                    }
-                }
-
-                return piece;
-            });
-        } else {
-            this.select({ x, y });
-        }
-    };
-
     isBishopPattern = ({ vectorX, vectorY }) => {
         return Math.abs(vectorX) === Math.abs(vectorY);
     };
@@ -187,8 +171,6 @@ export default class GameState {
     }) => {
         const vectorX = x - origin.x;
         const vectorY = y - origin.y;
-
-        console.log({ vectorX, vectorY });
 
         switch (type) {
             default: {
@@ -267,5 +249,51 @@ export default class GameState {
             firstMove
         });
         return fitsPiecePattern;
+    };
+
+    moveSelectedPiece = ({ x, y }) => {
+        if (!this.selected) {
+            return false;
+        }
+
+        const {
+            x: selectedX,
+            y: selectedY,
+            piece: selectedPiece
+        } = this.selected;
+        if (selectedPiece) {
+            this.pieces = this.pieces.map(piece => {
+                if (
+                    piece.x === selectedX &&
+                    piece.y === selectedY &&
+                    piece.id === selectedPiece.id
+                ) {
+                    if (
+                        this.isLegalMove({
+                            origin: { x: piece.x, y: piece.y, id: piece.id },
+                            destination: { x, y },
+                            type: selectedPiece.type,
+                            player: selectedPiece.player,
+                            firstMove: selectedPiece.firstMove
+                        })
+                    ) {
+                        this.select({
+                            x,
+                            y,
+                            piece: { ...piece, firstMove: false }
+                        });
+                        this.nextTurn();
+                        return new Piece({ ...piece, x, y, firstMove: false });
+                    } else {
+                        this.select({ x, y });
+                        return piece;
+                    }
+                }
+
+                return piece;
+            });
+        } else {
+            this.select({ x, y });
+        }
     };
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import icons from './icons';
 import GameState from '../models/GameState';
-import { BOARD_SIDE_SIZE } from '../lib/constants';
+import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 
 export default class Home extends Component {
     constructor() {
@@ -11,6 +11,14 @@ export default class Home extends Component {
         gameState.initPieces();
         this.state = { gameState };
         window.gameState = gameState;
+    }
+
+    componentDidMount() {
+        setInterval(() => {
+            const { gameState } = this.state;
+            gameState.updateTimePlayed();
+            this.updateGameState(gameState);
+        }, ONE_SECOND);
     }
 
     updateGameState = gameState => this.setState({ gameState });
@@ -22,7 +30,11 @@ export default class Home extends Component {
             if (selected.x === x && selected.y === y) {
                 gameState.unselect();
             } else if (selected.piece) {
-                gameState.moveSelectedPiece({ x, y });
+                if (piece) {
+                    gameState.select({ x, y, piece });
+                } else if (selected.piece.player === gameState.currentPlayer) {
+                    gameState.moveSelectedPiece({ x, y });
+                }
             } else {
                 gameState.select({ x, y, piece });
             }
@@ -33,7 +45,7 @@ export default class Home extends Component {
         this.updateGameState(gameState);
     };
 
-    renderPieceIcon = ({ id, type, player }) => {
+    renderPieceIcon = ({ type, player }) => {
         if (!type) {
             return null;
         }
@@ -52,6 +64,24 @@ export default class Home extends Component {
         }
 
         return type;
+    };
+
+    renderGameStats = () => {
+        const { gameState } = this.state;
+        console.log(gameState.totalTimePlayed);
+        return (
+            <GameStats>
+                <CurrentTurn>#{String(gameState.currentTurn + 1)}:</CurrentTurn>
+                <CurrentPlayer player={gameState.currentPlayer}>
+                    {gameState.currentPlayer ? 'Black' : 'White'}
+                </CurrentPlayer>
+                <TimePlayed>
+                    {gameState.totalTimePlayed.format('hh:mm:ss', {
+                        trim: false
+                    })}
+                </TimePlayed>
+            </GameStats>
+        );
     };
 
     renderSquares = () => {
@@ -121,6 +151,7 @@ export default class Home extends Component {
     render() {
         return (
             <View>
+                {this.renderGameStats()}
                 <Board>{this.renderSquares()}</Board>
             </View>
         );
@@ -130,19 +161,48 @@ export default class Home extends Component {
 const View = styled.div`
     display: flex;
     justify-content: center;
+    flex-direction: column;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     user-select: none;
-    background: ${props => props.theme.background1};
     color: ${props => props.theme.color1};
 `;
+
+const GameStats = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    flex-wrap: wrap;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    background: ${props => props.theme.background2};
+    color: ${props => props.theme.color2};
+    min-height: 40px;
+    box-sizing: border-box;
+`;
+
+const CurrentTurn = styled.div`
+    margin-right: 2px;
+`;
+
+const CurrentPlayer = styled.div`
+    text-transform: uppercase;
+    font-weight: bold;
+    color: ${props => (props.player ? 'black' : 'white')};
+    width: 60px;
+    margin-right: 20px;
+`;
+
+const TimePlayed = styled.div``;
 
 const Board = styled.div`
     display: grid;
     grid-template: repeat(10, calc(100vw / 10)) / repeat(10, calc(100vw / 10));
 
     @media screen and (orientation: landscape) {
-        grid-template: repeat(10, calc(100vh / 10)) / repeat(
+        grid-template: repeat(10, calc((100vh - 50px) / 10)) / repeat(
                 10,
                 calc(100vh / 10)
             );
@@ -154,8 +214,8 @@ const Square = styled.div`
         props.selected
             ? 'green'
             : props.even
-            ? 'rgb(210, 210, 210)'
-            : 'rgb(150, 150, 150)'};
+            ? props.theme.evenSquareBackground
+            : props.theme.oddSquareBackground};
     color: ${props => (props.player ? 'black' : 'white')};
     text-shadow: 0 0 2px ${props => (props.player ? 'white' : 'black')};
     display: flex;

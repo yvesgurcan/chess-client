@@ -11,6 +11,7 @@ import GameView from './components/GameView';
 const GlobalStyle = createGlobalStyle`
     body {
         margin: 0;
+        background: ${props => props.theme.background1};
     }
 `;
 

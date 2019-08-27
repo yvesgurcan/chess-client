@@ -1,3 +1,5 @@
+export const ONE_SECOND = 1000;
+
 export const BOARD_SIDE_SIZE = 7;
 
 export const PLAYER1 = 0;
