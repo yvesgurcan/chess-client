@@ -31,6 +31,8 @@ export default class GameState {
         ); // keeps time spent across multiple sessions
         this.currentPlayer = PLAYER1;
         this.currentTurn = 0;
+        this.pieces = [];
+        this.removedPieces = [[], []];
     }
 
     updateTimePlayed = () => {
@@ -97,6 +99,41 @@ export default class GameState {
         });
     };
 
+    removePiece = pieceToRemove => {
+        const pieces = [];
+        this.pieces.forEach(piece => {
+            if (piece.id !== pieceToRemove.id) {
+                pieces.push(piece);
+            }
+        });
+
+        this.pieces = pieces;
+
+        const playerPieceRemoved = this.removedPieces[pieceToRemove.player];
+        const updatedPlayerPieceRemoved = [
+            ...playerPieceRemoved,
+            pieceToRemove
+        ];
+
+        const oppositePlayerPieceRemoved = this.removedPieces[
+            Number(!pieceToRemove.player)
+        ];
+
+        if (pieceToRemove.player === 0) {
+            this.removedPieces = [
+                updatedPlayerPieceRemoved,
+                oppositePlayerPieceRemoved
+            ];
+        } else {
+            this.removedPieces = [
+                oppositePlayerPieceRemoved,
+                updatedPlayerPieceRemoved
+            ];
+        }
+
+        console.log(this.removedPieces);
+    };
+
     select = ({ x, y, piece }) => {
         if (piece) {
             const { x: discardX, y: discardY, ...pieceProperties } = piece;
@@ -140,8 +177,8 @@ export default class GameState {
 
             if (vector[otherAxis] > 0) {
                 if (
-                    piece[otherAxis] >= origin[otherAxis] &&
-                    piece[otherAxis] <= target
+                    piece[otherAxis] > origin[otherAxis] &&
+                    piece[otherAxis] < target
                 ) {
                     return true;
                 }
@@ -149,8 +186,8 @@ export default class GameState {
 
             if (vector[otherAxis] < 0) {
                 if (
-                    piece[otherAxis] <= origin[otherAxis] &&
-                    piece[otherAxis] >= target
+                    piece[otherAxis] < origin[otherAxis] &&
+                    piece[otherAxis] > target
                 ) {
                     return true;
                 }
@@ -178,6 +215,15 @@ export default class GameState {
             }
             case KING: {
                 return Math.abs(vectorX) === 1 || Math.abs(vectorY) === 1;
+                // TODO: check if this is castling
+                /*
+                    The king and the chosen rook are on the player's first rank.
+                    Neither the king nor the chosen rook has previously moved.
+                    There are no pieces between the king and the chosen rook.
+                    The king is not currently in check.
+                    The king does not pass through a square that is attacked by an enemy piece.
+                    The king does not end up in check. (True of any legal move.)
+                */
             }
             case QUEEN: {
                 return (
@@ -193,6 +239,7 @@ export default class GameState {
                         vector: { x: vectorX, y: vectorY }
                     })
                 );
+                // TODO: check if this is castling
             }
             case KNIGHT: {
                 if (
@@ -203,16 +250,6 @@ export default class GameState {
                 ) {
                     return true;
                 }
-
-                // TODO: check if this is castling
-                /*
-                    The king and the chosen rook are on the player's first rank.
-                    Neither the king nor the chosen rook has previously moved.
-                    There are no pieces between the king and the chosen rook.
-                    The king is not currently in check.
-                    The king does not pass through a square that is attacked by an enemy piece.
-                    The king does not end up in check. (True of any legal move.)
-                */
                 break;
             }
             case BISHOP: {
@@ -252,8 +289,11 @@ export default class GameState {
     };
 
     moveSelectedPiece = ({ x, y }) => {
+        let moved = false;
+        let pieceToRemove = null;
+
         if (!this.selected) {
-            return false;
+            return moved;
         }
 
         const {
@@ -277,14 +317,38 @@ export default class GameState {
                             firstMove: selectedPiece.firstMove
                         })
                     ) {
+                        const targetPiece = this.getPieceAt({
+                            x,
+                            y
+                        });
+
+                        if (targetPiece) {
+                            if (
+                                selectedPiece.player === this.currentPlayer &&
+                                targetPiece.player !== selectedPiece.player
+                            ) {
+                                pieceToRemove = targetPiece;
+                            } else {
+                                return piece;
+                            }
+                        } else if (
+                            selectedPiece.player !== this.currentPlayer
+                        ) {
+                            return piece;
+                        }
+
+                        moved = true;
+
                         this.select({
                             x,
                             y,
                             piece: { ...piece, firstMove: false }
                         });
+
                         this.nextTurn();
                         return new Piece({ ...piece, x, y, firstMove: false });
                     } else {
+                        // select empty tile
                         this.select({ x, y });
                         return piece;
                     }
@@ -292,8 +356,14 @@ export default class GameState {
 
                 return piece;
             });
+
+            if (pieceToRemove) {
+                this.removePiece(pieceToRemove);
+            }
         } else {
             this.select({ x, y });
         }
+
+        return moved;
     };
 }

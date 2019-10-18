@@ -30,10 +30,10 @@ export default class Home extends Component {
             if (selected.x === x && selected.y === y) {
                 gameState.unselect();
             } else if (selected.piece) {
-                if (piece) {
+                const moved = gameState.moveSelectedPiece({ x, y });
+
+                if (!moved) {
                     gameState.select({ x, y, piece });
-                } else if (selected.piece.player === gameState.currentPlayer) {
-                    gameState.moveSelectedPiece({ x, y });
                 }
             } else {
                 gameState.select({ x, y, piece });
@@ -45,7 +45,7 @@ export default class Home extends Component {
         this.updateGameState(gameState);
     };
 
-    renderPieceIcon = ({ type, player }) => {
+    renderPieceIcon = ({ id, type, player }) => {
         if (!type) {
             return null;
         }
@@ -68,7 +68,6 @@ export default class Home extends Component {
 
     renderGameStats = () => {
         const { gameState } = this.state;
-        console.log(gameState.totalTimePlayed);
         return (
             <GameStats>
                 <CurrentTurn>#{String(gameState.currentTurn + 1)}:</CurrentTurn>
@@ -82,6 +81,13 @@ export default class Home extends Component {
                 </TimePlayed>
             </GameStats>
         );
+    };
+
+    renderGraveyard = player => {
+        const { gameState } = this.state;
+        return gameState.removedPieces[player].map(piece => (
+            <Tomb key={piece.id}>{this.renderPieceIcon(piece)}</Tomb>
+        ));
     };
 
     renderSquares = () => {
@@ -152,7 +158,11 @@ export default class Home extends Component {
         return (
             <View>
                 {this.renderGameStats()}
-                <Board>{this.renderSquares()}</Board>
+                <Wrapper>
+                    <Graveyard>{this.renderGraveyard(0)}</Graveyard>
+                    <Board>{this.renderSquares()}</Board>
+                    <Graveyard>{this.renderGraveyard(1)}</Graveyard>
+                </Wrapper>
             </View>
         );
     }
@@ -197,14 +207,39 @@ const CurrentPlayer = styled.div`
 
 const TimePlayed = styled.div``;
 
-const Board = styled.div`
-    display: grid;
-    grid-template: repeat(10, calc(100vw / 10)) / repeat(10, calc(100vw / 10));
+const Wrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const Graveyard = styled.div`
+    width: 95%;
+    display: flex;
+    flex-wrap: wrap;
+    height: 5vw;
 
     @media screen and (orientation: landscape) {
-        grid-template: repeat(10, calc((100vh - 50px) / 10)) / repeat(
+        height: 5vh;
+    }
+`;
+
+const Tomb = styled.div`
+    width: 5vw;
+
+    @media screen and (orientation: landscape) {
+        width: 5vh;
+    }
+`;
+
+const Board = styled.div`
+    display: grid;
+    grid-template: repeat(10, calc(85vw / 10)) / repeat(10, calc(85vw / 10));
+
+    @media screen and (orientation: landscape) {
+        grid-template: repeat(10, calc((85vh - 50px) / 10)) / repeat(
                 10,
-                calc(100vh / 10)
+                calc(85vh / 10)
             );
     }
 `;
