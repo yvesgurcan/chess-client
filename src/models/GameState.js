@@ -1,4 +1,4 @@
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 
@@ -79,11 +79,15 @@ export default class GameState {
         this.pieces = pieces;
     };
 
-    getPieceAt = ({ x, y }) => {
+    /**
+     *
+     * @returns `Piece` or `undefined`
+     */
+    getPieceAt = ({ x, y, matchSelectedOnly = true }) => {
         return this.pieces.find(piece => {
             let matchSelectedId = true;
 
-            if (this.selected && this.selected.piece) {
+            if (matchSelectedOnly && this.selected && this.selected.piece) {
                 if (
                     this.selected.x === piece.x &&
                     this.selected.y === piece.y
@@ -93,6 +97,10 @@ export default class GameState {
                         matchSelectedId = false;
                     }
                 }
+            }
+
+            if (!matchSelectedOnly) {
+                return piece.x === x && piece.y === y;
             }
 
             return piece.x === x && piece.y === y && matchSelectedId;
@@ -130,8 +138,6 @@ export default class GameState {
                 updatedPlayerPieceRemoved
             ];
         }
-
-        console.log(this.removedPieces);
     };
 
     select = ({ x, y, piece }) => {
@@ -156,6 +162,7 @@ export default class GameState {
     };
 
     isBishopPattern = ({ vectorX, vectorY }) => {
+        // TODO: Check if there is a piece in the way with a new method called isBishopMoveFree
         return Math.abs(vectorX) === Math.abs(vectorY);
     };
 
@@ -199,6 +206,28 @@ export default class GameState {
         return !pieceIsInTheWay;
     };
 
+    isPawnCapturing = ({ x, y, vectorX, vectorY, direction }) => {
+        if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
+            const piece = this.getPieceAt({ x, y, matchSelectedOnly: false });
+            return !!piece;
+        }
+
+        return false;
+    };
+
+    isPawnMoving = ({ x, y, vectorX, vectorY, firstMove, direction }) => {
+        const piece = this.getPieceAt({ x, y, matchSelectedOnly: false });
+        if (piece) {
+            return false;
+        }
+
+        if (direction === 1) {
+            return vectorY > 0 && vectorY <= 1 + firstMove && vectorX === 0;
+        } else {
+            return vectorY < 0 && vectorY >= -1 - firstMove && vectorX === 0;
+        }
+    };
+
     isPiecePattern = ({
         destination: { x, y },
         origin,
@@ -228,7 +257,11 @@ export default class GameState {
             case QUEEN: {
                 return (
                     this.isBishopPattern({ vectorX, vectorY }) ||
-                    this.isRookPattern({ vectorX, vectorY })
+                    (this.isRookPattern({ vectorX, vectorY }) &&
+                        this.isRookMoveFree({
+                            origin,
+                            vector: { x: vectorX, y: vectorY }
+                        }))
                 );
             }
             case ROOK: {
@@ -256,21 +289,24 @@ export default class GameState {
                 return this.isBishopPattern({ vectorX, vectorY });
             }
             case PAWN: {
-                if (player === PLAYER2) {
-                    // TODO: check if pawn is taking a piece
-                    return (
-                        vectorY > 0 && vectorY <= 1 + firstMove && vectorX === 0
-                    );
-                }
-
-                if (player === PLAYER1) {
-                    // TODO: check if pawn is taking a piece
-                    return (
-                        vectorY < 0 &&
-                        vectorY >= -1 - firstMove &&
-                        vectorX === 0
-                    );
-                }
+                const direction = player === PLAYER1 ? -1 : 1;
+                return (
+                    this.isPawnMoving({
+                        x,
+                        y,
+                        vectorX,
+                        vectorY,
+                        firstMove,
+                        direction
+                    }) ||
+                    this.isPawnCapturing({
+                        x,
+                        y,
+                        vectorX,
+                        vectorY,
+                        direction
+                    })
+                );
             }
         }
 
