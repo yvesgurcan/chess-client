@@ -1,7 +1,7 @@
 {
     "name": "chess",
-    "version": "1.0.1",
-    "description": "A Chess game in JavaScript.",
+    "version": "1.0.2",
+    "description": "♞ Mobile-first Chess in JavaScript.",
     "main": "index.js",
     "scripts": {
         "start": "webpack-dev-server"

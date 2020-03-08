@@ -191,6 +191,7 @@ const GameStats = styled.div`
     color: ${props => props.theme.color2};
     min-height: 40px;
     box-sizing: border-box;
+    font-size: 18px;
 `;
 
 const CurrentTurn = styled.div`

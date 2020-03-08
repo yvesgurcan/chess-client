@@ -1,6 +1,8 @@
 # Chess
 
-Play this work in progress: https://chess.yvesgurcan.com.
+♞ Mobile-first Chess in JavaScript.
+
+Play it: https://chess.yvesgurcan.com.
 
 ## Setup
 
