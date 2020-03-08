@@ -27,18 +27,23 @@ export default class GameView extends Component {
         const { gameState } = this.state;
         const { selected } = gameState;
         if (selected) {
+            // unselect
             if (selected.x === x && selected.y === y) {
                 gameState.unselect();
+                // move
             } else if (selected.piece) {
                 const moved = gameState.moveSelectedPiece({ x, y });
 
+                // select
                 if (!moved) {
                     gameState.select({ x, y, piece });
                 }
+                // select
             } else {
                 gameState.select({ x, y, piece });
             }
         } else {
+            // select
             gameState.select({ x, y, piece });
         }
 
@@ -218,30 +223,32 @@ const Graveyard = styled.div`
     width: 95%;
     display: flex;
     flex-wrap: wrap;
-    height: 5vw;
+    height: 4vw;
+    padding: 10px;
+    background: rgb(118, 118, 118);
+    border: 1px solid black;
 
     @media screen and (orientation: landscape) {
-        height: 5vh;
+        height: 4vh;
     }
 `;
 
 const Tomb = styled.div`
-    width: 5vw;
+    width: 4vw;
 
     @media screen and (orientation: landscape) {
-        width: 5vh;
+        width: 4vh;
     }
 `;
 
 const Board = styled.div`
     display: grid;
-    grid-template: repeat(10, calc(85vw / 10)) / repeat(10, calc(85vw / 10));
+    grid-template: repeat(9, calc(85vw / 10)) / repeat(9, calc(85vw / 10));
 
     @media screen and (orientation: landscape) {
-        grid-template: repeat(10, calc((85vh - 50px) / 10)) / repeat(
-                10,
-                calc(85vh / 10)
-            );
+        grid-template:
+            repeat(10, calc((85vh - 50px) / 10)) /
+            repeat(10, calc(85vh / 10));
     }
 `;
 
