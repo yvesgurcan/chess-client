@@ -4,7 +4,7 @@ import icons from './icons';
 import GameState from '../models/GameState';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 
-export default class Home extends Component {
+export default class GameView extends Component {
     constructor() {
         super();
         const gameState = new GameState();
