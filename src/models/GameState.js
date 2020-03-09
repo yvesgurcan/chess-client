@@ -52,6 +52,7 @@ export default class GameState {
             return;
         }
 
+        this.unselect();
         this.currentPlayer = +!this.currentPlayer;
     };
 
