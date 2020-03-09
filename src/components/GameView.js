@@ -110,17 +110,31 @@ export default class GameView extends Component {
                     (x === 0 && y === BOARD_SIDE_SIZE + 2)
                 ) {
                     squares.push(<Side key={`${x}-${y}`} />);
-                    // first and last columns
-                } else if (x === 0 || x === BOARD_SIDE_SIZE + 2) {
+                    // first column
+                } else if (x === 0) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="right">
                             {BOARD_SIDE_SIZE + 2 - y}
                         </Side>
                     );
-                    // first and last rows
-                } else if (y === 0 || y === BOARD_SIDE_SIZE + 2) {
+                    // last column
+                } else if (x === BOARD_SIDE_SIZE + 2) {
+                    squares.push(
+                        <Side key={`${x}-${y}`} border="left">
+                            {BOARD_SIDE_SIZE + 2 - y}
+                        </Side>
+                    );
+                    // first row
+                } else if (y === 0) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="bottom">
+                            {String.fromCharCode(96 + x)}
+                        </Side>
+                    );
+                    // last row
+                } else if (y === BOARD_SIDE_SIZE + 2) {
+                    squares.push(
+                        <Side key={`${x}-${y}`} border="top">
                             {String.fromCharCode(96 + x)}
                         </Side>
                     );
