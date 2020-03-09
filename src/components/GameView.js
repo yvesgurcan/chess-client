@@ -47,6 +47,8 @@ export default class GameView extends Component {
             gameState.select({ x, y, piece });
         }
 
+        // debug
+        window.gameState = gameState;
         this.updateGameState(gameState);
     };
 

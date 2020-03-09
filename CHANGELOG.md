@@ -1,3 +1,7 @@
+# v0.0.5
+
+Added logic for castling.
+
 # v0.0.4
 
 Added logic to prevent bishop and queen to go beyond pieces when moving diagonally.

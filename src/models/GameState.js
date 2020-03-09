@@ -168,6 +168,27 @@ export default class GameState {
         return this.selected.x === x && this.selected.y === y;
     };
 
+    isPawnCapturing = ({ x, y, vectorX, vectorY, direction }) => {
+        if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
+            return this.hasPieceAt({ x, y });
+        }
+
+        return false;
+    };
+
+    isPawnMoving = ({ x, y, vectorX, vectorY, firstMove, direction }) => {
+        const hasPiece = this.hasPieceAt({ x, y });
+        if (hasPiece) {
+            return false;
+        }
+
+        if (direction === 1) {
+            return vectorY > 0 && vectorY <= 1 + firstMove && vectorX === 0;
+        } else {
+            return vectorY < 0 && vectorY >= -1 - firstMove && vectorX === 0;
+        }
+    };
+
     isBishopPattern = ({ vectorX, vectorY }) => {
         return Math.abs(vectorX) === Math.abs(vectorY);
     };
@@ -249,25 +270,83 @@ export default class GameState {
         return !pieceIsInTheWay;
     };
 
-    isPawnCapturing = ({ x, y, vectorX, vectorY, direction }) => {
-        if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
-            return this.hasPieceAt({ x, y });
-        }
-
-        return false;
+    isKingPattern = ({ vectorX, vectorY }) => {
+        return vectorX >= -1 && vectorX <= 1 && vectorY >= -1 && vectorY <= 1;
     };
 
-    isPawnMoving = ({ x, y, vectorX, vectorY, firstMove, direction }) => {
-        const hasPiece = this.hasPieceAt({ x, y });
-        if (hasPiece) {
+    isCastlePattern = ({ vectorX, vectorY }) => {
+        return Math.abs(vectorX) === 2 && vectorY === 0;
+    };
+
+    performCastle = ({ castleVectorX, selectedPiece, destination }) => {
+        const playerY = this.currentPlayer === PLAYER1 ? 7 : 0;
+        const rookX = castleVectorX > 0 ? 7 : 0;
+        const rookVectorX = castleVectorX > 0 ? -1 : 1;
+
+        // find chosen rook
+        const targetRook = this.pieces.find(piece => {
+            return (
+                piece.type === ROOK &&
+                piece.player === selectedPiece.player &&
+                piece.firstMove &&
+                piece.x === rookX
+            );
+        });
+
+        // there's no rook to castle with
+        if (!targetRook) {
+            return;
+        }
+
+        let betweenX;
+
+        if (castleVectorX > 0) {
+            betweenX = [5, 6];
+        } else {
+            betweenX = [1, 2, 3];
+        }
+
+        const isBlocked = betweenX
+            .map(deltaX => {
+                return this.hasPieceAt({ x: deltaX, y: playerY });
+            })
+            .some(blocking => blocking);
+
+        // there are pieces between the king and the rook
+        if (isBlocked) {
             return false;
         }
 
-        if (direction === 1) {
-            return vectorY > 0 && vectorY <= 1 + firstMove && vectorX === 0;
-        } else {
-            return vectorY < 0 && vectorY >= -1 - firstMove && vectorX === 0;
-        }
+        /*
+            TODO: Other checks that need to be performed for castling
+            - The king is not currently in check.
+            - The king does not pass through a square that is attacked by an enemy piece.
+            - The king does not end up in check (true of any legal move).
+        */
+
+        // update pieces positions
+        this.pieces = this.pieces.map(piece => {
+            if (piece.id === selectedPiece.id) {
+                return new Piece({
+                    ...selectedPiece,
+                    x: destination.x,
+                    y: destination.y,
+                    firstMove: false
+                });
+            } else if (piece.id === targetRook.id) {
+                return new Piece({
+                    ...targetRook,
+                    x: destination.x + rookVectorX,
+                    firstMove: false
+                });
+            }
+
+            return piece;
+        });
+
+        this.nextTurn();
+
+        return true;
     };
 
     isPiecePattern = ({
@@ -285,17 +364,8 @@ export default class GameState {
                 break;
             }
             case KING: {
-                return Math.abs(vectorX) === 1 || Math.abs(vectorY) === 1;
                 // TODO: see if king puts itself in check
-                // TODO: check if this is castling
-                /*
-                    The king and the chosen rook are on the player's first rank.
-                    Neither the king nor the chosen rook has previously moved.
-                    There are no pieces between the king and the chosen rook.
-                    The king is not currently in check.
-                    The king does not pass through a square that is attacked by an enemy piece.
-                    The king does not end up in check. (True of any legal move.)
-                */
+                return this.isKingPattern({ vectorX, vectorY });
             }
             case QUEEN: {
                 return (
@@ -383,6 +453,7 @@ export default class GameState {
     moveSelectedPiece = ({ x, y }) => {
         let moved = false;
         let pieceToRemove = null;
+        let castleVectorX = null;
 
         if (!this.selected) {
             return moved;
@@ -393,6 +464,7 @@ export default class GameState {
             y: selectedY,
             piece: selectedPiece
         } = this.selected;
+
         if (selectedPiece) {
             this.pieces = this.pieces.map(piece => {
                 if (
@@ -415,6 +487,7 @@ export default class GameState {
                         });
 
                         if (targetPiece) {
+                            // capture opponent piece
                             if (
                                 selectedPiece.player === this.currentPlayer &&
                                 targetPiece.player !== selectedPiece.player
@@ -440,6 +513,15 @@ export default class GameState {
                         this.nextTurn();
                         return new Piece({ ...piece, x, y, firstMove: false });
                     } else {
+                        // castling check
+                        if (piece.canCastlePrerequisites) {
+                            const vectorX = x - piece.x;
+                            const vectorY = y - piece.y;
+                            if (this.isCastlePattern({ vectorX, vectorY })) {
+                                castleVectorX = vectorX;
+                            }
+                        }
+
                         // select empty tile
                         this.select({ x, y });
                         return piece;
@@ -448,6 +530,15 @@ export default class GameState {
 
                 return piece;
             });
+
+            // perform castling
+            if (castleVectorX) {
+                return this.performCastle({
+                    castleVectorX,
+                    selectedPiece,
+                    destination: { x, y }
+                });
+            }
 
             if (pieceToRemove) {
                 this.removePiece(pieceToRemove);
