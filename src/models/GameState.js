@@ -286,6 +286,7 @@ export default class GameState {
             }
             case KING: {
                 return Math.abs(vectorX) === 1 || Math.abs(vectorY) === 1;
+                // TODO: see if king puts itself in check
                 // TODO: check if this is castling
                 /*
                     The king and the chosen rook are on the player's first rank.
@@ -319,7 +320,6 @@ export default class GameState {
                         vector: { x: vectorX, y: vectorY }
                     })
                 );
-                // TODO: check if this is castling
             }
             case KNIGHT: {
                 if (
@@ -368,6 +368,8 @@ export default class GameState {
     };
 
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
+        // TODO: See if the player's king is in check
+
         const fitsPiecePattern = this.isPiecePattern({
             destination,
             origin,
