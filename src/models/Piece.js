@@ -7,4 +7,12 @@ export default class Piece {
         this.player = player;
         this.firstMove = firstMove;
     }
+
+    get debug() {
+        return {
+            ...this,
+            x: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][this.x],
+            y: this.y + 1
+        };
+    }
 }

@@ -22,6 +22,8 @@ import {
 momentDurationFormatSetup(moment);
 
 export default class GameState {
+    practice = false;
+
     constructor() {
         this.gameStartedAt = moment(); // timestamp
         this.sessionStartedAt = moment(); // point of reference for time played in current session
@@ -44,8 +46,13 @@ export default class GameState {
     };
 
     nextTurn = () => {
-        this.currentPlayer = +!this.currentPlayer;
         this.currentTurn += 1;
+
+        if (this.practice) {
+            return;
+        }
+
+        this.currentPlayer = +!this.currentPlayer;
     };
 
     initPieces = () => {
@@ -83,11 +90,11 @@ export default class GameState {
      *
      * @returns `Piece` or `undefined`
      */
-    getPieceAt = ({ x, y, matchSelectedOnly = true }) => {
+    getPieceAt = ({ x, y }) => {
         return this.pieces.find(piece => {
             let matchSelectedId = true;
 
-            if (matchSelectedOnly && this.selected && this.selected.piece) {
+            if (this.selected && this.selected.piece) {
                 if (
                     this.selected.x === piece.x &&
                     this.selected.y === piece.y
@@ -99,12 +106,12 @@ export default class GameState {
                 }
             }
 
-            if (!matchSelectedOnly) {
-                return piece.x === x && piece.y === y;
-            }
-
             return piece.x === x && piece.y === y && matchSelectedId;
         });
+    };
+
+    hasPieceAt = ({ x, y }) => {
+        return this.pieces.some(piece => piece.x === x && piece.y === y);
     };
 
     removePiece = pieceToRemove => {
@@ -162,8 +169,44 @@ export default class GameState {
     };
 
     isBishopPattern = ({ vectorX, vectorY }) => {
-        // TODO: Check if there is a piece in the way with a new method called isBishopMoveFree
         return Math.abs(vectorX) === Math.abs(vectorY);
+    };
+
+    isBishopMoveFree = ({ origin, destination, vector }) => {
+        const pieceIsInTheWay = this.pieces.some(piece => {
+            if (piece.id === origin.id) {
+                return false;
+            }
+
+            const delta = {
+                x: piece.x - origin.x,
+                y: piece.y - origin.y
+            };
+
+            // piece is diagonal to the bishop
+            if (Math.abs(delta.x) === Math.abs(delta.y)) {
+                let xObstructed = false;
+                let yObstructed = false;
+                if (vector.x > 0) {
+                    xObstructed = piece.x < destination.x && piece.x > origin.x;
+                } else {
+                    xObstructed = piece.x > destination.x && piece.x < origin.x;
+                }
+
+                if (vector.y > 0) {
+                    yObstructed = piece.y < destination.y && piece.y > origin.y;
+                } else {
+                    yObstructed = piece.y > destination.y && piece.y < origin.y;
+                }
+
+                // piece is within the area that the bishop is crossing
+                return xObstructed && yObstructed;
+            }
+
+            return false;
+        });
+
+        return !pieceIsInTheWay;
     };
 
     isRookPattern = ({ vectorX, vectorY }) => {
@@ -208,16 +251,15 @@ export default class GameState {
 
     isPawnCapturing = ({ x, y, vectorX, vectorY, direction }) => {
         if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
-            const piece = this.getPieceAt({ x, y, matchSelectedOnly: false });
-            return !!piece;
+            return this.hasPieceAt({ x, y });
         }
 
         return false;
     };
 
     isPawnMoving = ({ x, y, vectorX, vectorY, firstMove, direction }) => {
-        const piece = this.getPieceAt({ x, y, matchSelectedOnly: false });
-        if (piece) {
+        const hasPiece = this.hasPieceAt({ x, y });
+        if (hasPiece) {
             return false;
         }
 
@@ -256,7 +298,12 @@ export default class GameState {
             }
             case QUEEN: {
                 return (
-                    this.isBishopPattern({ vectorX, vectorY }) ||
+                    (this.isBishopPattern({ vectorX, vectorY }) &&
+                        this.isBishopMoveFree({
+                            origin,
+                            destination: { x, y },
+                            vector: { x: vectorX, y: vectorY }
+                        })) ||
                     (this.isRookPattern({ vectorX, vectorY }) &&
                         this.isRookMoveFree({
                             origin,
@@ -286,7 +333,14 @@ export default class GameState {
                 break;
             }
             case BISHOP: {
-                return this.isBishopPattern({ vectorX, vectorY });
+                return (
+                    this.isBishopPattern({ vectorX, vectorY }) &&
+                    this.isBishopMoveFree({
+                        origin,
+                        destination: { x, y },
+                        vector: { x: vectorX, y: vectorY }
+                    })
+                );
             }
             case PAWN: {
                 const direction = player === PLAYER1 ? -1 : 1;

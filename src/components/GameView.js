@@ -224,8 +224,8 @@ const Graveyard = styled.div`
     display: flex;
     flex-wrap: wrap;
     height: 4vw;
-    padding: 10px;
     background: rgb(118, 118, 118);
+    padding: 10px;
     border: 1px solid black;
 
     @media screen and (orientation: landscape) {
@@ -243,12 +243,12 @@ const Tomb = styled.div`
 
 const Board = styled.div`
     display: grid;
-    grid-template: repeat(9, calc(85vw / 10)) / repeat(9, calc(85vw / 10));
+    grid-template: repeat(10, calc(80vw / 10)) / repeat(10, calc(80vw / 10));
 
     @media screen and (orientation: landscape) {
         grid-template:
-            repeat(10, calc((85vh - 50px) / 10)) /
-            repeat(10, calc(85vh / 10));
+            repeat(10, calc((80vh - 5rem) / 10)) /
+            repeat(10, calc((80vh - 5rem) / 10));
     }
 `;
 
