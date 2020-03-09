@@ -102,31 +102,29 @@ export default class GameView extends Component {
         let squares = [];
         for (let y = 0; y <= BOARD_SIDE_SIZE + 2; y++) {
             for (let x = 0; x <= BOARD_SIDE_SIZE + 2; x++) {
-                if (x === 0 && y === 0) {
+                // corners
+                if (
+                    (x === 0 && y === 0) ||
+                    (x === BOARD_SIDE_SIZE + 2 && y === BOARD_SIDE_SIZE + 2) ||
+                    (x === BOARD_SIDE_SIZE + 2 && y === 0) ||
+                    (x === 0 && y === BOARD_SIDE_SIZE + 2)
+                ) {
                     squares.push(<Side key={`${x}-${y}`} />);
-                } else if (x === 9) {
-                    squares.push(
-                        <Side
-                            key={`${x}-${y}`}
-                            border={y > 0 && y < 9 && 'left'}
-                        />
-                    );
-                } else if (y === 9) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border={x > 0 && 'top'} />
-                    );
-                } else if (x === 0) {
+                    // first and last columns
+                } else if (x === 0 || x === BOARD_SIDE_SIZE + 2) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="right">
-                            {y}
+                            {BOARD_SIDE_SIZE + 2 - y}
                         </Side>
                     );
-                } else if (y === 0) {
+                    // first and last rows
+                } else if (y === 0 || y === BOARD_SIDE_SIZE + 2) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="bottom">
                             {String.fromCharCode(96 + x)}
                         </Side>
                     );
+                    // everything else
                 } else {
                     const adjustedX = x - 1;
                     const adjustedY = y - 1;
