@@ -88,7 +88,6 @@ export default class GameState {
     };
 
     /**
-     *
      * @returns `Piece` or `undefined`
      */
     getPieceAt = ({ x, y }) => {
@@ -350,12 +349,16 @@ export default class GameState {
         return true;
     };
 
+    /**
+     * @returns {bool} Whether the pattern corresponds to the piece
+     */
     isPiecePattern = ({
         destination: { x, y },
         origin,
         type,
         player,
-        firstMove
+        firstMove,
+        watchCheck = true
     }) => {
         const vectorX = x - origin.x;
         const vectorY = y - origin.y;
@@ -365,8 +368,17 @@ export default class GameState {
                 break;
             }
             case KING: {
-                // TODO: see if king puts itself in check
-                return this.isKingPattern({ vectorX, vectorY });
+                const isKingPattern = this.isKingPattern({ vectorX, vectorY });
+                if (isKingPattern) {
+                    let isInCheck = false;
+                    if (watchCheck) {
+                        isInCheck = this.isKingInCheck({ x, y });
+                    }
+
+                    return !isInCheck;
+                }
+
+                return false;
             }
             case QUEEN: {
                 return (
@@ -438,8 +450,29 @@ export default class GameState {
         return false;
     };
 
+    isKingInCheck = ({ x, y }) => {
+        const opponentPieces = this.pieces.filter(
+            piece => piece.player !== this.currentPlayer
+        );
+
+        const isInCheck = opponentPieces.some(piece => {
+            // TODO: allow king to capture the piece when adjacent to it
+            const fitsPiecePattern = this.isPiecePattern({
+                destination: { x, y },
+                origin: { x: piece.x, y: piece.y },
+                type: piece.type,
+                player: piece.player,
+                firstMove: false,
+                watchCheck: false
+            });
+            return fitsPiecePattern;
+        });
+
+        return isInCheck;
+    };
+
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
-        // TODO: See if the player's king is in check
+        // TODO: See if the player's king is in check; if so, player should only do something that does not put them in check anymore
 
         const fitsPiecePattern = this.isPiecePattern({
             destination,

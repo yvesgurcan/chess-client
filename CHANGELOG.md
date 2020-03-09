@@ -1,3 +1,7 @@
+## v0.07
+
+Add logic to see if the king would be in check if moved somewhere.
+
 ## v0.0.6
 
 Fixed the numbering of the rows and columns of the board to fit to algebraic notation.
