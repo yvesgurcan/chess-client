@@ -308,7 +308,10 @@ export default class GameState {
 
         const isBlocked = betweenX
             .map(deltaX => {
-                return this.hasPieceAt({ x: deltaX, y: playerY });
+                return (
+                    this.hasPieceAt({ x: deltaX, y: playerY }) ||
+                    this.isKingInCheck({ x: deltaX, y: playerY })
+                );
             })
             .some(blocking => blocking);
 
@@ -316,13 +319,6 @@ export default class GameState {
         if (isBlocked) {
             return false;
         }
-
-        /*
-            TODO: Other checks that need to be performed for castling
-            - The king is not currently in check.
-            - The king does not pass through a square that is attacked by an enemy piece.
-            - The king does not end up in check (true of any legal move).
-        */
 
         // update pieces positions
         this.pieces = this.pieces.map(piece => {
@@ -357,8 +353,7 @@ export default class GameState {
         origin,
         type,
         player,
-        firstMove,
-        watchCheck = true
+        firstMove
     }) => {
         const vectorX = x - origin.x;
         const vectorY = y - origin.y;
@@ -368,17 +363,7 @@ export default class GameState {
                 break;
             }
             case KING: {
-                const isKingPattern = this.isKingPattern({ vectorX, vectorY });
-                if (isKingPattern) {
-                    let isInCheck = false;
-                    if (watchCheck) {
-                        isInCheck = this.isKingInCheck({ x, y });
-                    }
-
-                    return !isInCheck;
-                }
-
-                return false;
+                return this.isKingPattern({ vectorX, vectorY });
             }
             case QUEEN: {
                 return (
@@ -450,20 +435,31 @@ export default class GameState {
         return false;
     };
 
-    isKingInCheck = ({ x, y }) => {
-        const opponentPieces = this.pieces.filter(
-            piece => piece.player !== this.currentPlayer
-        );
+    isKingInCheck = kingProjection => {
+        let kingActual = null;
+        const opponentPieces = this.pieces.filter(piece => {
+            if (piece.type === KING && piece.player === this.currentPlayer) {
+                kingActual = { ...piece };
+            }
+
+            return piece.player !== this.currentPlayer;
+        });
+
+        const king = kingProjection || kingActual;
+
+        if (!king) {
+            console.error('King not found?!');
+            return false;
+        }
 
         const isInCheck = opponentPieces.some(piece => {
             // TODO: allow king to capture the piece when adjacent to it
             const fitsPiecePattern = this.isPiecePattern({
-                destination: { x, y },
+                destination: { x: king.x, y: king.y },
                 origin: { x: piece.x, y: piece.y },
                 type: piece.type,
                 player: piece.player,
-                firstMove: false,
-                watchCheck: false
+                firstMove: false
             });
             return fitsPiecePattern;
         });
@@ -472,8 +468,6 @@ export default class GameState {
     };
 
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
-        // TODO: See if the player's king is in check; if so, player should only do something that does not put them in check anymore
-
         const fitsPiecePattern = this.isPiecePattern({
             destination,
             origin,
@@ -499,86 +493,98 @@ export default class GameState {
             piece: selectedPiece
         } = this.selected;
 
-        if (selectedPiece) {
-            this.pieces = this.pieces.map(piece => {
-                if (
-                    piece.x === selectedX &&
-                    piece.y === selectedY &&
-                    piece.id === selectedPiece.id
-                ) {
-                    if (
-                        this.isLegalMove({
-                            origin: { x: piece.x, y: piece.y, id: piece.id },
-                            destination: { x, y },
-                            type: selectedPiece.type,
-                            player: selectedPiece.player,
-                            firstMove: selectedPiece.firstMove
-                        })
-                    ) {
-                        const targetPiece = this.getPieceAt({
-                            x,
-                            y
-                        });
+        if (!selectedPiece) {
+            this.select({ x, y });
+            return moved;
+        }
 
-                        if (targetPiece) {
-                            // capture opponent piece
-                            if (
-                                selectedPiece.player === this.currentPlayer &&
-                                targetPiece.player !== selectedPiece.player
-                            ) {
-                                pieceToRemove = targetPiece;
-                            } else {
-                                return piece;
-                            }
-                        } else if (
-                            selectedPiece.player !== this.currentPlayer
+        const originalPieces = [].concat(this.pieces);
+
+        this.pieces = this.pieces.map(piece => {
+            if (
+                piece.x === selectedX &&
+                piece.y === selectedY &&
+                piece.id === selectedPiece.id
+            ) {
+                if (
+                    this.isLegalMove({
+                        origin: { x: piece.x, y: piece.y, id: piece.id },
+                        destination: { x, y },
+                        type: selectedPiece.type,
+                        player: selectedPiece.player,
+                        firstMove: selectedPiece.firstMove
+                    })
+                ) {
+                    const targetPiece = this.getPieceAt({
+                        x,
+                        y
+                    });
+
+                    if (targetPiece) {
+                        // capture opponent piece
+                        if (
+                            selectedPiece.player === this.currentPlayer &&
+                            targetPiece.player !== selectedPiece.player
                         ) {
+                            pieceToRemove = targetPiece;
+                        } else {
                             return piece;
                         }
-
-                        moved = true;
-
-                        this.select({
-                            x,
-                            y,
-                            piece: { ...piece, firstMove: false }
-                        });
-
-                        this.nextTurn();
-                        return new Piece({ ...piece, x, y, firstMove: false });
-                    } else {
-                        // castling check
-                        if (piece.canCastlePrerequisites) {
-                            const vectorX = x - piece.x;
-                            const vectorY = y - piece.y;
-                            if (this.isCastlePattern({ vectorX, vectorY })) {
-                                castleVectorX = vectorX;
-                            }
-                        }
-
-                        // select empty tile
-                        this.select({ x, y });
+                    } else if (selectedPiece.player !== this.currentPlayer) {
                         return piece;
                     }
+
+                    moved = true;
+
+                    this.select({
+                        x,
+                        y,
+                        piece: { ...piece, firstMove: false }
+                    });
+
+                    return new Piece({ ...piece, x, y, firstMove: false });
+                } else {
+                    // castling check
+                    if (piece.canCastlePrerequisites) {
+                        const vectorX = x - piece.x;
+                        const vectorY = y - piece.y;
+                        if (this.isCastlePattern({ vectorX, vectorY })) {
+                            castleVectorX = vectorX;
+                        }
+                    }
+
+                    // select empty tile
+                    this.select({ x, y });
+                    return piece;
                 }
+            }
 
-                return piece;
+            return piece;
+        });
+
+        const kingInCheck = this.isKingInCheck();
+
+        if (kingInCheck) {
+            this.pieces = originalPieces;
+            moved = false;
+            return moved;
+        }
+
+        // perform castling
+        if (castleVectorX) {
+            return this.performCastle({
+                castleVectorX,
+                selectedPiece,
+                destination: { x, y }
             });
+        }
 
-            // perform castling
-            if (castleVectorX) {
-                return this.performCastle({
-                    castleVectorX,
-                    selectedPiece,
-                    destination: { x, y }
-                });
-            }
+        if (pieceToRemove) {
+            this.removePiece(pieceToRemove);
+        }
 
-            if (pieceToRemove) {
-                this.removePiece(pieceToRemove);
-            }
-        } else {
-            this.select({ x, y });
+        if (moved) {
+            this.nextTurn();
         }
 
         return moved;

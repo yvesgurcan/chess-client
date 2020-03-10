@@ -1,4 +1,8 @@
-## v0.07
+## v0.0.8
+
+Add logic to see if the king would be in check while performing castling or while performing any move.
+
+## v0.0.7
 
 Add logic to see if the king would be in check if moved somewhere.
 
