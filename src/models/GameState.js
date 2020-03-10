@@ -31,6 +31,7 @@ export default class GameState {
             moment().diff(moment()),
             'milliseconds'
         ); // keeps time spent across multiple sessions
+        this.gameEndedAt = null;
         this.currentPlayer = PLAYER1;
         this.currentTurn = 0;
         this.pieces = [];
@@ -38,10 +39,15 @@ export default class GameState {
     }
 
     updateTimePlayed = () => {
+        if (this.gameEndedAt) {
+            return;
+        }
+
         const sessionTimePlayed = moment.duration(
             moment().diff(this.sessionStartedAt),
             'milliseconds'
         );
+
         this.totalTimePlayed = sessionTimePlayed;
     };
 
@@ -467,6 +473,11 @@ export default class GameState {
         return isInCheck;
     };
 
+    isOpponentKingCheckmate = () => {
+        // TODO: See if opponent king is checkmate
+        return false;
+    };
+
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
         const fitsPiecePattern = this.isPiecePattern({
             destination,
@@ -480,6 +491,11 @@ export default class GameState {
 
     moveSelectedPiece = ({ x, y }) => {
         let moved = false;
+
+        if (this.gameEndedAt) {
+            return moved;
+        }
+
         let pieceToRemove = null;
         let castleVectorX = null;
 
@@ -563,10 +579,15 @@ export default class GameState {
         });
 
         const kingInCheck = this.isKingInCheck();
-
         if (kingInCheck) {
             this.pieces = originalPieces;
             moved = false;
+            return moved;
+        }
+
+        const opponentKingCheckmate = this.isOpponentKingCheckmate();
+        if (opponentKingCheckmate) {
+            this.gameEndedAt = moment();
             return moved;
         }
 
