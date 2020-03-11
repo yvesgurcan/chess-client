@@ -6,7 +6,7 @@ import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import darkTheme from './themes/dark';
 import lightTheme from './themes/light';
 
-import GameView from './components/GameView';
+import GameView from './views/GameView';
 
 const GlobalStyle = createGlobalStyle`
     body {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import icons from './icons';
 import GameState from '../models/GameState';
+import styled from 'styled-components';
+import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 
 export default class GameView extends Component {
@@ -9,7 +9,7 @@ export default class GameView extends Component {
         super();
         const gameState = new GameState();
         gameState.initPieces();
-        this.state = { gameState };
+        this.state = { gameState, settingsOpened: false };
         window.gameState = gameState;
     }
 
@@ -52,7 +52,11 @@ export default class GameView extends Component {
         this.updateGameState(gameState);
     };
 
-    renderPieceIcon = ({ id, type, player }) => {
+    openSettingsMenu = settingsOpened => {
+        this.setState({ settingsOpened });
+    };
+
+    renderPieceIcon = ({ type, player }) => {
         if (!type) {
             return null;
         }
@@ -86,8 +90,43 @@ export default class GameView extends Component {
                         trim: false
                     })}
                 </TimePlayed>
+                <OpenSettings
+                    open={this.state.settingsOpened}
+                    onClick={() =>
+                        this.openSettingsMenu(!this.state.settingsOpened)
+                    }
+                >
+                    ⚙️
+                </OpenSettings>
             </GameStats>
         );
+    };
+
+    renderSettingsMenu = () => {
+        if (this.state.settingsOpened) {
+            return (
+                <div>
+                    <SettingsMenuAnchor>
+                        <SettingsMenu>
+                            <SettingsItem>
+                                <span>White:</span> Human
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Black:</span> Human
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Time limit:</span> None
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Offline mode:</span> Enabled
+                            </SettingsItem>
+                        </SettingsMenu>
+                    </SettingsMenuAnchor>
+                </div>
+            );
+        }
+
+        return null;
     };
 
     renderGraveyard = player => {
@@ -177,6 +216,7 @@ export default class GameView extends Component {
         return (
             <View>
                 {this.renderGameStats()}
+                {this.renderSettingsMenu()}
                 <Wrapper>
                     <Graveyard>{this.renderGraveyard(0)}</Graveyard>
                     <Board>{this.renderSquares()}</Board>
@@ -226,6 +266,38 @@ const CurrentPlayer = styled.div`
 `;
 
 const TimePlayed = styled.div``;
+
+const OpenSettings = styled.div`
+    font-size: 14px;
+    margin-left: 10px;
+    box-sizing: border-box;
+    ${props =>
+        props.open &&
+        `
+        margin: -1px;
+        margin-left: 9px;
+        border: 1px inset white;
+        `};
+`;
+
+const SettingsMenuAnchor = styled.div`
+    margin-left: -80px;
+`;
+
+const SettingsMenu = styled.div`
+    width: 160px;
+    position: absolute;
+    margin-top: -10px;
+    padding: 10px;
+    background: ${props => props.theme.background2};
+    color: ${props => props.theme.color2};
+    border: 1px solid black;
+`;
+
+const SettingsItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
 
 const Wrapper = styled.div`
     display: flex;

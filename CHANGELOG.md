@@ -1,3 +1,7 @@
+## v0.0.9
+
+Add logic to show/hide a settings menu.
+
 ## v0.0.8
 
 Add logic to see if the king would be in check while performing castling or while performing any move.
