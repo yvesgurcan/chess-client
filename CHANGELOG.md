@@ -1,3 +1,7 @@
+## v0.0.10
+
+Add logic to (partially) verify if the opponent is checkmate. The logic does not take into account yet if moving a piece that isn't their king would prevent checkmate.
+
 ## v0.0.9
 
 Add logic to show/hide a settings menu.

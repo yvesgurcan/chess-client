@@ -474,8 +474,54 @@ export default class GameState {
     };
 
     isOpponentKingCheckmate = () => {
-        // TODO: See if opponent king is checkmate
-        return false;
+        let opponentKing = null;
+        const pieces = this.pieces.filter(piece => {
+            if (piece.type === KING && piece.player !== this.currentPlayer) {
+                opponentKing = { ...piece };
+            }
+
+            return piece.player === this.currentPlayer;
+        });
+
+        if (!opponentKing) {
+            console.error('Opponent king not found?!');
+            return false;
+        }
+
+        // check how many of the possible king moves will end up with the king being in check, including its current position
+        let isInCheck = [];
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                const destination = {
+                    x: Math.max(0, opponentKing.x + x),
+                    y: Math.max(0, opponentKing.y + y)
+                };
+                const destinationInCheck = pieces.some(piece => {
+                    const fitsPiecePattern = this.isPiecePattern({
+                        destination,
+                        origin: { x: piece.x, y: piece.y },
+                        type: piece.type,
+                        player: piece.player,
+                        firstMove: false
+                    });
+                    return fitsPiecePattern;
+                });
+
+                // console.log(destination, destinationInCheck);
+
+                isInCheck.push(destinationInCheck);
+            }
+        }
+
+        const illegalMoves = isInCheck.reduce(
+            (sum, value) => sum + Number(value)
+        );
+
+        // console.log({ illegalMoves });
+
+        // TODO: Check if moving one of the pieces of the opponent might get the king out of checkmate
+
+        return illegalMoves === 9;
     };
 
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
@@ -585,6 +631,10 @@ export default class GameState {
             return moved;
         }
 
+        if (pieceToRemove) {
+            this.removePiece(pieceToRemove);
+        }
+
         const opponentKingCheckmate = this.isOpponentKingCheckmate();
         if (opponentKingCheckmate) {
             this.gameEndedAt = moment();
@@ -598,10 +648,6 @@ export default class GameState {
                 selectedPiece,
                 destination: { x, y }
             });
-        }
-
-        if (pieceToRemove) {
-            this.removePiece(pieceToRemove);
         }
 
         if (moved) {
