@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GameState from '../models/GameState';
 import styled from 'styled-components';
+import moment from 'moment';
 import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
@@ -56,8 +57,44 @@ export default class GameView extends Component {
         this.updateGameState(gameState);
     };
 
-    openSettingsMenu = settingsOpened => {
+    toggleSettingsMenu = settingsOpened => {
         this.setState({ settingsOpened });
+        if (settingsOpened) {
+            gameState.pause();
+        } else {
+            gameState.resume();
+        }
+
+        gameState.unselect();
+        this.updateGameState(gameState);
+    };
+
+    exportGame = () => {
+        const defaultFileName = `chess-${gameState.gameId}-${moment().format(
+            'YYYY-MM-DD-HH-mm-ss'
+        )}`;
+        const fileName = prompt(
+            'Enter a name for your saved game.',
+            defaultFileName
+        );
+        const game = gameState.export();
+        const gameBlob = new Blob([game], { type: 'text/plain' });
+        const virtualLink = document.createElement('a');
+        virtualLink.download = fileName;
+        virtualLink.href = URL.createObjectURL(gameBlob);
+        virtualLink.click();
+    };
+
+    handleImportGame = () => {
+        const fileInput = document.getElementById('load-file-input');
+        fileInput.click();
+    };
+
+    importGame = async event => {
+        const file = event.target.files[0];
+        const gameToImport = await file.text();
+        gameState.import(gameToImport);
+        this.updateGameState(gameState);
     };
 
     renderPieceIcon = ({ type, player }) => {
@@ -97,7 +134,7 @@ export default class GameView extends Component {
                 <OpenSettings
                     open={this.state.settingsOpened}
                     onClick={() =>
-                        this.openSettingsMenu(!this.state.settingsOpened)
+                        this.toggleSettingsMenu(!this.state.settingsOpened)
                     }
                 >
                     ⚙️
@@ -122,10 +159,17 @@ export default class GameView extends Component {
                                 <span>Time limit:</span> None
                             </SettingsItem>
                             <SettingsItem>
-                                <span>Offline mode:</span> Enabled
+                                <span>Offline mode:</span> Disabled
+                            </SettingsItem>
+                            <SettingsItem onClick={this.exportGame}>
+                                <span>Save:</span> &gt;&gt;
+                            </SettingsItem>
+                            <SettingsItem onClick={this.handleImportGame}>
+                                <span>Load:</span> &lt;&lt;
                             </SettingsItem>
                         </SettingsMenu>
                     </SettingsMenuAnchor>
+                    <HiddenFileLoader onChange={this.importGame} />
                 </div>
             );
         }
@@ -371,4 +415,11 @@ const IconContainer = styled.div`
         width: 100%;
         height: 100%;
     }
+`;
+
+const HiddenFileLoader = styled.input.attrs({
+    type: 'file',
+    id: 'load-file-input'
+})`
+    display: none;
 `;

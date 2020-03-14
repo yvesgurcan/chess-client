@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
+import { getPackageInfo } from '../lib/util';
 
 import Piece from '../models/Piece';
 import {
@@ -25,42 +26,30 @@ export default class GameState {
     practice = false;
 
     constructor() {
-        this.gameStartedAt = moment(); // timestamp
-        this.sessionStartedAt = moment(); // point of reference for time played in current session
+        this.gameId = uuid();
+        this.gameStartedAt = moment();
+        this.gameEndedAt = null;
+        this.lastSessionTimeUpdate = moment();
         this.totalTimePlayed = moment.duration(
             moment().diff(moment()),
             'milliseconds'
         ); // keeps track of time spent across multiple sessions
-        this.gameEndedAt = null;
         this.currentPlayer = PLAYER1;
         this.currentTurn = 0;
         this.pieces = [];
         this.removedPieces = [[], []];
+
+        this.players = [
+            {
+                playerId: uuid(),
+                color: 0
+            },
+            {
+                playerId: uuid(),
+                color: 1
+            }
+        ];
     }
-
-    updateTimePlayed = () => {
-        if (this.gameEndedAt) {
-            return;
-        }
-
-        const sessionTimePlayed = moment.duration(
-            moment().diff(this.sessionStartedAt),
-            'milliseconds'
-        );
-
-        this.totalTimePlayed = sessionTimePlayed;
-    };
-
-    nextTurn = () => {
-        this.currentTurn += 1;
-
-        if (this.practice) {
-            return;
-        }
-
-        this.unselect();
-        this.currentPlayer = +!this.currentPlayer;
-    };
 
     initPieces = () => {
         let pieces = [];
@@ -91,6 +80,90 @@ export default class GameState {
         });
 
         this.pieces = pieces;
+    };
+
+    export = () => {
+        const { version: gameVersion } = getPackageInfo();
+        return JSON.stringify({
+            gameVersion,
+            gameId: this.gameId,
+            gameSavedAt: moment(),
+            gameStartedAt: this.gameStartedAt,
+            gameEndedAt: this.gameEndedAt,
+            totalTimePlayed: this.totalTimePlayed,
+            players: this.players,
+            currentPlayer: this.currentPlayer,
+            currentTurn: this.currentTurn,
+            pieces: this.pieces,
+            removedPieces: this.removedPieces
+        });
+    };
+
+    import = unparsedGameData => {
+        const gameData = JSON.parse(unparsedGameData);
+
+        this.gameVersion = gameData.gameVersion;
+        this.gameId = gameData.gameId;
+        this.gameStartedAt = moment(gameData.gameStartedAt);
+        this.gameEndedAt = gameData.gameEndedAt
+            ? moment(gameData.gameEndedAt)
+            : null;
+        this.lastSessionTimeUpdate = null;
+        this.totalTimePlayed = moment.duration(
+            gameData.totalTimePlayed,
+            'milliseconds'
+        );
+        this.currentPlayer = gameData.currentPlayer;
+        this.currentTurn = gameData.currentTurn;
+        this.pieces = gameData.pieces;
+        this.removedPieces = gameData.removedPieces;
+        this.players = gameData.players;
+
+        console.log(
+            `Loading game '${this.gameId}' (game version: ${
+                this.gameVersion
+            }). Turn: ${
+                this.currentTurn
+            }. Time played: ${this.totalTimePlayed.format('hh:mm:ss', {
+                trim: false
+            })}. Last saved on ${gameData.gameSavedAt}.`
+        );
+    };
+
+    updateTimePlayed = () => {
+        if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
+            return;
+        }
+
+        const timePlayedSinceLastUpdate = moment.duration(
+            moment().diff(this.lastSessionTimeUpdate),
+            'milliseconds'
+        );
+
+        this.lastSessionTimeUpdate = moment();
+
+        this.totalTimePlayed = this.totalTimePlayed.add(
+            timePlayedSinceLastUpdate
+        );
+    };
+
+    pause = () => {
+        this.lastSessionTimeUpdate = null;
+    };
+
+    resume = () => {
+        this.lastSessionTimeUpdate = moment();
+    };
+
+    nextTurn = () => {
+        this.currentTurn += 1;
+
+        if (this.practice) {
+            return;
+        }
+
+        this.unselect();
+        this.currentPlayer = +!this.currentPlayer;
     };
 
     /**
@@ -154,6 +227,10 @@ export default class GameState {
     };
 
     select = ({ x, y, piece }) => {
+        if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
+            return;
+        }
+
         if (piece) {
             const { x: discardX, y: discardY, ...pieceProperties } = piece;
             this.selected = { x, y, piece: pieceProperties };
@@ -538,7 +615,7 @@ export default class GameState {
     moveSelectedPiece = ({ x, y }) => {
         let moved = false;
 
-        if (this.gameEndedAt) {
+        if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
             return moved;
         }
 
