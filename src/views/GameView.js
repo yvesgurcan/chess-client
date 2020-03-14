@@ -3,6 +3,7 @@ import GameState from '../models/GameState';
 import styled from 'styled-components';
 import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
+import { getPackageInfo } from '../lib/util';
 
 export default class GameView extends Component {
     constructor() {
@@ -11,6 +12,9 @@ export default class GameView extends Component {
         gameState.initPieces();
         this.state = { gameState, settingsOpened: false };
         window.gameState = gameState;
+        const { name, version, repository, author } = getPackageInfo();
+        console.log(`${name} v${version} by ${author}`);
+        console.log(`repository: ${repository}`);
     }
 
     componentDidMount() {

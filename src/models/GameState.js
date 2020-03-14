@@ -30,7 +30,7 @@ export default class GameState {
         this.totalTimePlayed = moment.duration(
             moment().diff(moment()),
             'milliseconds'
-        ); // keeps time spent across multiple sessions
+        ); // keeps track of time spent across multiple sessions
         this.gameEndedAt = null;
         this.currentPlayer = PLAYER1;
         this.currentTurn = 0;

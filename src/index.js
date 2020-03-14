@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { Switch } from 'react-router';
 import { HashRouter, Route } from 'react-router-dom';
