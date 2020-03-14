@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
-import styled from 'styled-components';
-import icons from './icons';
 import GameState from '../models/GameState';
+import styled from 'styled-components';
+import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
+import { getPackageInfo } from '../lib/util';
 
-export default class Home extends Component {
+export default class GameView extends Component {
     constructor() {
         super();
         const gameState = new GameState();
         gameState.initPieces();
-        this.state = { gameState };
+        this.state = { gameState, settingsOpened: false };
         window.gameState = gameState;
+        const { name, version, repository, author } = getPackageInfo();
+        console.log(`${name} v${version} by ${author}`);
+        console.log(`repository: ${repository}`);
     }
 
     componentDidMount() {
@@ -27,25 +31,36 @@ export default class Home extends Component {
         const { gameState } = this.state;
         const { selected } = gameState;
         if (selected) {
+            // unselect
             if (selected.x === x && selected.y === y) {
                 gameState.unselect();
+                // move
             } else if (selected.piece) {
                 const moved = gameState.moveSelectedPiece({ x, y });
 
+                // select
                 if (!moved) {
                     gameState.select({ x, y, piece });
                 }
+                // select
             } else {
                 gameState.select({ x, y, piece });
             }
         } else {
+            // select
             gameState.select({ x, y, piece });
         }
 
+        // debug
+        window.gameState = gameState;
         this.updateGameState(gameState);
     };
 
-    renderPieceIcon = ({ id, type, player }) => {
+    openSettingsMenu = settingsOpened => {
+        this.setState({ settingsOpened });
+    };
+
+    renderPieceIcon = ({ type, player }) => {
         if (!type) {
             return null;
         }
@@ -79,8 +94,43 @@ export default class Home extends Component {
                         trim: false
                     })}
                 </TimePlayed>
+                <OpenSettings
+                    open={this.state.settingsOpened}
+                    onClick={() =>
+                        this.openSettingsMenu(!this.state.settingsOpened)
+                    }
+                >
+                    ⚙️
+                </OpenSettings>
             </GameStats>
         );
+    };
+
+    renderSettingsMenu = () => {
+        if (this.state.settingsOpened) {
+            return (
+                <div>
+                    <SettingsMenuAnchor>
+                        <SettingsMenu>
+                            <SettingsItem>
+                                <span>White:</span> Human
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Black:</span> Human
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Time limit:</span> None
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Offline mode:</span> Enabled
+                            </SettingsItem>
+                        </SettingsMenu>
+                    </SettingsMenuAnchor>
+                </div>
+            );
+        }
+
+        return null;
     };
 
     renderGraveyard = player => {
@@ -95,31 +145,43 @@ export default class Home extends Component {
         let squares = [];
         for (let y = 0; y <= BOARD_SIDE_SIZE + 2; y++) {
             for (let x = 0; x <= BOARD_SIDE_SIZE + 2; x++) {
-                if (x === 0 && y === 0) {
+                // corners
+                if (
+                    (x === 0 && y === 0) ||
+                    (x === BOARD_SIDE_SIZE + 2 && y === BOARD_SIDE_SIZE + 2) ||
+                    (x === BOARD_SIDE_SIZE + 2 && y === 0) ||
+                    (x === 0 && y === BOARD_SIDE_SIZE + 2)
+                ) {
                     squares.push(<Side key={`${x}-${y}`} />);
-                } else if (x === 9) {
-                    squares.push(
-                        <Side
-                            key={`${x}-${y}`}
-                            border={y > 0 && y < 9 && 'left'}
-                        />
-                    );
-                } else if (y === 9) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border={x > 0 && 'top'} />
-                    );
+                    // first column
                 } else if (x === 0) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="right">
-                            {y}
+                            {BOARD_SIDE_SIZE + 2 - y}
                         </Side>
                     );
+                    // last column
+                } else if (x === BOARD_SIDE_SIZE + 2) {
+                    squares.push(
+                        <Side key={`${x}-${y}`} border="left">
+                            {BOARD_SIDE_SIZE + 2 - y}
+                        </Side>
+                    );
+                    // first row
                 } else if (y === 0) {
                     squares.push(
                         <Side key={`${x}-${y}`} border="bottom">
                             {String.fromCharCode(96 + x)}
                         </Side>
                     );
+                    // last row
+                } else if (y === BOARD_SIDE_SIZE + 2) {
+                    squares.push(
+                        <Side key={`${x}-${y}`} border="top">
+                            {String.fromCharCode(96 + x)}
+                        </Side>
+                    );
+                    // everything else
                 } else {
                     const adjustedX = x - 1;
                     const adjustedY = y - 1;
@@ -158,6 +220,7 @@ export default class Home extends Component {
         return (
             <View>
                 {this.renderGameStats()}
+                {this.renderSettingsMenu()}
                 <Wrapper>
                     <Graveyard>{this.renderGraveyard(0)}</Graveyard>
                     <Board>{this.renderSquares()}</Board>
@@ -191,6 +254,7 @@ const GameStats = styled.div`
     color: ${props => props.theme.color2};
     min-height: 40px;
     box-sizing: border-box;
+    font-size: 18px;
 `;
 
 const CurrentTurn = styled.div`
@@ -207,6 +271,38 @@ const CurrentPlayer = styled.div`
 
 const TimePlayed = styled.div``;
 
+const OpenSettings = styled.div`
+    font-size: 14px;
+    margin-left: 10px;
+    box-sizing: border-box;
+    ${props =>
+        props.open &&
+        `
+        margin: -1px;
+        margin-left: 9px;
+        border: 1px inset white;
+        `};
+`;
+
+const SettingsMenuAnchor = styled.div`
+    margin-left: -80px;
+`;
+
+const SettingsMenu = styled.div`
+    width: 160px;
+    position: absolute;
+    margin-top: -10px;
+    padding: 10px;
+    background: ${props => props.theme.background2};
+    color: ${props => props.theme.color2};
+    border: 1px solid black;
+`;
+
+const SettingsItem = styled.div`
+    display: flex;
+    justify-content: space-between;
+`;
+
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -217,30 +313,32 @@ const Graveyard = styled.div`
     width: 95%;
     display: flex;
     flex-wrap: wrap;
-    height: 5vw;
+    height: 4vw;
+    background: rgb(118, 118, 118);
+    padding: 10px;
+    border: 1px solid black;
 
     @media screen and (orientation: landscape) {
-        height: 5vh;
+        height: 4vh;
     }
 `;
 
 const Tomb = styled.div`
-    width: 5vw;
+    width: 4vw;
 
     @media screen and (orientation: landscape) {
-        width: 5vh;
+        width: 4vh;
     }
 `;
 
 const Board = styled.div`
     display: grid;
-    grid-template: repeat(10, calc(85vw / 10)) / repeat(10, calc(85vw / 10));
+    grid-template: repeat(10, calc(80vw / 10)) / repeat(10, calc(80vw / 10));
 
     @media screen and (orientation: landscape) {
-        grid-template: repeat(10, calc((85vh - 50px) / 10)) / repeat(
-                10,
-                calc(85vh / 10)
-            );
+        grid-template:
+            repeat(10, calc((80vh - 5rem) / 10)) /
+            repeat(10, calc((80vh - 5rem) / 10));
     }
 `;
 

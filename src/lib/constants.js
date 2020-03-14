@@ -5,12 +5,22 @@ export const BOARD_SIDE_SIZE = 7;
 export const PLAYER1 = 0;
 export const PLAYER2 = 1;
 
+export const PLAYER_COLORS = ['white', 'black'];
+
 export const KING = 'king';
 export const QUEEN = 'queen';
 export const ROOK = 'rook';
 export const KNIGHT = 'knight';
 export const BISHOP = 'bishop';
 export const PAWN = 'pawn';
+
+export const PIECE_VALUES = {
+    [QUEEN]: 9,
+    [ROOK]: 5,
+    [KNIGHT]: 3,
+    [BISHOP]: 3,
+    [PAWN]: 1
+};
 
 export const KNIGHT_MOVE_DIMENSION1 = 2;
 export const KNIGHT_MOVE_DIMENSION2 = 1;
