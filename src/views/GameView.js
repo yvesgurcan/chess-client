@@ -6,11 +6,20 @@ import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
+const DEBUG = location.hostname === 'localhost';
+// import DEBUG_GAME from '../test/draw2.json';
+
 export default class GameView extends Component {
     constructor() {
         super();
         const gameState = new GameState();
-        gameState.initPieces();
+        if (DEBUG && typeof DEBUG_GAME !== 'undefined') {
+            gameState.import(DEBUG_GAME);
+            gameState.resume();
+        } else {
+            gameState.initPieces();
+        }
+
         this.state = { gameState, settingsOpened: false };
         window.gameState = gameState;
         const { name, version, repository, author } = getPackageInfo();
@@ -77,8 +86,13 @@ export default class GameView extends Component {
             'Enter a name for your saved game.',
             defaultFileName
         );
+
+        if (!fileName) {
+            return;
+        }
+
         const game = gameState.export();
-        const gameBlob = new Blob([game], { type: 'text/plain' });
+        const gameBlob = new Blob([game], { type: 'application/json' });
         const virtualLink = document.createElement('a');
         virtualLink.download = fileName;
         virtualLink.href = URL.createObjectURL(gameBlob);

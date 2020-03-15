@@ -17,7 +17,10 @@ import {
     ROOK,
     KNIGHT,
     KNIGHT_MOVE_DIMENSION1,
-    KNIGHT_MOVE_DIMENSION2
+    KNIGHT_MOVE_DIMENSION2,
+    KING_AREA,
+    DRAW,
+    CHECKMATE
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
@@ -34,7 +37,6 @@ export default class GameState {
             moment().diff(moment()),
             'milliseconds'
         ); // keeps track of time spent across multiple sessions
-        this.currentPlayer = PLAYER1;
         this.currentTurn = 0;
         this.pieces = [];
         this.removedPieces = [[], []];
@@ -49,6 +51,10 @@ export default class GameState {
                 color: 1
             }
         ];
+    }
+
+    get currentPlayer() {
+        return this.currentTurn % 2 === 0 ? PLAYER1 : PLAYER2;
     }
 
     initPieces = () => {
@@ -92,7 +98,6 @@ export default class GameState {
             gameEndedAt: this.gameEndedAt,
             totalTimePlayed: this.totalTimePlayed,
             players: this.players,
-            currentPlayer: this.currentPlayer,
             currentTurn: this.currentTurn,
             pieces: this.pieces,
             removedPieces: this.removedPieces
@@ -100,7 +105,23 @@ export default class GameState {
     };
 
     import = unparsedGameData => {
-        const gameData = JSON.parse(unparsedGameData);
+        let gameData = null;
+
+        try {
+            gameData = JSON.parse(unparsedGameData);
+        } catch (error) {
+            console.warn('Import data is not parseable to JSON.', { error });
+            gameData = unparsedGameData;
+        }
+
+        if (!gameData) {
+            console.warn('Import data is empty.');
+            return;
+        }
+
+        // TODO: Check if there is at least one king.
+        // TODO: Check if pieces overlap. Throw an error if they do.
+        // TODO: Check if pieces are within the board.
 
         this.gameVersion = gameData.gameVersion;
         this.gameId = gameData.gameId;
@@ -113,7 +134,6 @@ export default class GameState {
             gameData.totalTimePlayed,
             'milliseconds'
         );
-        this.currentPlayer = gameData.currentPlayer;
         this.currentTurn = gameData.currentTurn;
         this.pieces = gameData.pieces;
         this.removedPieces = gameData.removedPieces;
@@ -128,6 +148,14 @@ export default class GameState {
                 trim: false
             })}. Last saved on ${gameData.gameSavedAt}.`
         );
+
+        // this is an additional check that is only meaningful if the imported file has been manipulated
+        const gameOver = this.isGameOver({
+            player: this.currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1
+        });
+        if (gameOver) {
+            this.gameEndedAt = moment();
+        }
     };
 
     updateTimePlayed = () => {
@@ -163,7 +191,6 @@ export default class GameState {
         }
 
         this.unselect();
-        this.currentPlayer = +!this.currentPlayer;
     };
 
     /**
@@ -550,14 +577,20 @@ export default class GameState {
         return isInCheck;
     };
 
-    isOpponentKingCheckmate = () => {
+    isGameOver = ({ player = this.currentPlayer }) => {
         let opponentKing = null;
+        let opponentPieces = [];
         const pieces = this.pieces.filter(piece => {
-            if (piece.type === KING && piece.player !== this.currentPlayer) {
+            if (piece.type === KING && piece.player !== player) {
                 opponentKing = { ...piece };
             }
 
-            return piece.player === this.currentPlayer;
+            if (piece.player === player) {
+                return true;
+            }
+
+            opponentPieces.push(piece);
+            return false;
         });
 
         if (!opponentKing) {
@@ -565,14 +598,29 @@ export default class GameState {
             return false;
         }
 
+        let maxAvailableArea = KING_AREA;
+        let currentPositionFree = true;
+
         // check how many of the possible king moves will end up with the king being in check, including its current position
         let isInCheck = [];
         for (let x = -1; x <= 1; x++) {
             for (let y = -1; y <= 1; y++) {
                 const destination = {
-                    x: Math.max(0, opponentKing.x + x),
-                    y: Math.max(0, opponentKing.y + y)
+                    x: opponentKing.x + x,
+                    y: opponentKing.y + y
                 };
+
+                // don't check for off-board coordinates
+                if (
+                    destination.x < 0 ||
+                    destination.y < 0 ||
+                    destination.x > BOARD_SIDE_SIZE ||
+                    destination.y > BOARD_SIDE_SIZE
+                ) {
+                    maxAvailableArea--;
+                    continue;
+                }
+
                 const destinationInCheck = pieces.some(piece => {
                     const fitsPiecePattern = this.isPiecePattern({
                         destination,
@@ -584,9 +632,29 @@ export default class GameState {
                     return fitsPiecePattern;
                 });
 
-                // console.log(destination, destinationInCheck);
+                // king can't move there because their own piece is blocking the way
+                // TODO: Check if that piece can be moved (in that case, then the king is not checkmate)
+                /*
+                const occupied = opponentPieces.some(piece => {
+                    console.log(
+                        piece.type,
+                        piece.player,
+                        piece.x === destination.x && piece.y === destination.y
+                    );
+                    return (
+                        piece.type !== KING &&
+                        piece.x === destination.x &&
+                        piece.y === destination.y
+                    );
+                });
+                */
 
-                isInCheck.push(destinationInCheck);
+                isInCheck.push(destinationInCheck /*|| occupied*/);
+
+                // used to determine if it's a draw
+                if (x === 0 && y === 0) {
+                    currentPositionFree = !destinationInCheck;
+                }
             }
         }
 
@@ -594,11 +662,21 @@ export default class GameState {
             (sum, value) => sum + Number(value)
         );
 
-        // console.log({ illegalMoves });
+        // TODO: Check if moving one of the pieces of the opponent might get the king out of checkmate/draw
 
-        // TODO: Check if moving one of the pieces of the opponent might get the king out of checkmate
+        // console.log({ maxAvailableArea, illegalMoves });
 
-        return illegalMoves === 9;
+        if (illegalMoves === maxAvailableArea) {
+            console.log(CHECKMATE);
+            return CHECKMATE;
+        }
+
+        if (currentPositionFree && illegalMoves === maxAvailableArea - 1) {
+            console.log(DRAW);
+            return DRAW;
+        }
+
+        return false;
     };
 
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
@@ -712,8 +790,12 @@ export default class GameState {
             this.removePiece(pieceToRemove);
         }
 
-        const opponentKingCheckmate = this.isOpponentKingCheckmate();
-        if (opponentKingCheckmate) {
+        const gameOver = this.isGameOver({});
+        if (gameOver) {
+            if (gameOver === DRAW) {
+                this.nextTurn();
+            }
+
             this.gameEndedAt = moment();
             return moved;
         }

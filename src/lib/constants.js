@@ -22,6 +22,8 @@ export const PIECE_VALUES = {
     [PAWN]: 1
 };
 
+export const KING_AREA = 9;
+
 export const KNIGHT_MOVE_DIMENSION1 = 2;
 export const KNIGHT_MOVE_DIMENSION2 = 1;
 
@@ -31,3 +33,6 @@ export const RIGHT_BACK_ROW_PIECES = [
     KING,
     ...LATERAL_BACK_ROW_PIECES.reverse()
 ];
+
+export const DRAW = 'draw';
+export const CHECKMATE = 'checkmate';
