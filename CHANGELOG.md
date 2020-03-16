@@ -1,3 +1,7 @@
+## v0.0.13
+
+Add logic to record moves (castling, checkmate, draw, and basic moves).
+
 ## v0.0.12
 
 Add logic to (partially) verify if the game is a draw. The logic does not take into account yet if moving a piece that isn't their king would prevent a draw.

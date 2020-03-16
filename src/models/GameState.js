@@ -20,7 +20,9 @@ import {
     KNIGHT_MOVE_DIMENSION2,
     KING_AREA,
     DRAW,
-    CHECKMATE
+    CHECKMATE,
+    QUEENSIDE,
+    KINGSIDE
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
@@ -31,8 +33,7 @@ momentDurationFormatSetup(moment);
  * @example const gameState = new GameState();
  */
 export default class GameState {
-    practice = false;
-
+    practice = true;
     constructor() {
         this.gameId = uuid();
         this.gameStartedAt = moment();
@@ -45,6 +46,7 @@ export default class GameState {
         this.currentTurn = 0;
         this.pieces = [];
         this.removedPieces = [[], []];
+        this.moves = [];
 
         this.players = [
             {
@@ -114,7 +116,8 @@ export default class GameState {
             players: this.players,
             currentTurn: this.currentTurn,
             pieces: this.pieces,
-            removedPieces: this.removedPieces
+            removedPieces: this.removedPieces,
+            moves: this.moves
         });
     };
 
@@ -153,8 +156,9 @@ export default class GameState {
             'milliseconds'
         );
         this.currentTurn = gameData.currentTurn;
-        this.pieces = gameData.pieces;
+        this.pieces = gameData.pieces.map(piece => new Piece(piece));
         this.removedPieces = gameData.removedPieces;
+        this.moves = gameData.moves;
         this.players = gameData.players;
 
         console.log(
@@ -168,10 +172,10 @@ export default class GameState {
         );
 
         // this is an additional check that is only meaningful if the imported file has been manipulated
-        const gameOver = this.isGameOver({
+        const gameEnd = this.isGameEnd({
             player: this.currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1
         });
-        if (gameOver) {
+        if (gameEnd) {
             this.gameEndedAt = moment();
         }
     };
@@ -214,13 +218,23 @@ export default class GameState {
      * @returns {undefined}
      */
     nextTurn = () => {
-        this.currentTurn += 1;
-
         if (this.practice) {
-            return;
+            this.currentTurn += 2;
+        } else {
+            this.currentTurn += 1;
         }
-
         this.unselect();
+    };
+
+    /**
+     * @returns {undefined}
+     */
+    recordMove = move => {
+        const newMove = {
+            ...move,
+            player: this.currentPlayer
+        };
+        this.moves = [...this.moves, newMove];
     };
 
     /**
@@ -522,6 +536,8 @@ export default class GameState {
             return piece;
         });
 
+        const castling = rookVectorX > 0 ? QUEENSIDE : KINGSIDE;
+        this.recordMove({ castling });
         this.nextTurn();
 
         return true;
@@ -655,7 +671,7 @@ export default class GameState {
     /**
      * @returns {boolean | string}
      */
-    isGameOver = ({ player = this.currentPlayer }) => {
+    isGameEnd = ({ player = this.currentPlayer }) => {
         let opponentKing = null;
         let opponentPieces = [];
         const pieces = this.pieces.filter(piece => {
@@ -870,13 +886,16 @@ export default class GameState {
             return moved;
         }
 
+        this.recordMove({ type: selectedPiece.type, x, y });
+
         if (pieceToRemove) {
             this.removePiece(pieceToRemove);
         }
 
-        const gameOver = this.isGameOver({});
-        if (gameOver) {
-            if (gameOver === DRAW) {
+        const gameEnd = this.isGameEnd({});
+        if (gameEnd) {
+            this.recordMove({ gameEnd });
+            if (gameEnd === DRAW) {
                 this.nextTurn();
             }
 

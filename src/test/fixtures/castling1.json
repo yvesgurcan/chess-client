@@ -1,0 +1,265 @@
+{
+    "gameVersion": "0.0.12",
+    "gameId": "e6df6eb9-0131-4c29-ad65-8747ce56d954",
+    "gameSavedAt": "2020-03-16T06:09:08.943Z",
+    "gameStartedAt": "2020-03-16T06:08:54.378Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT10.174S",
+    "players": [
+        { "playerId": "bff96753-4ab5-433b-b535-5326046c514a", "color": 0 },
+        { "playerId": "c1dd8f50-7ee3-4f9e-b993-ba472c3e7c99", "color": 1 }
+    ],
+    "currentTurn": 6,
+    "pieces": [
+        {
+            "id": "8f0b6e33-7f23-4bb1-9c6e-fd76747689a2",
+            "type": "pawn",
+            "x": 0,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "297a7c98-da21-4309-8751-9e187f51259b",
+            "type": "rook",
+            "x": 0,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "7754fd1e-84f8-424f-ab3c-44bdc1b4b8e7",
+            "type": "pawn",
+            "x": 1,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "a9f8a84f-b5af-4e05-80b6-6929b57d4ab8",
+            "type": "knight",
+            "x": 1,
+            "y": 7,
+            "player": 0
+        },
+        {
+            "id": "9d892da3-1e14-4f29-ac5c-8b4f72f4335d",
+            "type": "pawn",
+            "x": 2,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "fe25adeb-0b5f-4f88-b91e-4494995de45a",
+            "type": "bishop",
+            "x": 2,
+            "y": 7,
+            "player": 0
+        },
+        {
+            "id": "71cef465-eab2-4ed6-9258-8117151ff905",
+            "type": "pawn",
+            "x": 3,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "999cb62e-6486-4ffc-8302-c7cb62c3867b",
+            "type": "queen",
+            "x": 3,
+            "y": 7,
+            "player": 0
+        },
+        {
+            "id": "c0a6a3b7-732c-4d63-92a7-05566c2ab999",
+            "type": "pawn",
+            "x": 4,
+            "y": 5,
+            "player": 0,
+            "firstMove": false
+        },
+        {
+            "id": "ffdabb5f-e68f-4113-9fce-a6cfd016ba25",
+            "type": "king",
+            "x": 4,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "b9ef48eb-68c2-4397-9adb-0880531efcc7",
+            "type": "pawn",
+            "x": 5,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "fc1eec6d-d9bb-4b54-bdfd-f8387a820d45",
+            "type": "bishop",
+            "x": 2,
+            "y": 4,
+            "player": 0,
+            "firstMove": false
+        },
+        {
+            "id": "d35c9582-6c5d-4eff-8020-7e903bb90be3",
+            "type": "pawn",
+            "x": 6,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "83df03e8-4e4a-4c0e-9370-a32b3fd173c8",
+            "type": "knight",
+            "x": 7,
+            "y": 5,
+            "player": 0,
+            "firstMove": false
+        },
+        {
+            "id": "ebfb5ff6-fce9-4029-93de-589c09ad175f",
+            "type": "pawn",
+            "x": 7,
+            "y": 6,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "ad5a1bb6-ed6e-4c0b-bfcc-2bea22c5c2ad",
+            "type": "rook",
+            "x": 7,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "11be4e32-b0f7-4ade-a976-60810f81a798",
+            "type": "pawn",
+            "x": 0,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "7512076d-4471-4c82-b6f4-58f7dad50e95",
+            "type": "rook",
+            "x": 0,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "5eff2f94-25d7-4264-9f77-489d01b07b9d",
+            "type": "pawn",
+            "x": 1,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "f4b4151a-f83f-403e-8e28-8eca84f56981",
+            "type": "knight",
+            "x": 1,
+            "y": 0,
+            "player": 1
+        },
+        {
+            "id": "0ffbc3b6-2769-400d-bcf5-4aefc5edb22e",
+            "type": "pawn",
+            "x": 2,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "605bc2d0-940e-4d07-8388-52c0c3d300bd",
+            "type": "bishop",
+            "x": 2,
+            "y": 0,
+            "player": 1
+        },
+        {
+            "id": "51ef08e0-8869-4221-b6e3-0c62cf948f7e",
+            "type": "pawn",
+            "x": 3,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "a17491d1-06cf-4c4a-8f07-6c83f43f9089",
+            "type": "queen",
+            "x": 3,
+            "y": 0,
+            "player": 1
+        },
+        {
+            "id": "e8531e72-1624-41d2-92a1-a64d101283b8",
+            "type": "pawn",
+            "x": 4,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "d2ac6bc1-770b-4f4d-afbc-43e62eb720db",
+            "type": "king",
+            "x": 4,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "2c090ab6-30ea-442d-b028-9af56c1780c6",
+            "type": "pawn",
+            "x": 5,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "b360b7d1-c034-4d63-93c5-bc0aaedee68a",
+            "type": "bishop",
+            "x": 5,
+            "y": 0,
+            "player": 1
+        },
+        {
+            "id": "42f76ed0-cf63-4f43-b5d1-bff70dcf3d66",
+            "type": "pawn",
+            "x": 6,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "973b48d2-4404-458d-b47b-0cdbf29d0b8b",
+            "type": "knight",
+            "x": 6,
+            "y": 0,
+            "player": 1
+        },
+        {
+            "id": "a73dd27a-402b-4064-967f-4b352bd83ac2",
+            "type": "pawn",
+            "x": 7,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "7d5cf77c-9ce0-4373-b535-20c35df6babd",
+            "type": "rook",
+            "x": 7,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []],
+    "moves": []
+}

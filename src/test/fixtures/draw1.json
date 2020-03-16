@@ -9,12 +9,13 @@
         { "playerId": "whitePlayer", "color": 0 },
         { "playerId": "blackPlayer", "color": 1 }
     ],
-    "currentTurn": 12,
+    "moves": [],
+    "currentTurn": 13,
     "pieces": [
         {
             "id": "609675cd-b8f4-4997-b716-578d7a414c62",
             "type": "king",
-            "x": 3,
+            "x": 1,
             "y": 7,
             "player": 0,
             "firstMove": false
@@ -22,8 +23,8 @@
         {
             "id": "a69e7c8b-4224-41f5-aa2e-2beb819cadb2",
             "type": "queen",
-            "x": 4,
-            "y": 3,
+            "x": 2,
+            "y": 4,
             "player": 1,
             "firstMove": false
         },
@@ -32,7 +33,7 @@
             "id": "95517702-2ff8-4b12-b87d-08d97976b4a2",
             "type": "rook",
             "x": 0,
-            "y": 4,
+            "y": 6,
             "player": 1,
             "firstMove": false
         },

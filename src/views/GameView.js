@@ -7,7 +7,7 @@ import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
 const DEBUG = location.hostname === 'localhost';
-// import DEBUG_GAME from '../test/draw2.json';
+import DEBUG_GAME from '../test/fixtures/castling1.json';
 
 export default class GameView extends Component {
     constructor() {
@@ -29,13 +29,17 @@ export default class GameView extends Component {
 
     componentDidMount() {
         setInterval(() => {
-            const { gameState } = this.state;
-            gameState.updateTimePlayed();
-            this.updateGameState(gameState);
+            if (!gameState.gameEndedAt) {
+                const { gameState } = this.state;
+                gameState.updateTimePlayed();
+                this.updateGameState(gameState);
+            }
         }, ONE_SECOND);
     }
 
-    updateGameState = gameState => this.setState({ gameState });
+    updateGameState = gameState => {
+        this.setState({ gameState });
+    };
 
     handleSelect = ({ x, y, piece }) => {
         const { gameState } = this.state;

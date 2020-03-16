@@ -2,9 +2,11 @@
 
 ♞ Mobile-first Chess in JavaScript.
 
-Play it: https://chess.yvesgurcan.com.
+Play: https://chess.yvesgurcan.com.
 
 Documentation: https://chess.yvesgurcan.com/doc
+
+See [changelog](./CHANGELOG.md) for updates.
 
 ## How does it work?
 

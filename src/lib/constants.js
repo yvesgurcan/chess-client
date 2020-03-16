@@ -36,3 +36,6 @@ export const RIGHT_BACK_ROW_PIECES = [
 
 export const DRAW = 'draw';
 export const CHECKMATE = 'checkmate';
+
+export const KINGSIDE = 'kingside';
+export const QUEENSIDE = 'queenside';

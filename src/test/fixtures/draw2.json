@@ -9,6 +9,7 @@
         { "playerId": "a4273616-c229-46d8-97f2-20cfbc9a007f", "color": 0 },
         { "playerId": "3432616b-d36b-4920-9ae2-23c21f35905e", "color": 1 }
     ],
+    "moves": [],
     "currentTurn": 6,
     "pieces": [
         {
