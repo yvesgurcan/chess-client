@@ -25,6 +25,11 @@ import {
 
 momentDurationFormatSetup(moment);
 
+/**
+ * @class
+ * @author Yves Gurcan
+ * @example const gameState = new GameState();
+ */
 export default class GameState {
     practice = false;
 
@@ -53,10 +58,16 @@ export default class GameState {
         ];
     }
 
+    /**
+     * @returns {number} The numeric representation (`0` for white player or `1` for black player) of the current player.
+     */
     get currentPlayer() {
         return this.currentTurn % 2 === 0 ? PLAYER1 : PLAYER2;
     }
 
+    /**
+     * @returns {undefined}
+     */
     initPieces = () => {
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
@@ -88,6 +99,9 @@ export default class GameState {
         this.pieces = pieces;
     };
 
+    /**
+     * @returns {string} The current game state as stringied JSON.
+     */
     export = () => {
         const { version: gameVersion } = getPackageInfo();
         return JSON.stringify({
@@ -104,6 +118,10 @@ export default class GameState {
         });
     };
 
+    /**
+     * @param {string} unparsedGameData
+     * @returns {undefined}
+     */
     import = unparsedGameData => {
         let gameData = null;
 
@@ -158,6 +176,9 @@ export default class GameState {
         }
     };
 
+    /**
+     * @returns {undefined}
+     */
     updateTimePlayed = () => {
         if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
             return;
@@ -175,14 +196,23 @@ export default class GameState {
         );
     };
 
+    /**
+     * @returns {undefined}
+     */
     pause = () => {
         this.lastSessionTimeUpdate = null;
     };
 
+    /**
+     * @returns {undefined}
+     */
     resume = () => {
         this.lastSessionTimeUpdate = moment();
     };
 
+    /**
+     * @returns {undefined}
+     */
     nextTurn = () => {
         this.currentTurn += 1;
 
@@ -194,7 +224,7 @@ export default class GameState {
     };
 
     /**
-     * @returns `Piece` or `undefined`
+     * @returns {Piece|undefined} The piece at the coordinates.
      */
     getPieceAt = ({ x, y }) => {
         return this.pieces.find(piece => {
@@ -216,10 +246,16 @@ export default class GameState {
         });
     };
 
+    /**
+     * @returns {boolean} `true` if there is a piece at the coordinates; otherwise, `false`.
+     */
     hasPieceAt = ({ x, y }) => {
         return this.pieces.some(piece => piece.x === x && piece.y === y);
     };
 
+    /**
+     * @returns {undefined}
+     */
     removePiece = pieceToRemove => {
         const pieces = [];
         this.pieces.forEach(piece => {
@@ -253,6 +289,9 @@ export default class GameState {
         }
     };
 
+    /**
+     * @returns {undefined}
+     */
     select = ({ x, y, piece }) => {
         if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
             return;
@@ -266,10 +305,16 @@ export default class GameState {
         }
     };
 
+    /**
+     * @returns {undefined}
+     */
     unselect = () => {
         this.selected = null;
     };
 
+    /**
+     * @returns {boolean} `true` if the coordinates correspond to a selected tile; otherwise, `false`.
+     */
     isSelectedSquare = ({ x, y }) => {
         if (!this.selected) {
             return false;
@@ -278,6 +323,9 @@ export default class GameState {
         return this.selected.x === x && this.selected.y === y;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isPawnCapturing = ({ x, y, vectorX, vectorY, direction }) => {
         if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
             return this.hasPieceAt({ x, y });
@@ -286,6 +334,9 @@ export default class GameState {
         return false;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isPawnMoving = ({ x, y, vectorX, vectorY, firstMove, direction }) => {
         const hasPiece = this.hasPieceAt({ x, y });
         if (hasPiece) {
@@ -299,10 +350,16 @@ export default class GameState {
         }
     };
 
+    /**
+     * @returns {boolean}
+     */
     isBishopPattern = ({ vectorX, vectorY }) => {
         return Math.abs(vectorX) === Math.abs(vectorY);
     };
 
+    /**
+     * @returns {boolean}
+     */
     isBishopMoveFree = ({ origin, destination, vector }) => {
         const pieceIsInTheWay = this.pieces.some(piece => {
             if (piece.id === origin.id) {
@@ -340,12 +397,18 @@ export default class GameState {
         return !pieceIsInTheWay;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isRookPattern = ({ vectorX, vectorY }) => {
         return (
             (vectorX === 0 && vectorY !== 0) || (vectorX !== 0 && vectorY === 0)
         );
     };
 
+    /**
+     * @returns {boolean}
+     */
     isRookMoveFree = ({ origin, vector }) => {
         const axis = vector.x ? 'y' : 'x';
         const otherAxis = vector.x ? 'x' : 'y';
@@ -380,14 +443,23 @@ export default class GameState {
         return !pieceIsInTheWay;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isKingPattern = ({ vectorX, vectorY }) => {
         return vectorX >= -1 && vectorX <= 1 && vectorY >= -1 && vectorY <= 1;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isCastlePattern = ({ vectorX, vectorY }) => {
         return Math.abs(vectorX) === 2 && vectorY === 0;
     };
 
+    /**
+     * @returns {boolean}
+     */
     performCastle = ({ castleVectorX, selectedPiece, destination }) => {
         const playerY = this.currentPlayer === PLAYER1 ? 7 : 0;
         const rookX = castleVectorX > 0 ? 7 : 0;
@@ -405,7 +477,7 @@ export default class GameState {
 
         // there's no rook to castle with
         if (!targetRook) {
-            return;
+            return false;
         }
 
         let betweenX;
@@ -456,7 +528,7 @@ export default class GameState {
     };
 
     /**
-     * @returns {bool} Whether the pattern corresponds to the piece
+     * @returns {boolean} Whether the pattern corresponds to the piece
      */
     isPiecePattern = ({
         destination: { x, y },
@@ -545,6 +617,9 @@ export default class GameState {
         return false;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isKingInCheck = kingProjection => {
         let kingActual = null;
         const opponentPieces = this.pieces.filter(piece => {
@@ -577,6 +652,9 @@ export default class GameState {
         return isInCheck;
     };
 
+    /**
+     * @returns {boolean | string}
+     */
     isGameOver = ({ player = this.currentPlayer }) => {
         let opponentKing = null;
         let opponentPieces = [];
@@ -679,6 +757,9 @@ export default class GameState {
         return false;
     };
 
+    /**
+     * @returns {boolean}
+     */
     isLegalMove = ({ destination, origin, type, player, firstMove }) => {
         const fitsPiecePattern = this.isPiecePattern({
             destination,
@@ -690,6 +771,9 @@ export default class GameState {
         return fitsPiecePattern;
     };
 
+    /**
+     * @returns {boolean}
+     */
     moveSelectedPiece = ({ x, y }) => {
         let moved = false;
 

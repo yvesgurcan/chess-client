@@ -1,0 +1,2803 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset='utf-8' />
+	<title>chess 0.0.12 | Documentation</title>
+	<meta name='description' content='♞ Mobile-first Chess in JavaScript.'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+	<link href='assets/styles.min.css' rel='stylesheet' />
+</head>
+
+<body class='documentation'>
+<div class='px2'>
+	<div class='clearfix md-flex lg-flex flex-stretch mxn2'>
+		<div class='documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 col-3 md-show'>
+			<div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link'>
+				<div class='px2'>
+					<h3 class='mb0 no-anchor'><code>chess</code></h3>
+					<div class='mb1'><code>0.0.12</code></div>
+					<input placeholder='Filter' id='filter-input' class='col12 block input' type='text' />
+					<div id="toc">
+						
+						
+						
+						<a
+								href='#gamestate'
+								class="regular block toggle-sibling">
+							<code>GameState</code>
+							<span class='icon'>▾</span>
+						</a>
+						
+						
+						<div class='toggle-target'>
+							
+							
+							
+							<a
+									href='#gamestatecurrentplayer'
+									class='button-indent regular block'>
+								<code>#currentPlayer</code>
+							</a>
+							
+							<a
+									href='#gamestateinitpieces'
+									class='button-indent regular block'>
+								<code>#initPieces</code>
+							</a>
+							
+							<a
+									href='#gamestateexport'
+									class='button-indent regular block'>
+								<code>#export</code>
+							</a>
+							
+							<a
+									href='#gamestateimport'
+									class='button-indent regular block'>
+								<code>#import</code>
+							</a>
+							
+							<a
+									href='#gamestateupdatetimeplayed'
+									class='button-indent regular block'>
+								<code>#updateTimePlayed</code>
+							</a>
+							
+							<a
+									href='#gamestatepause'
+									class='button-indent regular block'>
+								<code>#pause</code>
+							</a>
+							
+							<a
+									href='#gamestateresume'
+									class='button-indent regular block'>
+								<code>#resume</code>
+							</a>
+							
+							<a
+									href='#gamestatenextturn'
+									class='button-indent regular block'>
+								<code>#nextTurn</code>
+							</a>
+							
+							<a
+									href='#gamestategetpieceat'
+									class='button-indent regular block'>
+								<code>#getPieceAt</code>
+							</a>
+							
+							<a
+									href='#gamestatehaspieceat'
+									class='button-indent regular block'>
+								<code>#hasPieceAt</code>
+							</a>
+							
+							<a
+									href='#gamestateremovepiece'
+									class='button-indent regular block'>
+								<code>#removePiece</code>
+							</a>
+							
+							<a
+									href='#gamestateselect'
+									class='button-indent regular block'>
+								<code>#select</code>
+							</a>
+							
+							<a
+									href='#gamestateunselect'
+									class='button-indent regular block'>
+								<code>#unselect</code>
+							</a>
+							
+							<a
+									href='#gamestateisselectedsquare'
+									class='button-indent regular block'>
+								<code>#isSelectedSquare</code>
+							</a>
+							
+							<a
+									href='#gamestateispawncapturing'
+									class='button-indent regular block'>
+								<code>#isPawnCapturing</code>
+							</a>
+							
+							<a
+									href='#gamestateispawnmoving'
+									class='button-indent regular block'>
+								<code>#isPawnMoving</code>
+							</a>
+							
+							<a
+									href='#gamestateisbishoppattern'
+									class='button-indent regular block'>
+								<code>#isBishopPattern</code>
+							</a>
+							
+							<a
+									href='#gamestateisbishopmovefree'
+									class='button-indent regular block'>
+								<code>#isBishopMoveFree</code>
+							</a>
+							
+							<a
+									href='#gamestateisrookpattern'
+									class='button-indent regular block'>
+								<code>#isRookPattern</code>
+							</a>
+							
+							<a
+									href='#gamestateisrookmovefree'
+									class='button-indent regular block'>
+								<code>#isRookMoveFree</code>
+							</a>
+							
+							<a
+									href='#gamestateiskingpattern'
+									class='button-indent regular block'>
+								<code>#isKingPattern</code>
+							</a>
+							
+							<a
+									href='#gamestateiscastlepattern'
+									class='button-indent regular block'>
+								<code>#isCastlePattern</code>
+							</a>
+							
+							<a
+									href='#gamestateperformcastle'
+									class='button-indent regular block'>
+								<code>#performCastle</code>
+							</a>
+							
+							<a
+									href='#gamestateispiecepattern'
+									class='button-indent regular block'>
+								<code>#isPiecePattern</code>
+							</a>
+							
+							<a
+									href='#gamestateiskingincheck'
+									class='button-indent regular block'>
+								<code>#isKingInCheck</code>
+							</a>
+							
+							<a
+									href='#gamestateisgameover'
+									class='button-indent regular block'>
+								<code>#isGameOver</code>
+							</a>
+							
+							<a
+									href='#gamestateislegalmove'
+									class='button-indent regular block'>
+								<code>#isLegalMove</code>
+							</a>
+							
+							<a
+									href='#gamestatemoveselectedpiece'
+									class='button-indent regular block'>
+								<code>#moveSelectedPiece</code>
+							</a>
+							
+							
+							
+							
+						</div>
+						
+						
+					</div>
+					<div class='mt1 h6 quiet'>
+						<a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class='sm-col-12 md-col-9 lg-col-9 flex flex-column'>
+			<div class='flex-auto full-width'>
+				
+				
+				<section id='gamestate'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestate'>
+			<code>
+				GameState
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	<p>Author: Yves Gurcan</p>
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<h4 class='caps quiet mb1 mt3'>Examples</h4>
+	
+	
+	<pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> gameState = <span class="hljs-keyword">new</span> GameState();</code></pre>
+	
+	
+
+	
+
+	
+	<h4 class='caps quiet mb2 mt3'>Instance Members</h4>
+	<div class="section-indent">
+  
+    <section id='gamestatecurrentplayer'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatecurrentplayer'>
+			<code>
+				currentPlayer
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+	:
+	<span class='force-inline'>The numeric representation (
+<code>0</code>
+ for white player or 
+<code>1</code>
+ for black player) of the current player.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateinitpieces'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateinitpieces'>
+			<code>
+				initPieces
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateexport'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateexport'>
+			<code>
+				export
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+	:
+	<span class='force-inline'>The current game state as stringied JSON.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateimport'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateimport'>
+			<code>
+				import
+				<span class='gray'>(unparsedGameData)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>unparsedGameData</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateupdatetimeplayed'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateupdatetimeplayed'>
+			<code>
+				updateTimePlayed
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatepause'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatepause'>
+			<code>
+				pause
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateresume'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateresume'>
+			<code>
+				resume
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatenextturn'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatenextturn'>
+			<code>
+				nextTurn
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestategetpieceat'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestategetpieceat'>
+			<code>
+				getPieceAt
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code>(Piece | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+	:
+	<span class='force-inline'>The piece at the coordinates.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatehaspieceat'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatehaspieceat'>
+			<code>
+				hasPieceAt
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'><code>true</code>
+ if there is a piece at the coordinates; otherwise, 
+<code>false</code>
+.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateremovepiece'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateremovepiece'>
+			<code>
+				removePiece
+				<span class='gray'>(pieceToRemove)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>pieceToRemove</code></td>
+			<td class='col-3 quiet'>
+				any
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateselect'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateselect'>
+			<code>
+				select
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.piece</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateunselect'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateunselect'>
+			<code>
+				unselect
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisselectedsquare'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisselectedsquare'>
+			<code>
+				isSelectedSquare
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'><code>true</code>
+ if the coordinates correspond to a selected tile; otherwise, 
+<code>false</code>
+.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateispawncapturing'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateispawncapturing'>
+			<code>
+				isPawnCapturing
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.direction</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateispawnmoving'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateispawnmoving'>
+			<code>
+				isPawnMoving
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.firstMove</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.direction</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisbishoppattern'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisbishoppattern'>
+			<code>
+				isBishopPattern
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisbishopmovefree'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisbishopmovefree'>
+			<code>
+				isBishopMoveFree
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.origin</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.destination</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vector</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisrookpattern'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisrookpattern'>
+			<code>
+				isRookPattern
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisrookmovefree'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisrookmovefree'>
+			<code>
+				isRookMoveFree
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.origin</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vector</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateiskingpattern'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateiskingpattern'>
+			<code>
+				isKingPattern
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateiscastlepattern'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateiscastlepattern'>
+			<code>
+				isCastlePattern
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateperformcastle'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateperformcastle'>
+			<code>
+				performCastle
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.castleVectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.selectedPiece</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.destination</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateispiecepattern'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateispiecepattern'>
+			<code>
+				isPiecePattern
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.destination.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.destination.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.origin</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.type</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.player</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.firstMove</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>Whether the pattern corresponds to the piece
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateiskingincheck'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateiskingincheck'>
+			<code>
+				isKingInCheck
+				<span class='gray'>(kingProjection)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>kingProjection</code></td>
+			<td class='col-3 quiet'>
+				any
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisgameover'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisgameover'>
+			<code>
+				isGameOver
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.player</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>this.currentPlayer</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateislegalmove'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateislegalmove'>
+			<code>
+				isLegalMove
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.destination</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.origin</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.type</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.player</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.firstMove</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatemoveselectedpiece'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatemoveselectedpiece'>
+			<code>
+				moveSelectedPiece
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+</div>
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+			</div>
+		</div>
+	</div>
+</div>
+<script src='assets/scripts.min.js'></script>
+</body>
+</html>
