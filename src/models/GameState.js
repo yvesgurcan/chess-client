@@ -2,7 +2,6 @@ import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 import { getPackageInfo } from '../lib/util';
-
 import Piece from '../models/Piece';
 import {
     BOARD_SIDE_SIZE,
@@ -26,6 +25,8 @@ import {
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
+
+const DEBUG = location.hostname === 'localhost';
 
 /**
  * @class
@@ -218,7 +219,7 @@ export default class GameState {
      * @returns {undefined}
      */
     nextTurn = () => {
-        if (this.practice) {
+        if (DEBUG && this.practice) {
             this.currentTurn += 2;
         } else {
             this.currentTurn += 1;
