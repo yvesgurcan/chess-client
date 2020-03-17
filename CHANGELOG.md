@@ -1,3 +1,7 @@
+## v0.0.14
+
+Add some basic tests. Also enable to play without kings.
+
 ## v0.0.13
 
 Add logic to record moves (castling, checkmate, draw, and basic moves).
