@@ -10,14 +10,16 @@ const DEBUG = location.hostname === 'localhost';
 import DEBUG_GAME from '../test/fixtures/castling1.json';
 
 export default class GameView extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         const gameState = new GameState();
         if (DEBUG && typeof DEBUG_GAME !== 'undefined') {
             gameState.import(DEBUG_GAME);
             gameState.resume();
+            this.props.history.push(`/game/${gameState.gameId}`);
         } else {
             gameState.initPieces();
+            this.props.history.push(`/game/${gameState.gameId}`);
         }
 
         this.state = { gameState, settingsOpened: false };
