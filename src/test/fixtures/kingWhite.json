@@ -1,0 +1,24 @@
+{
+    "gameVersion": "0.0.11",
+    "gameId": "game",
+    "gameSavedAt": "2020-03-15T21:17:05.269Z",
+    "gameStartedAt": "2020-03-15T21:16:53.575Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT0S",
+    "players": [
+        { "playerId": "whitePlayer", "color": 0 },
+        { "playerId": "blackPlayer", "color": 1 }
+    ],
+    "currentTurn": 0,
+    "pieces": [
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 4,
+            "y": 4,
+            "player": 0,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []]
+}
