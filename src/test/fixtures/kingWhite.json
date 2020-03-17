@@ -18,6 +18,14 @@
             "y": 4,
             "player": 0,
             "firstMove": true
+        },
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 0,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
         }
     ],
     "removedPieces": [[], []]
