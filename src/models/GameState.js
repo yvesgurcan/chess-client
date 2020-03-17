@@ -131,7 +131,11 @@ export default class GameState {
      */
     import = (
         unparsedGameData,
-        { resumeGame = false, allowNoKing = false } = {}
+        {
+            resumeGame = false,
+            allowNoKing = false,
+            noConsoleOutput = false
+        } = {}
     ) => {
         let gameData = null;
 
@@ -168,15 +172,17 @@ export default class GameState {
         this.players = gameData.players;
         this.allowNoKing = allowNoKing;
 
-        console.log(
-            `Loading game '${this.gameId}' (game version: ${
-                this.gameVersion
-            }). Turn: ${
-                this.currentTurn
-            }. Time played: ${this.totalTimePlayed.format('hh:mm:ss', {
-                trim: false
-            })}. Last saved on ${gameData.gameSavedAt}.`
-        );
+        if (!noConsoleOutput) {
+            console.log(
+                `Loading game '${this.gameId}' (game version: ${
+                    this.gameVersion
+                }). Turn: ${
+                    this.currentTurn
+                }. Time played: ${this.totalTimePlayed.format('hh:mm:ss', {
+                    trim: false
+                })}. Last saved on ${gameData.gameSavedAt}.`
+            );
+        }
 
         if (resumeGame) {
             this.resume();
@@ -245,11 +251,20 @@ export default class GameState {
             ...move,
             player: this.currentPlayer
         };
-        this.moves = [...this.moves, newMove];
+        this.moves = [...(this.moves || []), newMove];
     };
 
     /**
-     * @returns {Piece|undefined} The piece at the coordinates.
+     * @returns {Piece|undefined}
+     */
+    getFirstPiece = ({ type, player }) => {
+        return this.pieces.find(
+            piece => piece.type === type && piece.player === player
+        );
+    };
+
+    /**
+     * @returns {Piece|undefined} The selected piece at the coordinates.
      */
     getPieceAt = ({ x, y }) => {
         return this.pieces.find(piece => {
