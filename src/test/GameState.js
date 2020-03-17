@@ -4,7 +4,9 @@ import { visualizeBoard } from '../lib/util';
 import whitePawnGame from './fixtures/pawnWhite';
 import blackPawnGame from './fixtures/pawnBlack';
 import whiteKingGame from './fixtures/kingWhite';
+import whiteKingCheckmateGame from './fixtures/kingWhiteCheckmate';
 import blackKingGame from './fixtures/kingBlack';
+import blackKingCheckmateGame from './fixtures/kingBlackCheckmate';
 
 let gameState = null;
 let selected = null;
@@ -12,9 +14,9 @@ let selected = null;
 const initTestGame = function(gameState, importData) {
     gameState.import(importData, {
         resumeGame: true,
-        allowNoKing: true,
         noConsoleOutput: true
     });
+    // visualizeBoard(gameState);
     return gameState.pieces;
 };
 
@@ -262,6 +264,23 @@ describe('Chess', function() {
             expect(movedPiece.y).toEqual(3);
         });
 
+        test('White king checkmate ends the game', function() {
+            const piece = initTestGame(gameState, whiteKingCheckmateGame)[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 7, y: 3 });
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(7);
+            expect(movedPiece.y).toEqual(3);
+            expect(gameState.gameEndedAt).not.toBe(null);
+        });
+
         test('Black king is selectable', function() {
             const piece = initTestGame(gameState, blackKingGame)[0];
             selected = gameState.select({ x: piece.x, y: piece.y, piece });
@@ -387,6 +406,23 @@ describe('Chess', function() {
             });
             expect(movedPiece.x).toEqual(3);
             expect(movedPiece.y).toEqual(3);
+        });
+
+        test('Black king checkmate ends the game', function() {
+            const piece = initTestGame(gameState, blackKingCheckmateGame)[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 7, y: 3 });
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(7);
+            expect(movedPiece.y).toEqual(3);
+            expect(gameState.gameEndedAt).not.toBe(null);
         });
     });
 });
