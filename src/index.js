@@ -21,6 +21,7 @@ ReactDOM.render(
             <GlobalStyle />
             <HashRouter>
                 <Switch>
+                    <Route exact path="/game/:gameId" component={GameView} />
                     <Route path="/" component={GameView} />
                 </Switch>
             </HashRouter>

@@ -34,7 +34,7 @@ const DEBUG = location.hostname === 'localhost';
  * @example const gameState = new GameState();
  */
 export default class GameState {
-    practice = true;
+    practice = false;
     constructor() {
         this.gameId = uuid();
         this.gameStartedAt = moment();
@@ -59,6 +59,8 @@ export default class GameState {
                 color: 1
             }
         ];
+
+        this.allowNoKing = false;
     }
 
     /**
@@ -124,15 +126,18 @@ export default class GameState {
 
     /**
      * @param {string} unparsedGameData
+     * @param {object} options
      * @returns {undefined}
      */
-    import = unparsedGameData => {
+    import = (
+        unparsedGameData,
+        { resumeGame = false, allowNoKing = false } = {}
+    ) => {
         let gameData = null;
 
         try {
             gameData = JSON.parse(unparsedGameData);
         } catch (error) {
-            console.warn('Import data is not parseable to JSON.', { error });
             gameData = unparsedGameData;
         }
 
@@ -161,6 +166,7 @@ export default class GameState {
         this.removedPieces = gameData.removedPieces;
         this.moves = gameData.moves;
         this.players = gameData.players;
+        this.allowNoKing = allowNoKing;
 
         console.log(
             `Loading game '${this.gameId}' (game version: ${
@@ -171,6 +177,10 @@ export default class GameState {
                 trim: false
             })}. Last saved on ${gameData.gameSavedAt}.`
         );
+
+        if (resumeGame) {
+            this.resume();
+        }
 
         // this is an additional check that is only meaningful if the imported file has been manipulated
         const gameEnd = this.isGameEnd({
@@ -305,19 +315,23 @@ export default class GameState {
     };
 
     /**
-     * @returns {undefined}
+     * @returns {boolean}
      */
     select = ({ x, y, piece }) => {
+        let pieceSelected = false;
         if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
-            return;
+            return pieceSelected;
         }
 
         if (piece) {
             const { x: discardX, y: discardY, ...pieceProperties } = piece;
             this.selected = { x, y, piece: pieceProperties };
+            pieceSelected = true;
         } else {
             this.selected = { x, y };
         }
+
+        return pieceSelected;
     };
 
     /**
@@ -638,6 +652,10 @@ export default class GameState {
      * @returns {boolean}
      */
     isKingInCheck = kingProjection => {
+        if (this.allowNoKing) {
+            return false;
+        }
+
         let kingActual = null;
         const opponentPieces = this.pieces.filter(piece => {
             if (piece.type === KING && piece.player === this.currentPlayer) {
@@ -673,6 +691,10 @@ export default class GameState {
      * @returns {boolean | string}
      */
     isGameEnd = ({ player = this.currentPlayer }) => {
+        if (this.allowNoKing) {
+            return false;
+        }
+
         let opponentKing = null;
         let opponentPieces = [];
         const pieces = this.pieces.filter(piece => {
