@@ -4,7 +4,7 @@
     "gameSavedAt": "2020-03-16T06:09:08.943Z",
     "gameStartedAt": "2020-03-16T06:08:54.378Z",
     "gameEndedAt": null,
-    "totalTimePlayed": "PT10.174S",
+    "totalTimePlayed": "PT0S",
     "players": [
         { "playerId": "bff96753-4ab5-433b-b535-5326046c514a", "color": 0 },
         { "playerId": "c1dd8f50-7ee3-4f9e-b993-ba472c3e7c99", "color": 1 }
