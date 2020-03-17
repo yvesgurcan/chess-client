@@ -1,6 +1,6 @@
 # Chess
 
-♞ JavaScript Mobile-first chess.
+♞ JavaScript mobile-first chess.
 
 Play: https://chess.yvesgurcan.com.
 
