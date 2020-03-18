@@ -58,13 +58,6 @@
             "player": 0
         },
         {
-            "id": "dee7fa6e-176f-4895-8008-b52388187935",
-            "type": "bishop",
-            "x": 2,
-            "y": 4,
-            "player": 0
-        },
-        {
             "id": "5287039e-e449-42aa-8ae3-af350995b46a",
             "type": "knight",
             "x": 7,

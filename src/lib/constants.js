@@ -34,6 +34,7 @@ export const RIGHT_BACK_ROW_PIECES = [
     ...LATERAL_BACK_ROW_PIECES.reverse()
 ];
 
+export const ONGOING = 'ongoing';
 export const DRAW = 'draw';
 export const CHECKMATE = 'checkmate';
 

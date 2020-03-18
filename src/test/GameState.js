@@ -1,12 +1,16 @@
 import GameState from '../models/GameState';
-import { PLAYER1 } from '../lib/constants';
+import { PLAYER1, DRAW, CHECKMATE, ONGOING } from '../lib/constants';
 import { visualizeBoard } from '../lib/util';
 import whitePawnGame from './fixtures/pawnWhite';
 import blackPawnGame from './fixtures/pawnBlack';
 import whiteKingGame from './fixtures/kingWhite';
 import whiteKingCheckmateGame from './fixtures/kingWhiteCheckmate';
+import whiteKingDrawGame from './fixtures/kingWhiteDraw';
+import whiteKingNotDrawMoveGame from './fixtures/kingWhiteNotDrawMove';
+import whiteKingNotDrawCaptureGame from './fixtures/kingWhiteNotDrawCapture';
 import blackKingGame from './fixtures/kingBlack';
 import blackKingCheckmateGame from './fixtures/kingBlackCheckmate';
+import blackKingDrawGame from './fixtures/kingBlackDraw';
 
 let gameState = null;
 let selected = null;
@@ -33,8 +37,8 @@ describe('Chess', function() {
             expect(gameState.gameId).not.toBe(undefined);
         });
 
-        test('Has start time', function() {
-            expect(gameState.gameStartedAt).not.toBe(undefined);
+        test('Status is ongoing', function() {
+            expect(gameState.gameStatus).toBe(ONGOING);
         });
 
         test('End time is null', function() {
@@ -278,7 +282,74 @@ describe('Chess', function() {
             });
             expect(movedPiece.x).toEqual(7);
             expect(movedPiece.y).toEqual(3);
+            expect(gameState.gameStatus).toEqual(CHECKMATE);
             expect(gameState.gameEndedAt).not.toBe(null);
+        });
+
+        test('White king draw ends the game', function() {
+            const piece = initTestGame(gameState, whiteKingDrawGame)[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(5);
+            expect(movedPiece.y).toEqual(1);
+
+            expect(gameState.gameStatus).toEqual(DRAW);
+            expect(gameState.gameEndedAt).not.toBe(null);
+        });
+
+        // TODO: Implement this test for black king
+        test('White king gets out of draw thanks to another piece moving does not end the game', function() {
+            const piece = initTestGame(gameState, whiteKingNotDrawMoveGame)[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
+
+            // visualizeBoard(gameState);
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(5);
+            expect(movedPiece.y).toEqual(1);
+
+            expect(gameState.gameStatus).toEqual(ONGOING);
+            expect(gameState.gameEndedAt).toBe(null);
+        });
+
+        // TODO: Implement this test for black king
+        test('White king gets out of draw thanks to another piece capturing does not end the game', function() {
+            const piece = initTestGame(
+                gameState,
+                whiteKingNotDrawCaptureGame
+            )[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
+
+            // visualizeBoard(gameState);
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(5);
+            expect(movedPiece.y).toEqual(1);
+
+            expect(gameState.gameStatus).toEqual(ONGOING);
+            expect(gameState.gameEndedAt).toBe(null);
         });
 
         test('Black king is selectable', function() {
@@ -420,8 +491,29 @@ describe('Chess', function() {
                 player: piece.player,
                 type: piece.type
             });
+
             expect(movedPiece.x).toEqual(7);
             expect(movedPiece.y).toEqual(3);
+            expect(gameState.gameStatus).toEqual(CHECKMATE);
+            expect(gameState.gameEndedAt).not.toBe(null);
+        });
+
+        test('Black king draw ends the game', function() {
+            const piece = initTestGame(gameState, blackKingDrawGame)[0];
+            selected = gameState.select({ x: piece.x, y: piece.y, piece });
+
+            const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
+
+            expect(moved).toEqual(true);
+
+            const movedPiece = gameState.getFirstPiece({
+                player: piece.player,
+                type: piece.type
+            });
+            expect(movedPiece.x).toEqual(5);
+            expect(movedPiece.y).toEqual(1);
+
+            expect(gameState.gameStatus).toEqual(DRAW);
             expect(gameState.gameEndedAt).not.toBe(null);
         });
     });

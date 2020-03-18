@@ -12,10 +12,10 @@
     "currentTurn": 1,
     "pieces": [
         {
-            "id": "a69e7c8b-4224-41f5-aa2e-2beb819cadb2",
-            "type": "queen",
+            "id": "5287039e-e449-42aa-8ae3-af350995b46a",
+            "type": "knight",
             "x": 7,
-            "y": 2,
+            "y": 0,
             "player": 1
         },
         {
@@ -27,12 +27,12 @@
             "firstMove": true
         },
         {
-            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
-            "type": "king",
-            "x": 0,
-            "y": 0,
-            "player": 1,
-            "firstMove": true
+            "id": "6c8d2486-d572-4d8b-8fec-f59be0ff7bdd",
+            "type": "pawn",
+            "x": 6,
+            "y": 2,
+            "player": 0,
+            "firstMove": false
         },
         {
             "id": "95517702-2ff8-4b12-b87d-08d97976b4a2",
@@ -51,18 +51,12 @@
             "firstMove": true
         },
         {
-            "id": "e03c80f4-6aab-4bbf-93a9-6c1561e2bcad",
-            "type": "bishop",
-            "x": 5,
-            "y": 2,
-            "player": 1
-        },
-        {
-            "id": "5287039e-e449-42aa-8ae3-af350995b46a",
-            "type": "knight",
-            "x": 7,
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 0,
             "y": 0,
-            "player": 1
+            "player": 1,
+            "firstMove": true
         }
     ],
     "removedPieces": [[], []]

@@ -21,7 +21,8 @@ import {
     DRAW,
     CHECKMATE,
     QUEENSIDE,
-    KINGSIDE
+    KINGSIDE,
+    ONGOING
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
@@ -37,6 +38,7 @@ export default class GameState {
     practice = false;
     constructor() {
         this.gameId = uuid();
+        this.gameStatus = ONGOING;
         this.gameStartedAt = moment();
         this.gameEndedAt = null;
         this.lastSessionTimeUpdate = moment();
@@ -156,6 +158,7 @@ export default class GameState {
 
         this.gameVersion = gameData.gameVersion;
         this.gameId = gameData.gameId;
+        this.gameStatus = gameData.gameStatus;
         this.gameStartedAt = moment(gameData.gameStartedAt);
         this.gameEndedAt = gameData.gameEndedAt
             ? moment(gameData.gameEndedAt)
@@ -193,6 +196,7 @@ export default class GameState {
             player: this.currentPlayer === PLAYER1 ? PLAYER2 : PLAYER1
         });
         if (gameEnd) {
+            this.gameStatus = gameEnd;
             this.gameEndedAt = moment();
         }
     };
@@ -799,12 +803,10 @@ export default class GameState {
         // console.log({ maxAvailableArea, illegalMoves });
 
         if (illegalMoves === maxAvailableArea) {
-            console.log(CHECKMATE);
             return CHECKMATE;
         }
 
         if (currentPositionFree && illegalMoves === maxAvailableArea - 1) {
-            console.log(DRAW);
             return DRAW;
         }
 
@@ -932,6 +934,7 @@ export default class GameState {
 
         const gameEnd = this.isGameEnd({});
         if (gameEnd) {
+            this.gameStatus = gameEnd;
             this.recordMove({ gameEnd });
             if (gameEnd === DRAW) {
                 this.nextTurn();
