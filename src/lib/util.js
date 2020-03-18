@@ -91,7 +91,8 @@ export function visualizeBoard(gameState) {
 
     console.log(
         [
-            '\x1b[33m                    x\n',
+            `\x1b[33m gameId: ${gameState.gameId}\n`,
+            '                    x\n',
             squares.map(line => '|' + line.join('|') + '|').join('\n'),
             '\x1b[0m'
         ].join('')
