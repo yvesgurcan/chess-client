@@ -28,6 +28,12 @@ const initTestGame = function(gameState, importData) {
     return gameState.pieces;
 };
 
+const selectAndMove = function(gameState, { piece, x, y }) {
+    gameState.select({ x: piece.x, y: piece.y, piece });
+    const moved = gameState.moveSelectedPiece({ piece, x, y });
+    return moved;
+};
+
 describe('Chess', function() {
     describe('New instance', function() {
         beforeAll(function() {
@@ -96,30 +102,29 @@ describe('Chess', function() {
         describe('White', function() {
             test('White pawn is selectable', function() {
                 const piece = initTestGame(gameState, whitePawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
+                selected = gameState.select({
+                    x: piece.x,
+                    y: piece.y,
+                    piece
+                });
                 expect(selected).toEqual(true);
             });
 
             test('White pawn can move one square ahead', function() {
                 const piece = initTestGame(gameState, whitePawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 5 });
                 expect(moved).toEqual(true);
             });
 
             test('White pawn can move two squares ahead on first move', function() {
                 const piece = initTestGame(gameState, whitePawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 4 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 4 });
                 expect(moved).toEqual(true);
             });
 
             test('White pawn can capture to northwest', function() {
                 const piece = initTestGame(gameState, whitePawnCaptureGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 3 });
-
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -133,10 +138,7 @@ describe('Chess', function() {
 
             test('White pawn can capture to northeast', function() {
                 const piece = initTestGame(gameState, whitePawnCaptureGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 3 });
-
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -152,30 +154,29 @@ describe('Chess', function() {
         describe('Black', function() {
             test('Black pawn is selectable', function() {
                 const piece = initTestGame(gameState, blackPawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
+                selected = gameState.select({
+                    x: piece.x,
+                    y: piece.y,
+                    piece
+                });
                 expect(selected).toEqual(true);
             });
 
             test('Black pawn can move one square ahead', function() {
                 const piece = initTestGame(gameState, blackPawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 2 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 2 });
                 expect(moved).toEqual(true);
             });
 
             test('Black pawn can move two squares ahead on first move', function() {
                 const piece = initTestGame(gameState, blackPawnMoveGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 3 });
                 expect(moved).toEqual(true);
             });
 
             test('Black pawn can capture to southwest', function() {
                 const piece = initTestGame(gameState, blackPawnCaptureGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 2, y: 4 });
-
+                const moved = selectAndMove(gameState, { piece, x: 2, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -189,10 +190,7 @@ describe('Chess', function() {
 
             test('Black pawn can capture to southeast', function() {
                 const piece = initTestGame(gameState, blackPawnCaptureGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 4 });
-
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -204,6 +202,22 @@ describe('Chess', function() {
                 expect(movedPiece.y).toEqual(4);
             });
         });
+    });
+
+    describe('Knight', function() {
+        beforeAll(function() {
+            gameState = new GameState();
+        });
+        afterAll(function() {
+            gameState = null;
+        });
+        afterEach(function() {
+            selected = null;
+        });
+
+        describe('White', function() {});
+
+        describe('Black', function() {});
     });
 
     describe('King', function() {
@@ -220,15 +234,17 @@ describe('Chess', function() {
         describe('White', function() {
             test('White king is selectable', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
+                selected = gameState.select({
+                    x: piece.x,
+                    y: piece.y,
+                    piece
+                });
                 expect(selected).toEqual(true);
             });
 
             test('White king can move one square north', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -242,9 +258,7 @@ describe('Chess', function() {
 
             test('White king can move one square northeast', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -257,9 +271,7 @@ describe('Chess', function() {
 
             test('White king can move one square east', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 4 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -272,9 +284,7 @@ describe('Chess', function() {
 
             test('White king can move one square southeast', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -287,9 +297,7 @@ describe('Chess', function() {
 
             test('White king can move one square south', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -302,9 +310,7 @@ describe('Chess', function() {
 
             test('White king can move one square southwest', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -317,9 +323,7 @@ describe('Chess', function() {
 
             test('White king can move one square west', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 4 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -332,9 +336,7 @@ describe('Chess', function() {
 
             test('White king can move one square northwest', function() {
                 const piece = initTestGame(gameState, whiteKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -350,10 +352,7 @@ describe('Chess', function() {
                     gameState,
                     whiteKingCheckmateGame
                 )[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 7, y: 3 });
-
+                const moved = selectAndMove(gameState, { piece, x: 7, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -368,10 +367,7 @@ describe('Chess', function() {
 
             test('White king draw ends the game', function() {
                 const piece = initTestGame(gameState, whiteKingDrawGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
-
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 1 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -391,12 +387,8 @@ describe('Chess', function() {
                     gameState,
                     whiteKingNotDrawMoveGame
                 )[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
-
                 // visualizeBoard(gameState);
-
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 1 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -416,12 +408,8 @@ describe('Chess', function() {
                     gameState,
                     whiteKingNotDrawCaptureGame
                 )[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
-
                 // visualizeBoard(gameState);
-
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 1 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -439,15 +427,17 @@ describe('Chess', function() {
         describe('Black', function() {
             test('Black king is selectable', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
+                selected = gameState.select({
+                    x: piece.x,
+                    y: piece.y,
+                    piece
+                });
                 expect(selected).toEqual(true);
             });
 
             test('Black king can move one square north', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -461,9 +451,7 @@ describe('Chess', function() {
 
             test('Black king can move one square northeast', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -476,9 +464,7 @@ describe('Chess', function() {
 
             test('Black king can move one square east', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 4 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -491,9 +477,7 @@ describe('Chess', function() {
 
             test('Black king can move one square southeast', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -506,9 +490,7 @@ describe('Chess', function() {
 
             test('Black king can move one square south', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 4, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 4, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -521,9 +503,7 @@ describe('Chess', function() {
 
             test('Black king can move one square southwest', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 5 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 5 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -536,9 +516,7 @@ describe('Chess', function() {
 
             test('Black king can move one square west', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 4 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 4 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -551,9 +529,7 @@ describe('Chess', function() {
 
             test('Black king can move one square northwest', function() {
                 const piece = initTestGame(gameState, blackKingGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 3, y: 3 });
+                const moved = selectAndMove(gameState, { piece, x: 3, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -569,10 +545,7 @@ describe('Chess', function() {
                     gameState,
                     blackKingCheckmateGame
                 )[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 7, y: 3 });
-
+                const moved = selectAndMove(gameState, { piece, x: 7, y: 3 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
@@ -588,10 +561,7 @@ describe('Chess', function() {
 
             test('Black king draw ends the game', function() {
                 const piece = initTestGame(gameState, blackKingDrawGame)[0];
-                selected = gameState.select({ x: piece.x, y: piece.y, piece });
-
-                const moved = gameState.moveSelectedPiece({ x: 5, y: 1 });
-
+                const moved = selectAndMove(gameState, { piece, x: 5, y: 1 });
                 expect(moved).toEqual(true);
 
                 const movedPiece = gameState.getFirstPiece({
