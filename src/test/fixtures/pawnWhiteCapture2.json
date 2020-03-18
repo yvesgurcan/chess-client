@@ -1,6 +1,6 @@
 {
     "gameVersion": "0.0.13",
-    "gameId": "f4ea1f3b-daf9-4a5b-9476-86b3eecfb6fe",
+    "gameId": "pawnWhiteCapture2",
     "gameSavedAt": "2020-03-17T01:20:03.480Z",
     "gameStartedAt": "2020-03-17T01:19:52.016Z",
     "gameEndedAt": null,
@@ -15,15 +15,22 @@
             "id": "233a5ba2-beb4-44fd-90fd-34d708760eda",
             "type": "pawn",
             "x": 4,
-            "y": 6,
+            "y": 4,
             "player": 0,
             "firstMove": true
+        },
+        {
+            "id": "a9f8a84f-b5af-4e05-80b6-6929b57d4ab8",
+            "type": "bishop",
+            "x": 5,
+            "y": 3,
+            "player": 1
         },
         {
             "id": "609675cd-b8f4-4997-b716-578d7a414c62",
             "type": "king",
             "x": 0,
-            "y": 0,
+            "y": 7,
             "player": 0,
             "firstMove": true
         },
@@ -31,7 +38,7 @@
             "id": "609675cd-b8f4-4997-b716-578d7a414c62",
             "type": "king",
             "x": 7,
-            "y": 7,
+            "y": 0,
             "player": 1,
             "firstMove": true
         }

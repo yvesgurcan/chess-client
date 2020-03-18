@@ -1,0 +1,41 @@
+{
+    "gameVersion": "0.0.13",
+    "gameId": "pawnBlackMove",
+    "gameSavedAt": "2020-03-17T01:20:03.480Z",
+    "gameStartedAt": "2020-03-17T01:19:52.016Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT0S",
+    "players": [
+        { "playerId": "e7d44662-3d24-46a1-95cf-a2b54330b88a", "color": 0 },
+        { "playerId": "febb08f1-f62c-4ee0-b455-94f2fde86971", "color": 1 }
+    ],
+    "currentTurn": 1,
+    "pieces": [
+        {
+            "id": "233a5ba2-beb4-44fd-90fd-34d708760eda",
+            "type": "pawn",
+            "x": 3,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 0,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 7,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []],
+    "moves": []
+}
