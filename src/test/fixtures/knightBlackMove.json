@@ -1,0 +1,40 @@
+{
+    "gameVersion": "0.0.14",
+    "gameId": "knightBlackMove",
+    "gameSavedAt": "2020-03-19T03:19:33.995Z",
+    "gameStartedAt": "2020-03-19T03:19:22.108Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT0S",
+    "players": [
+        { "playerId": "6d43da42-3ade-4812-aeac-86146b5e5ef6", "color": 0 },
+        { "playerId": "2d49bba5-73c2-4e99-aff6-092608500cb3", "color": 1 }
+    ],
+    "currentTurn": 1,
+    "pieces": [
+        {
+            "id": "4c3449db-cfe3-4862-97f5-bab0d9054954",
+            "type": "knight",
+            "x": 4,
+            "y": 3,
+            "player": 1
+        },
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 0,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "ae33ae8c-a56a-4dcc-b085-beca08a65095",
+            "type": "king",
+            "x": 7,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []],
+    "moves": []
+}

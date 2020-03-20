@@ -1,0 +1,101 @@
+{
+    "gameVersion": "0.0.14",
+    "gameId": "knightWhiteCapture",
+    "gameSavedAt": "2020-03-19T03:19:33.995Z",
+    "gameStartedAt": "2020-03-19T03:19:22.108Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT0S",
+    "players": [
+        { "playerId": "6d43da42-3ade-4812-aeac-86146b5e5ef6", "color": 0 },
+        { "playerId": "2d49bba5-73c2-4e99-aff6-092608500cb3", "color": 1 }
+    ],
+    "currentTurn": 0,
+    "pieces": [
+        {
+            "id": "4c3449db-cfe3-4862-97f5-bab0d9054954",
+            "type": "knight",
+            "x": 4,
+            "y": 3,
+            "player": 0
+        },
+        {
+            "id": "609675cd-b8f4-4997-b716-578d7a414c62",
+            "type": "king",
+            "x": 0,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "ae33ae8c-a56a-4dcc-b085-beca08a65095",
+            "type": "king",
+            "x": 7,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "1f3f686c-052f-496a-92ec-235ecb342504",
+            "type": "pawn",
+            "x": 3,
+            "y": 1,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "d99480cb-e04b-4f99-a841-0b8905d060f8",
+            "type": "knight",
+            "x": 5,
+            "y": 1,
+            "player": 1
+        },
+        {
+            "id": "9b8efcc0-b389-4fbe-9d00-fe17a8de1221",
+            "type": "rook",
+            "x": 2,
+            "y": 2,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "4236648f-e5b1-4e1f-986b-17640904fe35",
+            "type": "bishop",
+            "x": 6,
+            "y": 2,
+            "player": 1
+        },
+        {
+            "id": "0bc82297-9c3c-4e95-884c-e2db099b087e",
+            "type": "queen",
+            "x": 2,
+            "y": 4,
+            "player": 1
+        },
+        {
+            "id": "19da4822-477d-44db-9717-13c520632b06",
+            "type": "pawn",
+            "x": 3,
+            "y": 5,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "609675c1-b8f4-4997-b716-578d7a414c62",
+            "type": "knight",
+            "x": 5,
+            "y": 5,
+            "player": 1,
+            "firstMove": true
+        },
+        {
+            "id": "177d3b59-79c6-4471-ac69-2f7bd1a1ec5a",
+            "type": "rook",
+            "x": 6,
+            "y": 4,
+            "player": 1,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []],
+    "moves": []
+}
