@@ -4,6 +4,7 @@ import GameState from '../models/GameState';
 import { PLAYER1, PLAYER2, DRAW, CHECKMATE, ONGOING } from '../lib/constants';
 
 import { visualizeBoard } from '../lib/util';
+
 import pawnWhiteMove from './fixtures/pawnWhiteMove';
 import pawnWhiteCapture from './fixtures/pawnWhiteCapture';
 import knightWhiteMove from './fixtures/knightWhiteMove';
@@ -21,6 +22,8 @@ import knightBlackCapture from './fixtures/knightBlackCapture';
 import kingBlack from './fixtures/kingBlack';
 import kingBlackCheckmate from './fixtures/kingBlackCheckmate';
 import kingBlackDraw from './fixtures/kingBlackDraw';
+
+// TODO: Turns: Check if player can play during their turn and can't play out of turn and can't play when checkmate or draw
 
 let gameState = null;
 
