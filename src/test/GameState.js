@@ -8,6 +8,8 @@ import pawnWhiteMove from './fixtures/pawnWhiteMove';
 import pawnWhiteCapture from './fixtures/pawnWhiteCapture';
 import knightWhiteMove from './fixtures/knightWhiteMove';
 import knightWhiteCapture from './fixtures/knightWhiteCapture';
+import bishopWhiteMove from './fixtures/bishopWhiteMove';
+import bishopWhiteOppositeMove from './fixtures/bishopWhiteOppositeMove';
 import kingWhite from './fixtures/kingWhite';
 import kingWhiteCheckmate from './fixtures/kingWhiteCheckmate';
 import kingWhiteDraw from './fixtures/kingWhiteDraw';
@@ -419,6 +421,84 @@ describe('Chess', function() {
                 checkSelectAndCapture(gameState, { piece, x: 2, y: 4 });
             });
         });
+    });
+
+    describe('Bishop', function() {
+        beforeAll(function() {
+            gameState = new GameState();
+        });
+        afterAll(function() {
+            gameState = null;
+        });
+
+        describe('White', function() {
+            test('White bishop is selectable', function() {
+                const piece = initTestGame(gameState, bishopWhiteMove)[0];
+                checkSelect(gameState, { piece });
+            });
+
+            test('White bishop can move to northeast', function() {
+                const piece = initTestGame(gameState, bishopWhiteMove)[0];
+                checkSelectAndMove(gameState, { piece, x: 6, y: 0 });
+            });
+
+            test('White bishop can move to southeast', function() {
+                const piece = initTestGame(gameState, bishopWhiteMove)[0];
+                checkSelectAndMove(gameState, { piece, x: 7, y: 7 });
+            });
+
+            test('White bishop can move to southwest', function() {
+                const piece = initTestGame(gameState, bishopWhiteMove)[0];
+                checkSelectAndMove(gameState, { piece, x: 0, y: 6 });
+            });
+
+            test('White bishop can move to northwest', function() {
+                const piece = initTestGame(gameState, bishopWhiteMove)[0];
+                checkSelectAndMove(gameState, { piece, x: 0, y: 0 });
+            });
+
+            test('White bishop on opposite color is selectable', function() {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelect(gameState, { piece });
+            });
+
+            test('White bishop on opposite color can move to northeast', function() {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 7, y: 0 });
+            });
+
+            test('White bishop on opposite color can move to southeast', function() {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 7, y: 6 });
+            });
+
+            test('White bishop on opposite color can move to southwest', function() {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 0, y: 7 });
+            });
+
+            test('White bishop on opposite color can move to northwest', function() {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 1, y: 0 });
+            });
+        });
+
+        describe('Black', function() {});
     });
 
     describe('King', function() {
