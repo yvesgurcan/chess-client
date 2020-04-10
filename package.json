@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "webpack-dev-server",
+        "build": "webpack --mode production",
         "test": "jest",
         "test:verbose": "jest --expand",
         "docs": "documentation build src/models/GameState.js -f html -o doc --theme ./node_modules/documentation-theme-light/default_theme",
