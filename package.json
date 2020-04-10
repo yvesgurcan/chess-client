@@ -1,6 +1,6 @@
 {
     "name": "chess",
-    "version": "0.0.17",
+    "version": "0.0.18",
     "description": "♞ Mobile-first Chess in JavaScript.",
     "main": "index.js",
     "scripts": {
