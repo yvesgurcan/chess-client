@@ -41,7 +41,6 @@ module.exports = {
     },
     devServer: {
         overlay: true,
-        writeToDisk: true,
         stats: 'minimal'
     }
 };
