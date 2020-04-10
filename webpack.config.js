@@ -32,9 +32,9 @@ module.exports = {
         ]
     },
     optimization: {
-        // Separate runtime code into a chunk
+        // Separate runtime code into a runtime chunk
         runtimeChunk: 'single',
-        // Separate dependencies into a chunk
+        // Separate dependencies into a vendors chunk
         splitChunks: {
             chunks: 'all'
         }
