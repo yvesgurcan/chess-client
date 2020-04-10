@@ -11,7 +11,6 @@ import DEBUG_GAME from '../test/fixtures/castling1.json';
 
 export default class GameView extends Component {
     constructor(props) {
-        console.log('yolo');
         super(props);
         const gameState = new GameState();
         if (DEBUG && typeof DEBUG_GAME !== 'undefined') {

@@ -39,7 +39,6 @@ module.exports = {
             chunks: 'all'
         }
     },
-    watch: true,
     devServer: {
         overlay: true,
         writeToDisk: true,
