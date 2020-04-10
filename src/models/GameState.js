@@ -268,6 +268,7 @@ export default class GameState {
     };
 
     /**
+     * @example const piece = getPieceAt({ x: 2, y: 1 });
      * @returns {Piece|undefined} The selected piece at the coordinates.
      */
     getPieceAt = ({ x, y }) => {
@@ -291,6 +292,7 @@ export default class GameState {
     };
 
     /**
+     * @example const isPiece = hasPieceAt({ x: 4, y: 5 });
      * @returns {boolean} `true` if there is a piece at the coordinates; otherwise, `false`.
      */
     hasPieceAt = ({ x, y }) => {
@@ -298,6 +300,14 @@ export default class GameState {
     };
 
     /**
+     * @example
+     * removePiece({
+     *      id: '297a7c98-da21-4309-8751-9e187f51259b',
+     *      type: 'pawn',
+     *      x: 1,
+     *      y: 3,
+     *      player: 0
+     * });
      * @returns {undefined}
      */
     removePiece = pieceToRemove => {
