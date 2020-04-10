@@ -6,7 +6,8 @@
     "scripts": {
         "start": "webpack-dev-server",
         "build": "webpack --mode production",
-        "postversion": "npm run build",
+        "preversion": "npm run test",
+        "postversion": "npm run build && git commit -m 'New build' && git push",
         "test": "jest",
         "test:verbose": "jest --expand",
         "docs": "documentation build src/models/GameState.js -f html -o doc --theme ./node_modules/documentation-theme-light/default_theme",
