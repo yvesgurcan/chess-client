@@ -4,12 +4,16 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
     output: {
-        filename: '[name].[hash].js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, './')
     },
     plugins: [
         new CleanWebpackPlugin({
-            cleanOnceBeforeBuildPatterns: ['main.*.js']
+            cleanOnceBeforeBuildPatterns: [
+                'main.*.js',
+                'vendors~main.*.js',
+                'runtime.*.js'
+            ]
         }),
         new HtmlWebpackPlugin({
             filename: 'index.html',
@@ -26,6 +30,14 @@ module.exports = {
                 }
             }
         ]
+    },
+    optimization: {
+        // Separate runtime code into a chunk
+        runtimeChunk: 'single',
+        // Separate dependencies into a chunk
+        splitChunks: {
+            chunks: 'all'
+        }
     },
     watch: true,
     devServer: {
