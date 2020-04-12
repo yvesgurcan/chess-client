@@ -567,7 +567,7 @@ export default class GameState {
     /**
      * @returns {boolean}
      */
-    performCastle = ({ castleVectorX, selectedPiece, destination }) => {
+    performCastle = ({ castleVectorX, selectedPiece, destination, from }) => {
         const playerY = this.currentPlayer === PLAYER1 ? 7 : 0;
         const rookX = castleVectorX > 0 ? 7 : 0;
         const rookVectorX = castleVectorX > 0 ? -1 : 1;
@@ -629,8 +629,15 @@ export default class GameState {
             return piece;
         });
 
-        const castling = rookVectorX > 0 ? QUEENSIDE : KINGSIDE;
-        this.recordMove({ castling });
+        // const castling = rookVectorX > 0 ? QUEENSIDE : KINGSIDE;
+        this.recordMove({
+            piece: {
+                id: selectedPiece.id,
+                type: selectedPiece.type
+            },
+            from,
+            to: destination
+        });
         this.nextTurn();
 
         return true;
@@ -1013,7 +1020,8 @@ export default class GameState {
             return this.performCastle({
                 castleVectorX,
                 selectedPiece,
-                destination: { x, y }
+                destination: { x, y },
+                from: { x: selectedX, y: selectedY }
             });
         }
 

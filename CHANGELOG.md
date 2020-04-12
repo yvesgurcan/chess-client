@@ -1,3 +1,7 @@
+## v0.1.1
+
+Fix logging when castling.
+
 ## v0.1.0
 
 Add Artificial Intelligence.
