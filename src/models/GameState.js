@@ -992,7 +992,14 @@ export default class GameState {
         const gameEnd = this.isGameEnd({});
         if (gameEnd) {
             this.gameStatus = gameEnd;
-            this.recordMove({ gameEnd });
+            this.recordMove({
+                piece: {
+                    id: selectedPiece.id,
+                    type: selectedPiece.type
+                },
+                from: { x: selectedX, y: selectedY },
+                to: { x, y }
+            });
             if (gameEnd === DRAW) {
                 this.nextTurn();
             }
