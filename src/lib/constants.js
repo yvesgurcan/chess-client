@@ -7,6 +7,9 @@ export const PLAYER2 = 1;
 
 export const PLAYER_COLORS = ['white', 'black'];
 
+export const HUMAN_PLAYER = 'Human';
+export const AI_PLAYER = 'AI';
+
 export const KING = 'king';
 export const QUEEN = 'queen';
 export const ROOK = 'rook';

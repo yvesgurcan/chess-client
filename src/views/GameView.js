@@ -2,25 +2,23 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import GameState from '../models/GameState';
-// import artificialIntelligence from '../models/ArtificialIntelligence';
 import icons from '../components/icons';
-import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
+import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
 const DEBUG = location.hostname === 'localhost';
-import DEBUG_GAME from '../test/fixtures/castling1.json';
+// import DEBUG_GAME from '../test/fixtures/castling1.json';
 
 export default class GameView extends Component {
     constructor(props) {
         super(props);
         const gameState = new GameState();
-        // artificialIntelligence.init({});
         if (DEBUG && typeof DEBUG_GAME !== 'undefined') {
             gameState.import(DEBUG_GAME);
             gameState.resume();
             this.props.history.push(`/game/${gameState.gameId}`);
         } else {
-            gameState.initPieces();
+            gameState.newGame();
             this.props.history.push(`/game/${gameState.gameId}`);
         }
 
@@ -33,7 +31,7 @@ export default class GameView extends Component {
 
     componentDidMount() {
         setInterval(() => {
-            if (!gameState.gameEndedAt) {
+            if (!this.state.gameState.gameEndedAt) {
                 const { gameState } = this.state;
                 gameState.updateTimePlayed();
                 this.updateGameState(gameState);
@@ -45,7 +43,7 @@ export default class GameView extends Component {
         this.setState({ gameState });
     };
 
-    handleSelect = ({ x, y, piece }) => {
+    handleSelect = ({ x, y }) => {
         const { gameState } = this.state;
         const { selected } = gameState;
         if (selected) {
@@ -58,15 +56,15 @@ export default class GameView extends Component {
 
                 // select
                 if (!moved) {
-                    gameState.select({ x, y, piece });
+                    gameState.select({ x, y });
                 }
                 // select
             } else {
-                gameState.select({ x, y, piece });
+                gameState.select({ x, y });
             }
         } else {
             // select
-            gameState.select({ x, y, piece });
+            gameState.select({ x, y });
         }
 
         // debug
@@ -171,12 +169,25 @@ export default class GameView extends Component {
                 <div>
                     <SettingsMenuAnchor>
                         <SettingsMenu>
-                            <SettingsItem>
-                                <span>White:</span> Human
-                            </SettingsItem>
-                            <SettingsItem>
-                                <span>Black:</span> Human
-                            </SettingsItem>
+                            {PLAYER_COLORS.map((colorString, index) => (
+                                <SettingsItem
+                                    key={colorString}
+                                    onClick={() => {
+                                        this.state.gameState.togglePlayerControl(
+                                            index
+                                        );
+                                        this.updateGameState(
+                                            this.state.gameState
+                                        );
+                                    }}
+                                >
+                                    <span>{colorString}:</span>{' '}
+                                    {
+                                        this.state.gameState.players[index]
+                                            .control
+                                    }
+                                </SettingsItem>
+                            ))}
                             <SettingsItem>
                                 <span>Time limit:</span> None
                             </SettingsItem>
@@ -282,6 +293,27 @@ export default class GameView extends Component {
         return squares;
     };
 
+    renderLog = () => {
+        if (!this.state.gameState.log.length) {
+            return;
+        }
+
+        return (
+            <Log>
+                {this.state.gameState.log.map(
+                    ({ id, string, piece, player }) => (
+                        <LogEntry key={id}>
+                            <LogIconContainer>
+                                {this.renderPieceIcon({ ...piece, player })}
+                            </LogIconContainer>
+                            {string}
+                        </LogEntry>
+                    )
+                )}
+            </Log>
+        );
+    };
+
     render() {
         return (
             <View>
@@ -291,6 +323,7 @@ export default class GameView extends Component {
                     <Graveyard>{this.renderGraveyard(0)}</Graveyard>
                     <Board>{this.renderSquares()}</Board>
                     <Graveyard>{this.renderGraveyard(1)}</Graveyard>
+                    {this.renderLog()}
                 </Wrapper>
             </View>
         );
@@ -367,6 +400,7 @@ const SettingsMenu = styled.div`
 const SettingsItem = styled.div`
     display: flex;
     justify-content: space-between;
+    text-transform: capitalize;
 `;
 
 const Wrapper = styled.div`
@@ -444,4 +478,36 @@ const HiddenFileLoader = styled.input.attrs({
     id: 'load-file-input'
 })`
     display: none;
+`;
+
+const Log = styled.div`
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    width: 95%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: space-between;
+    background: rgb(118, 118, 118);
+    padding: 10px;
+    border: 1px solid black;
+    max-height: 30vh;
+
+    @media screen and (orientation: landscape) {
+        max-height: 30vw;
+    }
+`;
+
+const LogEntry = styled.div`
+    display: flex;
+    align-items: center;
+    padding: 0.05rem;
+`;
+
+const LogIconContainer = styled.div`
+    width: 2.75vh;
+
+    @media screen and (orientation: landscape) {
+        height: 2.75vw;
+    }
 `;

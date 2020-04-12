@@ -12,10 +12,11 @@ import {
     STOCKFISH_EVENT_MOVE
 } from '../lib/constants';
 
-const DEFAULT_DEBUG_LEVEL = 0; //location.hostname === 'localhost' ? 0 : 2;
+const DEFAULT_DEBUG_LEVEL = 1; //location.hostname === 'localhost' ? 0 : 2;
 
 let instance = null;
 
+// Singleton
 class ArtificialIntelligence {
     constructor() {
         if (instance) {
@@ -29,10 +30,17 @@ class ArtificialIntelligence {
         this.worker = new Worker(STOCKFISH_URL);
         this.worker.onmessage = ({ data }) => this.onMessage(data);
         this.sendRawCommand(STOCKFISH_COMMAND_START_UCI);
+        this.sendRawCommand(STOCKFISH_COMMAND_IS_READY);
+        instance = this;
+        return instance;
     }
 
-    newGame() {
+    /*
+     * These commands are required to support more than one game.
+     */
+    startGame() {
         this.sendRawCommand('ucinewgame');
+        this.sendRawCommand(STOCKFISH_COMMAND_IS_READY);
     }
 
     onMessage(message) {
@@ -53,8 +61,7 @@ class ArtificialIntelligence {
 
                 this.emitEvent(parsedMessage);
 
-                // return;
-                break;
+                return;
             }
             case STOCKFISH_RESULT_START_UCI_OK: {
                 this.emitEvent({ event: STOCKFISH_EVENT_INIT, debugLevel: 1 });
@@ -65,7 +72,6 @@ class ArtificialIntelligence {
                 return;
             }
         }
-
         /*
             if (match[1] === 'cp') {
             else if (match[1] === 'mate') {
@@ -84,8 +90,10 @@ class ArtificialIntelligence {
         this.worker.postMessage(command);
     }
 
-    computeResponse(move) {
-        this.sendRawCommand(`position startpos moves ${move}`);
+    computeNextMove(move, fenstring) {
+        this.sendRawCommand(
+            `position ${fenstring || 'startpos'} moves ${move}`
+        );
         this.sendRawCommand(`go depth 15`);
     }
 
@@ -178,34 +186,5 @@ class ArtificialIntelligence {
         };
     }
 }
-
-class MockApp {
-    constructor() {
-        const artificialIntelligence = new ArtificialIntelligence();
-        this.artificialIntelligence = artificialIntelligence;
-        this.artificialIntelligence.init({
-            eventHandler: this.eventHandler
-        });
-    }
-
-    eventHandler = payload => {
-        switch (payload.event) {
-            default: {
-                break;
-            }
-            case STOCKFISH_EVENT_INIT: {
-                console.log('Playing first move.');
-                this.artificialIntelligence.computeResponse(`e2e4`);
-                break;
-            }
-            case STOCKFISH_EVENT_MOVE: {
-                console.log('Received move:', payload.move);
-                break;
-            }
-        }
-    };
-}
-
-// const mockApp = new MockApp();
 
 export default new ArtificialIntelligence();
