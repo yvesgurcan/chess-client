@@ -7,6 +7,9 @@ export const PLAYER2 = 1;
 
 export const PLAYER_COLORS = ['white', 'black'];
 
+export const HUMAN_PLAYER = 'Human';
+export const AI_PLAYER = 'AI';
+
 export const KING = 'king';
 export const QUEEN = 'queen';
 export const ROOK = 'rook';
@@ -40,3 +43,19 @@ export const CHECKMATE = 'checkmate';
 
 export const KINGSIDE = 'kingside';
 export const QUEENSIDE = 'queenside';
+
+/* Stockfish */
+
+export const STOCKFISH_URL = 'stockfish.js';
+export const STOCKFISH_COMMAND_START_UCI = 'uci';
+export const STOCKFISH_RESULT_START_UCI_OK = 'uciok';
+
+export const STOCKFISH_COMMAND_IS_READY = 'isready';
+export const STOCKFISH_RESULT_ALIVE = 'readyok';
+
+export const STOCKFISH_EVENT_INIT = 'STOCKFISH_INIT';
+export const STOCKFISH_EVENT_READY = 'STOCKFISH_READY';
+export const STOCKFISH_EVENT_UNKNOWN = 'STOCKFISH_UNKNOWN';
+export const STOCKFISH_EVENT_GET_OPTION = 'STOCKFISH_GET_OPTION';
+export const STOCKFISH_EVENT_GET_DEPTH = 'STOCKFISH_GET_DEPTH';
+export const STOCKFISH_EVENT_MOVE = 'STOCKFISH_MOVE';

@@ -1,3 +1,11 @@
+## v0.1.1
+
+Fix logging when castling.
+
+## v0.1.0
+
+Add Artificial Intelligence.
+
 ## v0.0.14
 
 Add some basic tests. Also enable to play without kings.

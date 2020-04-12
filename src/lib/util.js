@@ -1,6 +1,10 @@
 import { name, version, author, repository } from '../../package.json';
 import { BOARD_SIDE_SIZE } from './constants';
 
+export function supportsWebWorkers() {
+    return typeof Worker !== 'undefined';
+}
+
 export function getPackageInfo() {
     const parsedPackageInfo = {
         name,

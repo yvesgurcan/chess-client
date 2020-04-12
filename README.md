@@ -15,6 +15,16 @@ See [changelog](./CHANGELOG.md) for updates.
 -   Projections are used to validate whether a move is legal or not.
 -   Vectors are used to translate the position of the pieces.
 
-## Setup
+## Artificial Intelligence
+
+Uses [Stockfish-js](https://github.com/exoticorn/stockfish-js), a JavaScript version of [Stockfish](https://github.com/official-stockfish/Stockfish). Stockfish-js takes the form of a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
+
+Stockfish relies on the [universal chess interface (UCI) protocol](http://wbec-ridderkerk.nl/html/UCIProtocol.html).
+
+Computer Chess wiki: http://computer-chess.org/doku.php
+
+## Contribute
+
+### Setup
 
 You know the drill. `npm i` and all that :)

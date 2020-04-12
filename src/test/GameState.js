@@ -96,7 +96,7 @@ expect.extend({
     }
 });
 
-const initTestGame = function(gameState, importData) {
+const initTestGame = function (gameState, importData) {
     gameState.import(importData, {
         resumeGame: true,
         noConsoleOutput: true
@@ -104,12 +104,12 @@ const initTestGame = function(gameState, importData) {
     return gameState.pieces;
 };
 
-const checkSelect = function(gameState, { piece }) {
+const checkSelect = function (gameState, { piece }) {
     const selected = gameState.select({ x: piece.x, y: piece.y, piece });
     expect(selected).toBe(true);
 };
 
-const checkSelectAndMove = function(gameState, { piece, x, y }) {
+const checkSelectAndMove = function (gameState, { piece, x, y }) {
     checkSelect(gameState, { piece });
     gameState.moveSelectedPiece({ piece, x, y });
     const movedPiece = gameState.getFirstPiece({
@@ -120,347 +120,343 @@ const checkSelectAndMove = function(gameState, { piece, x, y }) {
     expect(movedPiece).coordinatesToBe({ x, y });
 };
 
-const checkSelectAndCapture = function(gameState, { piece, x, y }) {
+const checkSelectAndCapture = function (gameState, { piece, x, y }) {
     checkSelectAndMove(gameState, { piece, x, y });
     const opponentPlayer = piece.player === PLAYER1 ? PLAYER2 : PLAYER1;
     expect(gameState.removedPieces[opponentPlayer].length).toBe(1);
 };
 
-describe('Chess', function() {
-    describe('New instance', function() {
-        beforeAll(function() {
+describe('Chess', function () {
+    describe('New instance', function () {
+        beforeAll(function () {
             gameState = new GameState();
         });
-        afterAll(function() {
+        afterAll(function () {
             gameState = null;
         });
 
-        test('Has a game ID', function() {
+        test('Has a game ID', function () {
             expect(gameState.gameId).not.toBe(undefined);
         });
 
-        test('Status is ongoing', function() {
+        test('Status is ongoing', function () {
             expect(gameState.gameStatus).toBe(ONGOING);
         });
 
-        test('End time is null', function() {
+        test('End time is null', function () {
             expect(gameState.gameEndedAt).toBe(null);
         });
 
-        test('Has last session time update time', function() {
+        test('Has last session time update time', function () {
             expect(gameState.lastSessionTimeUpdate).not.toBe(undefined);
         });
 
-        test('Has last total time played', function() {
+        test('Has last total time played', function () {
             expect(gameState.totalTimePlayed).not.toBe(undefined);
         });
 
-        test('Current turn is zero', function() {
+        test('Current turn is zero', function () {
             expect(gameState.currentTurn).toBe(0);
         });
 
-        test('Current player to be white player', function() {
+        test('Current player to be white player', function () {
             expect(gameState.currentPlayer).toBe(PLAYER1);
         });
 
-        test('List of pieces is empty', function() {
+        test('List of pieces is empty', function () {
             expect(gameState.pieces).toEqual([]);
         });
 
-        test('List of removed pieces is empty', function() {
+        test('List of removed pieces is empty', function () {
             expect(gameState.removedPieces).toEqual([[], []]);
         });
 
-        test('List of moves is empty', function() {
-            expect(gameState.moves).toEqual([]);
-        });
-
-        test('Has a player object with two elements', function() {
+        test('Has a player object with two elements', function () {
             expect(gameState.players.length).toBe(2);
         });
     });
 
-    describe('Pawn', function() {
-        beforeAll(function() {
+    describe('Pawn', function () {
+        beforeAll(function () {
             gameState = new GameState();
         });
-        afterAll(function() {
+        afterAll(function () {
             gameState = null;
         });
 
-        describe('White', function() {
-            test('White pawn is selectable', function() {
+        describe('White', function () {
+            test('White pawn is selectable', function () {
                 const piece = initTestGame(gameState, pawnWhiteMove)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('White pawn can move one square ahead', function() {
+            test('White pawn can move one square ahead', function () {
                 const piece = initTestGame(gameState, pawnWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 5 });
             });
 
-            test('White pawn can move two squares ahead on first move', function() {
+            test('White pawn can move two squares ahead on first move', function () {
                 const piece = initTestGame(gameState, pawnWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 4 });
             });
 
-            test('White pawn can capture to northwest', function() {
+            test('White pawn can capture to northwest', function () {
                 const piece = initTestGame(gameState, pawnWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 3, y: 3 });
             });
 
-            test('White pawn can capture to northeast', function() {
+            test('White pawn can capture to northeast', function () {
                 const piece = initTestGame(gameState, pawnWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 5, y: 3 });
             });
         });
 
-        describe('Black', function() {
-            test('Black pawn is selectable', function() {
+        describe('Black', function () {
+            test('Black pawn is selectable', function () {
                 const piece = initTestGame(gameState, pawnBlackMove)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('Black pawn can move one square ahead', function() {
+            test('Black pawn can move one square ahead', function () {
                 const piece = initTestGame(gameState, pawnBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 2 });
             });
 
-            test('Black pawn can move two squares ahead on first move', function() {
+            test('Black pawn can move two squares ahead on first move', function () {
                 const piece = initTestGame(gameState, pawnBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 3 });
             });
 
-            test('Black pawn can capture to southwest', function() {
+            test('Black pawn can capture to southwest', function () {
                 const piece = initTestGame(gameState, pawnBlackCapture)[0];
                 checkSelectAndMove(gameState, { piece, x: 2, y: 4 });
             });
 
-            test('Black pawn can capture to southeast', function() {
+            test('Black pawn can capture to southeast', function () {
                 const piece = initTestGame(gameState, pawnBlackCapture)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 4 });
             });
         });
     });
 
-    describe('Knight', function() {
-        beforeAll(function() {
+    describe('Knight', function () {
+        beforeAll(function () {
             gameState = new GameState();
         });
-        afterAll(function() {
+        afterAll(function () {
             gameState = null;
         });
 
-        describe('White', function() {
-            test('White knight is selectable', function() {
+        describe('White', function () {
+            test('White knight is selectable', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('White knight can move 2 north and 1 west', function() {
+            test('White knight can move 2 north and 1 west', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 1 });
             });
 
-            test('White knight can move 2 north and 1 east', function() {
+            test('White knight can move 2 north and 1 east', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 1 });
             });
 
-            test('White knight can move 2 east and 1 north', function() {
+            test('White knight can move 2 east and 1 north', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 6, y: 2 });
             });
 
-            test('White knight can move 2 east and 1 south', function() {
+            test('White knight can move 2 east and 1 south', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 6, y: 4 });
             });
 
-            test('White knight can move 2 south and 1 west', function() {
+            test('White knight can move 2 south and 1 west', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('White knight can move 2 south and 1 east', function() {
+            test('White knight can move 2 south and 1 east', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('White knight can move 2 west and 1 north', function() {
+            test('White knight can move 2 west and 1 north', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 2, y: 2 });
             });
 
-            test('White knight can move 2 west and 1 south', function() {
+            test('White knight can move 2 west and 1 south', function () {
                 const piece = initTestGame(gameState, knightWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 2, y: 4 });
             });
 
-            test('White knight can capture 2 north and 1 west', function() {
+            test('White knight can capture 2 north and 1 west', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 3, y: 1 });
             });
 
-            test('White knight can capture 2 north and 1 east', function() {
+            test('White knight can capture 2 north and 1 east', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 5, y: 1 });
             });
 
-            test('White knight can capture 2 east and 1 north', function() {
+            test('White knight can capture 2 east and 1 north', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 6, y: 2 });
             });
 
-            test('White knight can capture 2 east and 1 south', function() {
+            test('White knight can capture 2 east and 1 south', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 6, y: 4 });
             });
 
-            test('White knight can capture 2 south and 1 west', function() {
+            test('White knight can capture 2 south and 1 west', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('White knight can capture 2 south and 1 east', function() {
+            test('White knight can capture 2 south and 1 east', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('White knight can capture 2 west and 1 north', function() {
+            test('White knight can capture 2 west and 1 north', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 2, y: 2 });
             });
 
-            test('White knight can capture 2 west and 1 south', function() {
+            test('White knight can capture 2 west and 1 south', function () {
                 const piece = initTestGame(gameState, knightWhiteCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 2, y: 4 });
             });
         });
 
-        describe('Black', function() {
-            test('Black knight is selectable', function() {
+        describe('Black', function () {
+            test('Black knight is selectable', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('Black knight can move 2 north and 1 west', function() {
+            test('Black knight can move 2 north and 1 west', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 1 });
             });
 
-            test('Black knight can move 2 north and 1 east', function() {
+            test('Black knight can move 2 north and 1 east', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 1 });
             });
 
-            test('Black knight can move 2 east and 1 north', function() {
+            test('Black knight can move 2 east and 1 north', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 6, y: 2 });
             });
 
-            test('Black knight can move 2 east and 1 south', function() {
+            test('Black knight can move 2 east and 1 south', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 6, y: 4 });
             });
 
-            test('Black knight can move 2 south and 1 west', function() {
+            test('Black knight can move 2 south and 1 west', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('Black knight can move 2 south and 1 east', function() {
+            test('Black knight can move 2 south and 1 east', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('Black knight can move 2 west and 1 north', function() {
+            test('Black knight can move 2 west and 1 north', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 2, y: 2 });
             });
 
-            test('Black knight can move 2 west and 1 south', function() {
+            test('Black knight can move 2 west and 1 south', function () {
                 const piece = initTestGame(gameState, knightBlackMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 2, y: 4 });
             });
 
-            test('Black knight can capture 2 north and 1 west', function() {
+            test('Black knight can capture 2 north and 1 west', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 3, y: 1 });
             });
 
-            test('Black knight can capture 2 north and 1 east', function() {
+            test('Black knight can capture 2 north and 1 east', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 5, y: 1 });
             });
 
-            test('Black knight can capture 2 east and 1 north', function() {
+            test('Black knight can capture 2 east and 1 north', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 6, y: 2 });
             });
 
-            test('Black knight can capture 2 east and 1 south', function() {
+            test('Black knight can capture 2 east and 1 south', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 6, y: 4 });
             });
 
-            test('Black knight can capture 2 south and 1 west', function() {
+            test('Black knight can capture 2 south and 1 west', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('Black knight can capture 2 south and 1 east', function() {
+            test('Black knight can capture 2 south and 1 east', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('Black knight can capture 2 west and 1 north', function() {
+            test('Black knight can capture 2 west and 1 north', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 2, y: 2 });
             });
 
-            test('Black knight can capture 2 west and 1 south', function() {
+            test('Black knight can capture 2 west and 1 south', function () {
                 const piece = initTestGame(gameState, knightBlackCapture)[0];
                 checkSelectAndCapture(gameState, { piece, x: 2, y: 4 });
             });
         });
     });
 
-    describe('Bishop', function() {
-        beforeAll(function() {
+    describe('Bishop', function () {
+        beforeAll(function () {
             gameState = new GameState();
         });
-        afterAll(function() {
+        afterAll(function () {
             gameState = null;
         });
 
-        describe('White', function() {
-            test('White bishop is selectable', function() {
+        describe('White', function () {
+            test('White bishop is selectable', function () {
                 const piece = initTestGame(gameState, bishopWhiteMove)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('White bishop can move to northeast', function() {
+            test('White bishop can move to northeast', function () {
                 const piece = initTestGame(gameState, bishopWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 6, y: 0 });
             });
 
-            test('White bishop can move to southeast', function() {
+            test('White bishop can move to southeast', function () {
                 const piece = initTestGame(gameState, bishopWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 7, y: 7 });
             });
 
-            test('White bishop can move to southwest', function() {
+            test('White bishop can move to southwest', function () {
                 const piece = initTestGame(gameState, bishopWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 0, y: 6 });
             });
 
-            test('White bishop can move to northwest', function() {
+            test('White bishop can move to northwest', function () {
                 const piece = initTestGame(gameState, bishopWhiteMove)[0];
                 checkSelectAndMove(gameState, { piece, x: 0, y: 0 });
             });
 
-            test('White bishop on opposite color is selectable', function() {
+            test('White bishop on opposite color is selectable', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove
@@ -468,7 +464,7 @@ describe('Chess', function() {
                 checkSelect(gameState, { piece });
             });
 
-            test('White bishop on opposite color can move to northeast', function() {
+            test('White bishop on opposite color can move to northeast', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove
@@ -476,7 +472,7 @@ describe('Chess', function() {
                 checkSelectAndMove(gameState, { piece, x: 7, y: 0 });
             });
 
-            test('White bishop on opposite color can move to southeast', function() {
+            test('White bishop on opposite color can move to southeast', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove
@@ -484,7 +480,7 @@ describe('Chess', function() {
                 checkSelectAndMove(gameState, { piece, x: 7, y: 6 });
             });
 
-            test('White bishop on opposite color can move to southwest', function() {
+            test('White bishop on opposite color can move to southwest', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove
@@ -492,7 +488,7 @@ describe('Chess', function() {
                 checkSelectAndMove(gameState, { piece, x: 0, y: 7 });
             });
 
-            test('White bishop on opposite color can move to northwest', function() {
+            test('White bishop on opposite color can move to northwest', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove
@@ -501,64 +497,64 @@ describe('Chess', function() {
             });
         });
 
-        describe('Black', function() {});
+        describe('Black', function () {});
     });
 
-    describe('King', function() {
-        beforeAll(function() {
+    describe('King', function () {
+        beforeAll(function () {
             gameState = new GameState();
         });
-        afterAll(function() {
+        afterAll(function () {
             gameState = null;
         });
 
-        describe('White', function() {
-            test('White king is selectable', function() {
+        describe('White', function () {
+            test('White king is selectable', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('White king can move one square north', function() {
+            test('White king can move one square north', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 3 });
             });
 
-            test('White king can move one square northeast', function() {
+            test('White king can move one square northeast', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 3 });
             });
 
-            test('White king can move one square east', function() {
+            test('White king can move one square east', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 4 });
             });
 
-            test('White king can move one square southeast', function() {
+            test('White king can move one square southeast', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('White king can move one square south', function() {
+            test('White king can move one square south', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 5 });
             });
 
-            test('White king can move one square southwest', function() {
+            test('White king can move one square southwest', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('White king can move one square west', function() {
+            test('White king can move one square west', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 4 });
             });
 
-            test('White king can move one square northwest', function() {
+            test('White king can move one square northwest', function () {
                 const piece = initTestGame(gameState, kingWhite)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 3 });
             });
 
-            test('White king checkmate ends the game', function() {
+            test('White king checkmate ends the game', function () {
                 const piece = initTestGame(gameState, kingWhiteCheckmate)[0];
                 checkSelectAndMove(gameState, { piece, x: 7, y: 3 });
 
@@ -566,7 +562,7 @@ describe('Chess', function() {
                 expect(gameState.gameEndedAt).not.toBe(null);
             });
 
-            test('White king draw ends the game', function() {
+            test('White king draw ends the game', function () {
                 const piece = initTestGame(gameState, kingWhiteDraw)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 1 });
 
@@ -575,7 +571,7 @@ describe('Chess', function() {
             });
 
             // TODO: Implement this test for black king
-            test.skip('White king gets out of draw thanks to another piece moving does not end the game', function() {
+            test.skip('White king gets out of draw thanks to another piece moving does not end the game', function () {
                 const piece = initTestGame(gameState, kingWhiteNotDrawMove)[0];
                 // visualizeBoard(gameState);
                 checkSelectAndMove(gameState, { piece, x: 5, y: 1 });
@@ -585,7 +581,7 @@ describe('Chess', function() {
             });
 
             // TODO: Implement this test for black king
-            test.skip('White king gets out of draw thanks to another piece capturing does not end the game', function() {
+            test.skip('White king gets out of draw thanks to another piece capturing does not end the game', function () {
                 const piece = initTestGame(
                     gameState,
                     kingWhiteNotDrawCapture
@@ -598,53 +594,53 @@ describe('Chess', function() {
             });
         });
 
-        describe('Black', function() {
-            test('Black king is selectable', function() {
+        describe('Black', function () {
+            test('Black king is selectable', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelect(gameState, { piece });
             });
 
-            test('Black king can move one square north', function() {
+            test('Black king can move one square north', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 3 });
             });
 
-            test('Black king can move one square northeast', function() {
+            test('Black king can move one square northeast', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 3 });
             });
 
-            test('Black king can move one square east', function() {
+            test('Black king can move one square east', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 4 });
             });
 
-            test('Black king can move one square southeast', function() {
+            test('Black king can move one square southeast', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 5 });
             });
 
-            test('Black king can move one square south', function() {
+            test('Black king can move one square south', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 4, y: 5 });
             });
 
-            test('Black king can move one square southwest', function() {
+            test('Black king can move one square southwest', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 5 });
             });
 
-            test('Black king can move one square west', function() {
+            test('Black king can move one square west', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 4 });
             });
 
-            test('Black king can move one square northwest', function() {
+            test('Black king can move one square northwest', function () {
                 const piece = initTestGame(gameState, kingBlack)[0];
                 checkSelectAndMove(gameState, { piece, x: 3, y: 3 });
             });
 
-            test('Black king checkmate ends the game', function() {
+            test('Black king checkmate ends the game', function () {
                 const piece = initTestGame(gameState, kingBlackCheckmate)[0];
                 checkSelectAndMove(gameState, { piece, x: 7, y: 3 });
 
@@ -652,7 +648,7 @@ describe('Chess', function() {
                 expect(gameState.gameEndedAt).not.toBe(null);
             });
 
-            test('Black king draw ends the game', function() {
+            test('Black king draw ends the game', function () {
                 const piece = initTestGame(gameState, kingBlackDraw)[0];
                 checkSelectAndMove(gameState, { piece, x: 5, y: 1 });
 

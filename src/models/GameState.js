@@ -1,12 +1,16 @@
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { getPackageInfo } from '../lib/util';
+import { getPackageInfo, supportsWebWorkers } from '../lib/util';
+import artificialIntelligence from '../models/ArtificialIntelligence';
+import GameLog from '../models/GameLog';
 import Piece from '../models/Piece';
 import {
     BOARD_SIDE_SIZE,
     PLAYER1,
     PLAYER2,
+    HUMAN_PLAYER,
+    AI_PLAYER,
     PAWN,
     LEFT_BACK_ROW_PIECES,
     RIGHT_BACK_ROW_PIECES,
@@ -22,7 +26,10 @@ import {
     CHECKMATE,
     QUEENSIDE,
     KINGSIDE,
-    ONGOING
+    ONGOING,
+    STOCKFISH_EVENT_INIT,
+    STOCKFISH_EVENT_READY,
+    STOCKFISH_EVENT_MOVE
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
@@ -49,20 +56,39 @@ export default class GameState {
         this.currentTurn = 0;
         this.pieces = [];
         this.removedPieces = [[], []];
-        this.moves = [];
+
+        const webWorkersAreSupported = supportsWebWorkers();
 
         this.players = [
             {
                 playerId: uuid(),
-                color: 0
+                color: PLAYER1,
+                control: HUMAN_PLAYER
             },
             {
                 playerId: uuid(),
-                color: 1
+                color: PLAYER2,
+                control: webWorkersAreSupported ? AI_PLAYER : HUMAN_PLAYER
             }
         ];
 
         this.allowNoKing = false;
+
+        this.gameLog = new GameLog();
+
+        if (!webWorkersAreSupported) {
+            return;
+        }
+
+        this.artificialIntelligence = artificialIntelligence.init({
+            eventHandler: this.handleArtificialIntelligenceEvent
+        });
+
+        this.artificialIntelligenceStatus = {
+            initialized: false,
+            gameReady: false,
+            ready: false
+        };
     }
 
     /**
@@ -72,10 +98,18 @@ export default class GameState {
         return this.currentTurn % 2 === 0 ? PLAYER1 : PLAYER2;
     }
 
+    get currentPlayerObject() {
+        return this.players[this.currentPlayer];
+    }
+
+    get log() {
+        return this.gameLog.movesAlgebraicNotation;
+    }
+
     /**
      * @returns {undefined}
      */
-    initPieces = () => {
+    newGame = () => {
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
             [...LEFT_BACK_ROW_PIECES, ...RIGHT_BACK_ROW_PIECES].forEach(
@@ -104,6 +138,12 @@ export default class GameState {
         });
 
         this.pieces = pieces;
+
+        if (!supportsWebWorkers()) {
+            return;
+        }
+
+        this.artificialIntelligence.startGame();
     };
 
     /**
@@ -122,7 +162,7 @@ export default class GameState {
             currentTurn: this.currentTurn,
             pieces: this.pieces,
             removedPieces: this.removedPieces,
-            moves: this.moves
+            moves: this.moves // should be done on game log instead
         });
     };
 
@@ -171,7 +211,7 @@ export default class GameState {
         this.currentTurn = gameData.currentTurn;
         this.pieces = gameData.pieces.map(piece => new Piece(piece));
         this.removedPieces = gameData.removedPieces;
-        this.moves = gameData.moves;
+        this.moves = gameData.moves && gameData.moves; // should be done on game log instead
         this.players = gameData.players;
         this.allowNoKing = allowNoKing;
 
@@ -233,7 +273,29 @@ export default class GameState {
      */
     resume = () => {
         this.lastSessionTimeUpdate = moment();
+        this.startArtificialIntelligenceTurn();
     };
+
+    togglePlayerControl(playerColor) {
+        const player = this.players[playerColor];
+        let updatedControl = player.control;
+        switch (player.control) {
+            case HUMAN_PLAYER: {
+                if (!supportsWebWorkers()) {
+                    return;
+                }
+
+                updatedControl = AI_PLAYER;
+                break;
+            }
+            case AI_PLAYER: {
+                updatedControl = HUMAN_PLAYER;
+                break;
+            }
+        }
+
+        this.players[playerColor].control = updatedControl;
+    }
 
     /**
      * @returns {undefined}
@@ -244,7 +306,9 @@ export default class GameState {
         } else {
             this.currentTurn += 1;
         }
+
         this.unselect();
+        this.startArtificialIntelligenceTurn();
     };
 
     /**
@@ -255,7 +319,7 @@ export default class GameState {
             ...move,
             player: this.currentPlayer
         };
-        this.moves = [...(this.moves || []), newMove];
+        this.gameLog.addEntry(newMove);
     };
 
     /**
@@ -269,26 +333,10 @@ export default class GameState {
 
     /**
      * @example const piece = getPieceAt({ x: 2, y: 1 });
-     * @returns {Piece|undefined} The selected piece at the coordinates.
+     * @returns {Piece|undefined} The piece at the coordinates.
      */
     getPieceAt = ({ x, y }) => {
-        return this.pieces.find(piece => {
-            let matchSelectedId = true;
-
-            if (this.selected && this.selected.piece) {
-                if (
-                    this.selected.x === piece.x &&
-                    this.selected.y === piece.y
-                ) {
-                    // make sure that, if pieces were to stack on the same square, only the selected piece would be returned
-                    if (this.selected.piece.id !== piece.id) {
-                        matchSelectedId = false;
-                    }
-                }
-            }
-
-            return piece.x === x && piece.y === y && matchSelectedId;
-        });
+        return this.pieces.find(piece => piece.x === x && piece.y === y);
     };
 
     /**
@@ -346,12 +394,13 @@ export default class GameState {
     /**
      * @returns {boolean}
      */
-    select = ({ x, y, piece }) => {
+    select = ({ x, y }) => {
         let pieceSelected = false;
         if (this.gameEndedAt || !this.lastSessionTimeUpdate) {
             return pieceSelected;
         }
 
+        const piece = this.getPieceAt({ x, y });
         if (piece) {
             const { x: discardX, y: discardY, ...pieceProperties } = piece;
             this.selected = { x, y, piece: pieceProperties };
@@ -518,7 +567,7 @@ export default class GameState {
     /**
      * @returns {boolean}
      */
-    performCastle = ({ castleVectorX, selectedPiece, destination }) => {
+    performCastle = ({ castleVectorX, selectedPiece, destination, from }) => {
         const playerY = this.currentPlayer === PLAYER1 ? 7 : 0;
         const rookX = castleVectorX > 0 ? 7 : 0;
         const rookVectorX = castleVectorX > 0 ? -1 : 1;
@@ -580,8 +629,15 @@ export default class GameState {
             return piece;
         });
 
-        const castling = rookVectorX > 0 ? QUEENSIDE : KINGSIDE;
-        this.recordMove({ castling });
+        // const castling = rookVectorX > 0 ? QUEENSIDE : KINGSIDE;
+        this.recordMove({
+            piece: {
+                id: selectedPiece.id,
+                type: selectedPiece.type
+            },
+            from,
+            to: destination
+        });
         this.nextTurn();
 
         return true;
@@ -936,8 +992,6 @@ export default class GameState {
             return moved;
         }
 
-        this.recordMove({ type: selectedPiece.type, x, y });
-
         if (pieceToRemove) {
             this.removePiece(pieceToRemove);
         }
@@ -945,7 +999,14 @@ export default class GameState {
         const gameEnd = this.isGameEnd({});
         if (gameEnd) {
             this.gameStatus = gameEnd;
-            this.recordMove({ gameEnd });
+            this.recordMove({
+                piece: {
+                    id: selectedPiece.id,
+                    type: selectedPiece.type
+                },
+                from: { x: selectedX, y: selectedY },
+                to: { x, y }
+            });
             if (gameEnd === DRAW) {
                 this.nextTurn();
             }
@@ -959,14 +1020,77 @@ export default class GameState {
             return this.performCastle({
                 castleVectorX,
                 selectedPiece,
-                destination: { x, y }
+                destination: { x, y },
+                from: { x: selectedX, y: selectedY }
             });
         }
 
         if (moved) {
+            this.recordMove({
+                piece: {
+                    id: selectedPiece.id,
+                    type: selectedPiece.type
+                },
+                from: { x: selectedX, y: selectedY },
+                to: { x, y }
+            });
             this.nextTurn();
         }
 
         return moved;
+    };
+
+    startArtificialIntelligenceTurn = () => {
+        if (!supportsWebWorkers()) {
+            return;
+        }
+
+        if (this.currentPlayerObject.control === AI_PLAYER) {
+            const {
+                initialized,
+                gameReady,
+                ready
+            } = this.artificialIntelligenceStatus;
+            if (initialized && gameReady) {
+                this.artificialIntelligence.computeNextMove(
+                    this.gameLog.pureAlgebraicNotation
+                );
+            }
+        }
+    };
+
+    handleArtificialIntelligenceEvent = payload => {
+        const {
+            initialized,
+            gameReady,
+            ready
+        } = this.artificialIntelligenceStatus;
+        switch (payload.event) {
+            default: {
+                break;
+            }
+            case STOCKFISH_EVENT_INIT: {
+                this.artificialIntelligenceStatus.initialized = true;
+                break;
+            }
+            case STOCKFISH_EVENT_READY: {
+                // first ready
+                if (initialized && !gameReady) {
+                    this.artificialIntelligenceStatus.gameReady = true;
+                } else if (gameReady) {
+                    this.startArtificialIntelligenceTurn();
+                }
+                break;
+            }
+            case STOCKFISH_EVENT_MOVE: {
+                const parsedMove = this.gameLog.parsePureAlgebraicNotationToMove(
+                    payload.move
+                );
+                const { from, to } = parsedMove;
+                this.select({ x: from.x, y: from.y });
+                this.moveSelectedPiece({ x: to.x, y: to.y });
+                break;
+            }
+        }
     };
 }

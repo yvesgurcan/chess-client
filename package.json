@@ -1,13 +1,13 @@
 {
     "name": "chess",
-    "version": "0.0.21",
+    "version": "0.1.1",
     "description": "♞ Mobile-first Chess in JavaScript.",
     "main": "index.js",
     "scripts": {
         "start": "webpack-dev-server",
         "build": "webpack --mode production",
         "preversion": "npm run test",
-        "postversion": "npm run build && git add . && git commit -m 'New build' && git push",
+        "postversion": "npm run build && npm run docs && git add . && git commit -m 'New build' && git push",
         "test": "jest",
         "test:verbose": "jest --expand",
         "docs": "documentation build src/models/GameState.js -f html -o doc --theme ./node_modules/documentation-theme-light/default_theme",
