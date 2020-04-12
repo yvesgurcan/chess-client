@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import GameState from '../models/GameState';
 import styled from 'styled-components';
 import moment from 'moment';
+import GameState from '../models/GameState';
+// import artificialIntelligence from '../models/ArtificialIntelligence';
 import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
@@ -11,9 +12,9 @@ import DEBUG_GAME from '../test/fixtures/castling1.json';
 
 export default class GameView extends Component {
     constructor(props) {
-        console.log('yolo');
         super(props);
         const gameState = new GameState();
+        // artificialIntelligence.init({});
         if (DEBUG && typeof DEBUG_GAME !== 'undefined') {
             gameState.import(DEBUG_GAME);
             gameState.resume();
