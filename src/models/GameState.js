@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { getPackageInfo } from '../lib/util';
+import { getPackageInfo, supportsWebWorkers } from '../lib/util';
 import artificialIntelligence from '../models/ArtificialIntelligence';
 import GameLog from '../models/GameLog';
 import Piece from '../models/Piece';
@@ -57,6 +57,8 @@ export default class GameState {
         this.pieces = [];
         this.removedPieces = [[], []];
 
+        const webWorkersAreSupported = supportsWebWorkers();
+
         this.players = [
             {
                 playerId: uuid(),
@@ -66,22 +68,27 @@ export default class GameState {
             {
                 playerId: uuid(),
                 color: PLAYER2,
-                control: AI_PLAYER
+                control: webWorkersAreSupported ? AI_PLAYER : HUMAN_PLAYER
             }
         ];
 
         this.allowNoKing = false;
 
+        this.gameLog = new GameLog();
+
+        if (!webWorkersAreSupported) {
+            return;
+        }
+
         this.artificialIntelligence = artificialIntelligence.init({
             eventHandler: this.handleArtificialIntelligenceEvent
         });
+
         this.artificialIntelligenceStatus = {
             initialized: false,
             gameReady: false,
             ready: false
         };
-
-        this.gameLog = new GameLog();
     }
 
     /**
@@ -131,6 +138,10 @@ export default class GameState {
         });
 
         this.pieces = pieces;
+
+        if (!supportsWebWorkers()) {
+            return;
+        }
 
         this.artificialIntelligence.startGame();
     };
@@ -270,6 +281,10 @@ export default class GameState {
         let updatedControl = player.control;
         switch (player.control) {
             case HUMAN_PLAYER: {
+                if (!supportsWebWorkers()) {
+                    return;
+                }
+
                 updatedControl = AI_PLAYER;
                 break;
             }
@@ -1011,6 +1026,10 @@ export default class GameState {
     };
 
     startArtificialIntelligenceTurn = () => {
+        if (!supportsWebWorkers()) {
+            return;
+        }
+
         if (this.currentPlayerObject.control === AI_PLAYER) {
             const {
                 initialized,
