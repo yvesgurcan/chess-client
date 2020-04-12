@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset='utf-8' />
-	<title>chess 0.0.12 | Documentation</title>
+	<title>chess 0.1.0 | Documentation</title>
 	<meta name='description' content='♞ Mobile-first Chess in JavaScript.'>
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 	<link href='assets/styles.min.css' rel='stylesheet' />
@@ -15,7 +15,7 @@
 			<div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link'>
 				<div class='px2'>
 					<h3 class='mb0 no-anchor'><code>chess</code></h3>
-					<div class='mb1'><code>0.0.12</code></div>
+					<div class='mb1'><code>0.1.0</code></div>
 					<input placeholder='Filter' id='filter-input' class='col12 block input' type='text' />
 					<div id="toc">
 						
@@ -40,9 +40,9 @@
 							</a>
 							
 							<a
-									href='#gamestateinitpieces'
+									href='#gamestatenewgame'
 									class='button-indent regular block'>
-								<code>#initPieces</code>
+								<code>#newGame</code>
 							</a>
 							
 							<a
@@ -79,6 +79,18 @@
 									href='#gamestatenextturn'
 									class='button-indent regular block'>
 								<code>#nextTurn</code>
+							</a>
+							
+							<a
+									href='#gamestaterecordmove'
+									class='button-indent regular block'>
+								<code>#recordMove</code>
+							</a>
+							
+							<a
+									href='#gamestategetfirstpiece'
+									class='button-indent regular block'>
+								<code>#getFirstPiece</code>
 							</a>
 							
 							<a
@@ -184,9 +196,9 @@
 							</a>
 							
 							<a
-									href='#gamestateisgameover'
+									href='#gamestateisgameend'
 									class='button-indent regular block'>
-								<code>#isGameOver</code>
+								<code>#isGameEnd</code>
 							</a>
 							
 							<a
@@ -326,7 +338,7 @@
 </section>
 
   
-    <section id='gamestateinitpieces'class='mt2 mb2 px3 py1 keyline-top'>
+    <section id='gamestatenewgame'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -334,9 +346,9 @@
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#gamestateinitpieces'>
+		<a class='black' href='#gamestatenewgame'>
 			<code>
-				initPieces
+				newGame
 				<span class='gray'>()</span>
 			</code>
 		</a>
@@ -447,7 +459,7 @@
 		<a class='black' href='#gamestateimport'>
 			<code>
 				import
-				<span class='gray'>(unparsedGameData)</span>
+				<span class='gray'>(unparsedGameData, options)</span>
 			</code>
 		</a>
 	</h3>
@@ -478,6 +490,58 @@
 			</td>
 			<td class='col-6'></td>
 		</tr>
+		
+		
+		<tr>
+			<td class='col-3 strong'><code>options</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+				
+				= <code>{}</code>
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>options.resumeGame</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>false</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>options.allowNoKing</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>false</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>options.noConsoleOutput</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>false</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
 		
 		
 	</table>
@@ -730,6 +794,178 @@
 </section>
 
   
+    <section id='gamestaterecordmove'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestaterecordmove'>
+			<code>
+				recordMove
+				<span class='gray'>(move)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>move</code></td>
+			<td class='col-3 quiet'>
+				any
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestategetfirstpiece'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestategetfirstpiece'>
+			<code>
+				getFirstPiece
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.type</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.player</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code>(Piece | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
     <section id='gamestategetpieceat'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
@@ -816,6 +1052,12 @@
 
 	
 
+	
+	<h4 class='caps quiet mb1 mt3'>Examples</h4>
+	
+	
+	<pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> piece = getPieceAt({ <span class="hljs-attr">x</span>: <span class="hljs-number">2</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">1</span> });</code></pre>
+	
 	
 
 	
@@ -918,6 +1160,12 @@
 	
 
 	
+	<h4 class='caps quiet mb1 mt3'>Examples</h4>
+	
+	
+	<pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> isPiece = hasPieceAt({ <span class="hljs-attr">x</span>: <span class="hljs-number">4</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">5</span> });</code></pre>
+	
+	
 
 	
 
@@ -991,6 +1239,18 @@
 
 	
 
+	
+	<h4 class='caps quiet mb1 mt3'>Examples</h4>
+	
+	
+	<pre class='p1 overflow-auto round fill-light'><code>removePiece({
+     <span class="hljs-attr">id</span>: <span class="hljs-string">'297a7c98-da21-4309-8751-9e187f51259b'</span>,
+     <span class="hljs-attr">type</span>: <span class="hljs-string">'pawn'</span>,
+     <span class="hljs-attr">x</span>: <span class="hljs-number">1</span>,
+     <span class="hljs-attr">y</span>: <span class="hljs-number">3</span>,
+     <span class="hljs-attr">player</span>: <span class="hljs-number">0</span>
+});</code></pre>
+	
 	
 
 	
@@ -1069,17 +1329,6 @@
 
 
 		
-		<tr>
-  <td class='col-2 strong'>$0.piece</td>
-  <td class="col-2 quiet">
-    any
-    
-  </td>
-  <td class='col-8'></td>
-</tr>
-
-
-		
 		
 		
 	</table>
@@ -1090,7 +1339,7 @@
 	
 	
 	<h4 class='caps quiet mb1 mt3'>Returns</h4>
-	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
 	:
 	<span class='force-inline'>
 </span>
@@ -2465,7 +2714,7 @@
 </section>
 
   
-    <section id='gamestateisgameover'class='mt2 mb2 px3 py1 keyline-top'>
+    <section id='gamestateisgameend'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -2473,9 +2722,9 @@
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#gamestateisgameover'>
+		<a class='black' href='#gamestateisgameend'>
 			<code>
-				isGameOver
+				isGameEnd
 				<span class='gray'>($0)</span>
 			</code>
 		</a>
