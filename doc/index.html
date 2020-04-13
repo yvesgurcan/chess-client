@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset='utf-8' />
-	<title>chess 0.1.1 | Documentation</title>
+	<title>chess 0.1.2 | Documentation</title>
 	<meta name='description' content='♞ Mobile-first Chess in JavaScript.'>
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 	<link href='assets/styles.min.css' rel='stylesheet' />
@@ -15,7 +15,7 @@
 			<div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link'>
 				<div class='px2'>
 					<h3 class='mb0 no-anchor'><code>chess</code></h3>
-					<div class='mb1'><code>0.1.1</code></div>
+					<div class='mb1'><code>0.1.2</code></div>
 					<input placeholder='Filter' id='filter-input' class='col12 block input' type='text' />
 					<div id="toc">
 						
@@ -37,6 +37,24 @@
 									href='#gamestatecurrentplayer'
 									class='button-indent regular block'>
 								<code>#currentPlayer</code>
+							</a>
+							
+							<a
+									href='#gamestatecurrentplayerobject'
+									class='button-indent regular block'>
+								<code>#currentPlayerObject</code>
+							</a>
+							
+							<a
+									href='#gamestatelog'
+									class='button-indent regular block'>
+								<code>#log</code>
+							</a>
+							
+							<a
+									href='#gamestateaioptions'
+									class='button-indent regular block'>
+								<code>#aiOptions</code>
 							</a>
 							
 							<a
@@ -219,6 +237,116 @@
 						</div>
 						
 						
+						
+						
+						<a
+								href='#singleton'
+								class="regular block">
+							<code>Singleton</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#init'
+								class="regular block">
+							<code>init</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#startgame'
+								class="regular block">
+							<code>startGame</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#sendrawcommand'
+								class="regular block">
+							<code>sendRawCommand</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#onmessage'
+								class="regular block">
+							<code>onMessage</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#emitevent'
+								class="regular block">
+							<code>emitEvent</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#computenextmove'
+								class="regular block">
+							<code>computeNextMove</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#setoption'
+								class="regular block">
+							<code>setOption</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#isignoredmessage'
+								class="regular block">
+							<code>isIgnoredMessage</code>
+							
+						</a>
+						
+						
+						
+						
+						
+						<a
+								href='#responseparser'
+								class="regular block">
+							<code>responseParser</code>
+							
+						</a>
+						
+						
+						
 					</div>
 					<div class='mt1 h6 quiet'>
 						<a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
@@ -253,7 +381,7 @@
 	
 	
 	
-	<p>Author: Yves Gurcan</p>
+	
 	
 	
 
@@ -319,6 +447,171 @@
  for white player or 
 <code>1</code>
  for black player) of the current player.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatecurrentplayerobject'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatecurrentplayerobject'>
+			<code>
+				currentPlayerObject
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
+	:
+	<span class='force-inline'>The object representation of the current player.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatelog'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatelog'>
+			<code>
+				log
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateaioptions'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateaioptions'>
+			<code>
+				aiOptions
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></code>
+	:
+	<span class='force-inline'>
 </span>
 	
 	
@@ -428,7 +721,7 @@
 	<h4 class='caps quiet mb1 mt3'>Returns</h4>
 	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
 	:
-	<span class='force-inline'>The current game state as stringied JSON.
+	<span class='force-inline'>The current game state as stringified JSON.
 </span>
 	
 	
@@ -3044,6 +3337,812 @@
 
   
 </div>
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='singleton'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#singleton'>
+			<code>
+				Singleton
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+	<h4 class='caps quiet mb1 mt3'>Examples</h4>
+	
+	
+	<pre class='p1 overflow-auto round fill-light'><code><span class="hljs-keyword">const</span> eventHandler = <span class="hljs-function">(<span class="hljs-params">payload</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(payload);
+artificialIntelligence.init({ eventHandler });</code></pre>
+	
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='init'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#init'>
+			<code>
+				init
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Initializes Stockfish-js.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.eventHandler</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>()=&gt;{}</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.debugLevel</td>
+  <td class="col-2 quiet">
+    any
+    
+      (default <code>DEFAULT_DEBUG_LEVEL</code>)
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code>instance</code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='startgame'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#startgame'>
+			<code>
+				startGame
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Using this method before playing is required to support more than one game.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='sendrawcommand'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#sendrawcommand'>
+			<code>
+				sendRawCommand
+				<span class='gray'>(command)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Sends a command to Stockfish-js.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>command</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='onmessage'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#onmessage'>
+			<code>
+				onMessage
+				<span class='gray'>(message)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Handles messages sent by Stockfish-js.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>message</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='emitevent'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#emitevent'>
+			<code>
+				emitEvent
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Sends payloads to the event handler.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.debugLevel</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.payload</td>
+  <td class="col-2 quiet">
+    ...any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='computenextmove'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#computenextmove'>
+			<code>
+				computeNextMove
+				<span class='gray'>(move, fenstring)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Asks to Stockfish-js to compute the best response to this move.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>move</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+			<td class='col-3 strong'><code>fenstring</code></td>
+			<td class='col-3 quiet'>
+				(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='setoption'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#setoption'>
+			<code>
+				setOption
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Changes an option of the chess engine.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.name</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.value</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='isignoredmessage'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#isignoredmessage'>
+			<code>
+				isIgnoredMessage
+				<span class='gray'>(message)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Returns whether this event should be emitted or not.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>message</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+				
+				
+				
+				<section id='responseparser'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#responseparser'>
+			<code>
+				responseParser
+				<span class='gray'>(message)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Parses UCI output into an event.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>message</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
 
 	
 
