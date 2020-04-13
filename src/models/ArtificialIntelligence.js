@@ -4,6 +4,10 @@ import {
     STOCKFISH_RESULT_START_UCI_OK,
     STOCKFISH_COMMAND_IS_READY,
     STOCKFISH_RESULT_ALIVE,
+    STOCKFISH_DEFAULT_DEPTH,
+    STOCKFISH_MIN_DEPTH,
+    STOCKFISH_MAX_DEPTH,
+    STOCKFISH_EVENT_ENGINE,
     STOCKFISH_EVENT_INIT,
     STOCKFISH_EVENT_READY,
     STOCKFISH_EVENT_UNKNOWN,
@@ -16,7 +20,13 @@ const DEFAULT_DEBUG_LEVEL = 1; //location.hostname === 'localhost' ? 0 : 2;
 
 let instance = null;
 
-// Singleton
+/**
+ * @class
+ * Singleton
+ * @example
+ * const eventHandler = (payload) => console.log(payload);
+ * artificialIntelligence.init({ eventHandler });
+ */
 class ArtificialIntelligence {
     constructor() {
         if (instance) {
@@ -24,6 +34,10 @@ class ArtificialIntelligence {
         }
     }
 
+    /**
+     * Initializes Stockfish-js.
+     * @returns {instance}
+     */
     init({ eventHandler = () => {}, debugLevel = DEFAULT_DEBUG_LEVEL }) {
         this.debugLevel = debugLevel;
         this.eventHandler = eventHandler;
@@ -31,107 +45,141 @@ class ArtificialIntelligence {
         this.worker.onmessage = ({ data }) => this.onMessage(data);
         this.sendRawCommand(STOCKFISH_COMMAND_START_UCI);
         this.sendRawCommand(STOCKFISH_COMMAND_IS_READY);
+        this.depth = STOCKFISH_DEFAULT_DEPTH;
+        this.options = [];
         instance = this;
         return instance;
     }
 
-    /*
-     * These commands are required to support more than one game.
+    /**
+     * Using this method before playing is required to support more than one game.
+     * @returns {undefined}
      */
     startGame() {
         this.sendRawCommand('ucinewgame');
         this.sendRawCommand(STOCKFISH_COMMAND_IS_READY);
     }
 
-    onMessage(message) {
-        switch (message) {
-            default: {
-                if (!message) {
-                    return;
-                }
-
-                const parsedMessage = this.responseParser(message);
-                if (
-                    parsedMessage.commandKey1 === 'id' ||
-                    parsedMessage.commandKey1 === 'Stockfish'
-                ) {
-                    // no need to return data about the library
-                    return;
-                }
-
-                this.emitEvent(parsedMessage);
-
-                return;
-            }
-            case STOCKFISH_RESULT_START_UCI_OK: {
-                this.emitEvent({ event: STOCKFISH_EVENT_INIT, debugLevel: 1 });
-                return;
-            }
-            case STOCKFISH_RESULT_ALIVE: {
-                this.emitEvent({ event: STOCKFISH_EVENT_READY, debugLevel: 1 });
-                return;
-            }
-        }
-        /*
-            if (match[1] === 'cp') {
-            else if (match[1] === 'mate') {
-            (message.match(/\b(upper|lower)bound\b/))
-        */
+    get fullOptions() {
+        return [
+            {
+                name: 'Depth',
+                value: this.depth,
+                type: 'spin',
+                min: STOCKFISH_MIN_DEPTH,
+                max: STOCKFISH_MAX_DEPTH
+            },
+            ...this.options
+        ];
     }
 
-    emitEvent(payload) {
-        if (Number(payload.debugLevel || 0) >= this.debugLevel) {
-            console.log(payload);
-        }
-        this.eventHandler(payload);
-    }
-
+    /**
+     * Sends a command to Stockfish-js.
+     * @param {string} command
+     * @returns {undefined}
+     */
     sendRawCommand(command) {
         this.worker.postMessage(command);
     }
 
-    computeNextMove(move, fenstring) {
-        this.sendRawCommand(
-            `position ${fenstring || 'startpos'} moves ${move}`
-        );
-        this.sendRawCommand(`go depth 15`);
+    /**
+     * Returns whether this event should be emitted or not.
+     * @param {object} message
+     * @returns {boolean}
+     */
+    static isIgnoredMessage(message) {
+        if (message.firstWord === 'Stockfish') {
+            return true;
+        }
+
+        // ignore the option to write a log file for now
+        if (message.name === 'Debug Log File') {
+            return true;
+        }
+
+        // multi-threading is not supported for web workers
+        if (message.name === 'Threads') {
+            return true;
+        }
+
+        // hash table size can not be changed
+        if (message.name === 'Hash') {
+            return true;
+        }
+
+        // available node time is not relevant to production
+        // https://chess.stackexchange.com/questions/23155/how-to-use-nodestime-option-in-stockfish-10
+        if (message.name === 'nodestime') {
+            return true;
+        }
+
+        // move overhead is for laggy connection but since we're doing this in the client we shouldn't need this
+        // http://www.talkchess.com/forum3/viewtopic.php?t=71355
+        if (message.name === 'Move Overhead') {
+            return true;
+        }
+
+        return false;
     }
 
-    responseParser(message) {
+    /**
+     * Parses UCI output into an event.
+     * @param {string} message
+     * @returns {object}
+     */
+    static responseParser(message) {
         const [commandKey1, commandKey2, ...parameters] = message.split(' ');
+
+        // engine info
+        if (commandKey1 === 'id') {
+            return {
+                event: STOCKFISH_EVENT_ENGINE,
+                [commandKey2]: parameters.join(' '),
+                debugLevel: 0
+            };
+        }
 
         // init option info
         if (commandKey1 === 'option' && commandKey2 === 'name') {
-            let option = '';
+            let name = '';
             let count = 0;
             let parameter = parameters[count];
             while (parameter !== 'type') {
-                option += parameter;
+                name += parameter + ' ';
                 count++;
                 parameter = parameters[count];
             }
 
+            // remove extra space
+            name = name.substring(0, name.length - 1);
+
             const optionConfig = parameters.slice(count + 1, parameters.length);
             const [type, ...optionConfigParameters] = optionConfig;
 
-            let defaultValue = '';
+            let value = null;
             let range = {};
+            let select = [];
             if (optionConfigParameters.length) {
-                const stringDefaultValue = null;
+                const stringValue = optionConfigParameters[1];
                 switch (type) {
                     default: {
                         break;
                     }
                     case 'string': {
-                        defaultValue = stringDefaultValue;
+                        value = stringValue;
                         break;
                     }
                     case 'check': {
-                        defaultValue = Boolean(stringDefaultValue);
+                        value = Boolean(stringValue);
                         break;
                     }
                     case 'spin': {
-                        defaultValue = Number(stringDefaultValue);
+                        value = Number(stringValue);
+                        break;
+                    }
+                    case 'combo': {
+                        value = stringValue;
+                        break;
                     }
                 }
                 const rangeParameters = optionConfigParameters.slice(
@@ -145,14 +193,27 @@ class ArtificialIntelligence {
                         max: Number(rangeParameters[3])
                     };
                 }
+
+                if (type === 'combo') {
+                    const [_, __, ...selectParameters] = optionConfigParameters;
+
+                    let count = 0;
+                    let parameter = selectParameters[count];
+                    while (parameter === 'var') {
+                        select.push(selectParameters[count + 1]);
+                        count += 2;
+                        parameter = selectParameters[count];
+                    }
+                }
             }
 
             return {
                 event: STOCKFISH_EVENT_GET_OPTION,
-                option,
+                name,
                 type,
-                ...{ default: defaultValue },
+                ...(value !== null && { value }),
                 ...range,
+                ...(select.length > 0 && { select }),
                 debugLevel: 0
             };
         }
@@ -180,10 +241,128 @@ class ArtificialIntelligence {
         // unknown
         return {
             event: STOCKFISH_EVENT_UNKNOWN,
-            commandKey1,
+            firstWord: commandKey1,
             message,
-            debugLevel: 1
+            debugLevel: 10
         };
+    }
+
+    static sortOptions(options) {
+        return options.sort((optionA, optionB) => {
+            if (optionA.name === 'Skill Level') {
+                return -1;
+            }
+
+            if (optionB.name === 'Skill Level') {
+                return 1;
+            }
+
+            if (optionA.type !== 'button' && optionB.type === 'button') {
+                return -1;
+            }
+            if (optionA.type === 'button' && optionB.type !== 'button') {
+                return 1;
+            }
+
+            if (optionA.type !== 'check' && optionB.type === 'check') {
+                return -1;
+            }
+            if (optionA.type === 'check' && optionB.type !== 'check') {
+                return 1;
+            }
+
+            return 0;
+        });
+    }
+
+    /**
+     * Handles messages sent by Stockfish-js.
+     * @param {string} message
+     * @returns {undefined}
+     */
+    onMessage(message) {
+        switch (message) {
+            default: {
+                if (!message) {
+                    return;
+                }
+
+                const parsedMessage = ArtificialIntelligence.responseParser(
+                    message
+                );
+                const ignoreMessage = ArtificialIntelligence.isIgnoredMessage(
+                    parsedMessage
+                );
+
+                if (ignoreMessage) {
+                    return;
+                }
+
+                if (parsedMessage.event === STOCKFISH_EVENT_GET_OPTION) {
+                    const { event, ...option } = parsedMessage;
+                    this.options = [...this.options, { ...option }];
+                }
+
+                this.emitEvent(parsedMessage);
+
+                return;
+            }
+            case STOCKFISH_RESULT_START_UCI_OK: {
+                this.options = ArtificialIntelligence.sortOptions(this.options);
+                this.emitEvent({ event: STOCKFISH_EVENT_INIT, debugLevel: 1 });
+                return;
+            }
+            case STOCKFISH_RESULT_ALIVE: {
+                this.emitEvent({ event: STOCKFISH_EVENT_READY, debugLevel: 1 });
+                return;
+            }
+        }
+        /*
+            if (match[1] === 'cp') {
+            else if (match[1] === 'mate') {
+            (message.match(/\b(upper|lower)bound\b/))
+        */
+    }
+
+    /**
+     * Sends payloads to the event handler.
+     * @returns {undefined}
+     */
+    emitEvent({ debugLevel, ...payload }) {
+        if (Number(debugLevel || 0) >= this.debugLevel) {
+            if (payload.event === STOCKFISH_EVENT_UNKNOWN) {
+                console.error(payload);
+            } else {
+                console.log(payload);
+            }
+        }
+        this.eventHandler(payload);
+    }
+
+    /**
+     * Asks to Stockfish-js to compute the best response to this move.
+     * @param {string} move
+     * @param {string | undefined} fenstring
+     * @returns {undefined}
+     */
+    computeNextMove(move, fenstring) {
+        this.sendRawCommand(
+            `position ${fenstring || 'startpos'} moves ${move}`
+        );
+        this.sendRawCommand(`go depth ${this.depth}`);
+    }
+
+    /**
+     * Changes an option of the chess engine.
+     */
+    setOption({ name, value }) {
+        if (name === 'Depth') {
+            this.depth = value;
+        } else {
+            this.sendRawCommand(
+                `setoption name ${name} value ${String(value)}`
+            );
+        }
     }
 }
 

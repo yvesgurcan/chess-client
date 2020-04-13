@@ -42,7 +42,7 @@ export default class GameLog {
 
     addEntry(moveData) {
         const id = uuid();
-        const { from, to, player, piece } = moveData;
+        const { from, to, player, piece, endGame } = moveData;
         this.moves = [...this.moves, { id, ...moveData }];
         const pureAlgebraicNotationMove = this.parseMoveToPureAlgebraicNotation(
             {
@@ -52,7 +52,13 @@ export default class GameLog {
         );
         this.movesAlgebraicNotation = [
             ...this.movesAlgebraicNotation,
-            { id, string: pureAlgebraicNotationMove, player, piece }
+            {
+                id,
+                string: pureAlgebraicNotationMove,
+                player,
+                piece,
+                ...(endGame && { endGame })
+            }
         ];
         this.pureAlgebraicNotation += pureAlgebraicNotationMove;
     }

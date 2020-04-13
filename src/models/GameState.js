@@ -38,7 +38,6 @@ const DEBUG = location.hostname === 'localhost';
 
 /**
  * @class
- * @author Yves Gurcan
  * @example const gameState = new GameState();
  */
 export default class GameState {
@@ -76,6 +75,12 @@ export default class GameState {
 
         this.gameLog = new GameLog();
 
+        this.artificialIntelligenceStatus = {
+            initialized: false,
+            gameReady: false,
+            ready: false
+        };
+
         if (!webWorkersAreSupported) {
             return;
         }
@@ -83,12 +88,6 @@ export default class GameState {
         this.artificialIntelligence = artificialIntelligence.init({
             eventHandler: this.handleArtificialIntelligenceEvent
         });
-
-        this.artificialIntelligenceStatus = {
-            initialized: false,
-            gameReady: false,
-            ready: false
-        };
     }
 
     /**
@@ -98,12 +97,29 @@ export default class GameState {
         return this.currentTurn % 2 === 0 ? PLAYER1 : PLAYER2;
     }
 
+    /**
+     * @returns {object} The object representation of the current player.
+     */
     get currentPlayerObject() {
         return this.players[this.currentPlayer];
     }
 
+    /**
+     * @returns {array}
+     */
     get log() {
         return this.gameLog.movesAlgebraicNotation;
+    }
+
+    /**
+     * @returns {array}
+     */
+    get aiOptions() {
+        return this.artificialIntelligence.fullOptions;
+    }
+
+    setArtificialIntelligenceOption(updatePayload) {
+        return this.artificialIntelligence.setOption(updatePayload);
     }
 
     /**
@@ -147,7 +163,7 @@ export default class GameState {
     };
 
     /**
-     * @returns {string} The current game state as stringied JSON.
+     * @returns {string} The current game state as stringified JSON.
      */
     export = () => {
         const { version: gameVersion } = getPackageInfo();
@@ -307,7 +323,9 @@ export default class GameState {
             this.currentTurn += 1;
         }
 
-        this.unselect();
+        setTimeout(() => {
+            this.unselect();
+        }, 1000);
         this.startArtificialIntelligenceTurn();
     };
 
@@ -757,19 +775,20 @@ export default class GameState {
             return false;
         }
 
-        const isInCheck = opponentPieces.some(piece => {
+        const isInCheckByAnOpponentPiece = opponentPieces.some(piece => {
             // TODO: allow king to capture the piece when adjacent to it
-            const fitsPiecePattern = this.isPiecePattern({
+            const pieceCanReachKing = this.isPiecePattern({
                 destination: { x: king.x, y: king.y },
-                origin: { x: piece.x, y: piece.y },
+                origin: { x: piece.x, y: piece.y, id: piece.id },
                 type: piece.type,
                 player: piece.player,
                 firstMove: false
             });
-            return fitsPiecePattern;
+
+            return pieceCanReachKing;
         });
 
-        return isInCheck;
+        return isInCheckByAnOpponentPiece;
     };
 
     /**
@@ -826,7 +845,7 @@ export default class GameState {
                 const destinationInCheck = pieces.some(piece => {
                     const fitsPiecePattern = this.isPiecePattern({
                         destination,
-                        origin: { x: piece.x, y: piece.y },
+                        origin: { x: piece.x, y: piece.y, id: piece.id },
                         type: piece.type,
                         player: piece.player,
                         firstMove: false
@@ -922,6 +941,7 @@ export default class GameState {
         }
 
         const originalPieces = [].concat(this.pieces);
+        const originalRemovedPieces = [].concat(this.removedPieces);
 
         this.pieces = this.pieces.map(piece => {
             if (
@@ -985,15 +1005,17 @@ export default class GameState {
             return piece;
         });
 
+        if (pieceToRemove) {
+            this.removePiece(pieceToRemove);
+        }
+
         const kingInCheck = this.isKingInCheck();
         if (kingInCheck) {
             this.pieces = originalPieces;
+            this.removedPieces = originalRemovedPieces;
             moved = false;
-            return moved;
-        }
 
-        if (pieceToRemove) {
-            this.removePiece(pieceToRemove);
+            return moved;
         }
 
         const gameEnd = this.isGameEnd({});
@@ -1005,7 +1027,8 @@ export default class GameState {
                     type: selectedPiece.type
                 },
                 from: { x: selectedX, y: selectedY },
-                to: { x, y }
+                to: { x, y },
+                endGame: gameEnd
             });
             if (gameEnd === DRAW) {
                 this.nextTurn();
@@ -1052,9 +1075,12 @@ export default class GameState {
                 ready
             } = this.artificialIntelligenceStatus;
             if (initialized && gameReady) {
-                this.artificialIntelligence.computeNextMove(
-                    this.gameLog.pureAlgebraicNotation
-                );
+                // give some time for humans to see what is going on in the case of two AIs playing against each other
+                setTimeout(() => {
+                    this.artificialIntelligence.computeNextMove(
+                        this.gameLog.pureAlgebraicNotation
+                    );
+                }, 1000);
             }
         }
     };

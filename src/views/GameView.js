@@ -7,7 +7,7 @@ import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
 const DEBUG = location.hostname === 'localhost';
-// import DEBUG_GAME from '../test/fixtures/castling1.json';
+// import DEBUG_GAME from '../test/fixtures/kingBlackPawnAndBishop.json';
 
 export default class GameView extends Component {
     constructor(props) {
@@ -22,7 +22,11 @@ export default class GameView extends Component {
             this.props.history.push(`/game/${gameState.gameId}`);
         }
 
-        this.state = { gameState, settingsOpened: false };
+        this.state = {
+            gameState,
+            settingsOpened: false,
+            aiSettingsOpened: false
+        };
         window.gameState = gameState;
         const { name, version, repository, author } = getPackageInfo();
         console.log(`${name} v${version} by ${author}`);
@@ -30,10 +34,14 @@ export default class GameView extends Component {
     }
 
     componentDidMount() {
+        let finalUpdate = false;
         setInterval(() => {
             if (!this.state.gameState.gameEndedAt) {
                 const { gameState } = this.state;
                 gameState.updateTimePlayed();
+                this.updateGameState(gameState);
+            } else if (!finalUpdate) {
+                finalUpdate = true;
                 this.updateGameState(gameState);
             }
         }, ONE_SECOND);
@@ -73,8 +81,20 @@ export default class GameView extends Component {
     };
 
     toggleSettingsMenu = settingsOpened => {
-        this.setState({ settingsOpened });
+        this.setState({ settingsOpened, aiSettingsOpened: false });
         if (settingsOpened) {
+            gameState.pause();
+        } else {
+            gameState.resume();
+        }
+
+        gameState.unselect();
+        this.updateGameState(gameState);
+    };
+
+    toggleAISettingsMenu = aiSettingsOpened => {
+        this.setState({ aiSettingsOpened, settingsOpened: false });
+        if (aiSettingsOpened) {
             gameState.pause();
         } else {
             gameState.resume();
@@ -159,6 +179,19 @@ export default class GameView extends Component {
                 >
                     ⚙️
                 </OpenSettings>
+                {this.state.gameState.artificialIntelligenceStatus
+                    .initialized && (
+                    <OpenSettings
+                        open={this.state.aiSettingsOpened}
+                        onClick={() =>
+                            this.toggleAISettingsMenu(
+                                !this.state.aiSettingsOpened
+                            )
+                        }
+                    >
+                        🤖
+                    </OpenSettings>
+                )}
             </GameStats>
         );
     };
@@ -203,6 +236,67 @@ export default class GameView extends Component {
                         </SettingsMenu>
                     </SettingsMenuAnchor>
                     <HiddenFileLoader onChange={this.importGame} />
+                </div>
+            );
+        }
+
+        return null;
+    };
+
+    renderAISettingsMenu = () => {
+        if (!this.state.gameState.artificialIntelligenceStatus.initialized) {
+            return;
+        }
+
+        if (this.state.aiSettingsOpened) {
+            return (
+                <div>
+                    <AISettingsMenuAnchor>
+                        <AISettingsMenu>
+                            {gameState.aiOptions.map(
+                                ({ name, value, type }) => {
+                                    let nameComponent = <span>{name}:</span>;
+                                    let valueComponent = String(value);
+
+                                    switch (type) {
+                                        default: {
+                                            break;
+                                        }
+                                        case 'button': {
+                                            nameComponent = <span>{name}</span>;
+                                            valueComponent = null;
+                                            break;
+                                        }
+
+                                        case 'check': {
+                                            valueComponent = (
+                                                <span
+                                                    onClick={() => {
+                                                        this.state.gameState.setArtificialIntelligenceOption(
+                                                            {
+                                                                name,
+                                                                value: !value
+                                                            }
+                                                        );
+                                                    }}
+                                                >
+                                                    {String(value)}
+                                                </span>
+                                            );
+                                            break;
+                                        }
+                                    }
+
+                                    return (
+                                        <SettingsItem key={name}>
+                                            {nameComponent}
+                                            {valueComponent}
+                                        </SettingsItem>
+                                    );
+                                }
+                            )}
+                        </AISettingsMenu>
+                    </AISettingsMenuAnchor>
                 </div>
             );
         }
@@ -301,12 +395,13 @@ export default class GameView extends Component {
         return (
             <Log>
                 {this.state.gameState.log.map(
-                    ({ id, string, piece, player }) => (
+                    ({ id, string, piece, player, endGame }) => (
                         <LogEntry key={id}>
                             <LogIconContainer>
                                 {this.renderPieceIcon({ ...piece, player })}
                             </LogIconContainer>
                             {string}
+                            {endGame && 'X'}
                         </LogEntry>
                     )
                 )}
@@ -319,6 +414,7 @@ export default class GameView extends Component {
             <View>
                 {this.renderGameStats()}
                 {this.renderSettingsMenu()}
+                {this.renderAISettingsMenu()}
                 <Wrapper>
                     <Graveyard>{this.renderGraveyard(0)}</Graveyard>
                     <Board>{this.renderSquares()}</Board>
@@ -384,7 +480,11 @@ const OpenSettings = styled.div`
 `;
 
 const SettingsMenuAnchor = styled.div`
-    margin-left: -80px;
+    margin-left: -60px;
+`;
+
+const AISettingsMenuAnchor = styled.div`
+    margin-left: -120px;
 `;
 
 const SettingsMenu = styled.div`
@@ -395,6 +495,10 @@ const SettingsMenu = styled.div`
     background: ${props => props.theme.background2};
     color: ${props => props.theme.color2};
     border: 1px solid black;
+`;
+
+const AISettingsMenu = styled(SettingsMenu)`
+    width: 220px;
 `;
 
 const SettingsItem = styled.div`
@@ -413,13 +517,13 @@ const Graveyard = styled.div`
     width: 95%;
     display: flex;
     flex-wrap: wrap;
-    height: 4vw;
+    min-height: 4vw;
     background: rgb(118, 118, 118);
-    padding: 10px;
+    padding: 1vh;
     border: 1px solid black;
 
     @media screen and (orientation: landscape) {
-        height: 4vh;
+        min-height: 4vh;
     }
 `;
 
@@ -491,10 +595,10 @@ const Log = styled.div`
     background: rgb(118, 118, 118);
     padding: 10px;
     border: 1px solid black;
-    max-height: 30vh;
+    max-height: 35vh;
 
     @media screen and (orientation: landscape) {
-        max-height: 30vw;
+        max-height: 35vw;
     }
 `;
 
@@ -506,8 +610,4 @@ const LogEntry = styled.div`
 
 const LogIconContainer = styled.div`
     width: 2.75vh;
-
-    @media screen and (orientation: landscape) {
-        height: 2.75vw;
-    }
 `;

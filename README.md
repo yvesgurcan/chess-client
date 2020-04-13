@@ -2,9 +2,9 @@
 
 ♞ JavaScript mobile-first chess.
 
-- [Play](https://chess.yvesgurcan.com)
-- [Documentation](https://chess.yvesgurcan.com/doc)
-- [Changelog](./CHANGELOG.md)
+-   [Play](https://chess.yvesgurcan.com)
+-   [Documentation](https://chess.yvesgurcan.com/doc)
+-   [Changelog](./CHANGELOG.md)
 
 ## How does it work?
 
@@ -15,7 +15,7 @@
 
 ## Artificial Intelligence
 
-Uses [Stockfish-js](https://github.com/exoticorn/stockfish-js), a JavaScript version of [Stockfish](https://github.com/official-stockfish/Stockfish). Stockfish-js takes the form of a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
+Uses [Stockfish-js](https://github.com/niklasf/stockfish.js/), a JavaScript version of [Stockfish](https://github.com/official-stockfish/Stockfish) compiled with WebAssembly. Stockfish-js takes the form of a [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
 
 Stockfish relies on the [universal chess interface (UCI) protocol](http://wbec-ridderkerk.nl/html/UCIProtocol.html).
 
