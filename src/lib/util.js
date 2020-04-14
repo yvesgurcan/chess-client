@@ -15,6 +15,11 @@ export function getPackageInfo() {
     return parsedPackageInfo;
 }
 
+export async function saveGameRemotely(gameData) {
+    const response = await fetch();
+    const data = response.json();
+}
+
 export function visualizeBoard(gameState) {
     let squares = [];
     squares.push([
