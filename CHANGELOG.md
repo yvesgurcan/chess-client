@@ -1,3 +1,7 @@
+## v0.1.3
+
+Add loading of an existing game from GitHub.
+
 ## v0.1.1
 
 Fix logging when castling.

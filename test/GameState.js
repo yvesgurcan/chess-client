@@ -1,9 +1,15 @@
 import diff from 'jest-diff';
 
-import GameState from '../models/GameState';
-import { PLAYER1, PLAYER2, DRAW, CHECKMATE, ONGOING } from '../lib/constants';
+import GameState from '../src/models/GameState';
+import {
+    PLAYER1,
+    PLAYER2,
+    DRAW,
+    CHECKMATE,
+    ONGOING
+} from '../src/lib/constants';
 
-import { visualizeBoard } from '../lib/util';
+import { visualizeBoard } from '../src/lib/util';
 
 import pawnWhiteMove from './fixtures/pawnWhiteMove';
 import pawnWhiteCapture from './fixtures/pawnWhiteCapture';

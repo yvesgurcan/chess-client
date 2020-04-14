@@ -1,25 +1,30 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
+import gql from 'graphql-tag';
+import { graphql } from '@apollo/react-hoc';
+import { v4 as uuid } from 'uuid';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
-const DEBUG = location.hostname === 'localhost';
-// import DEBUG_GAME from '../test/fixtures/kingBlackPawnAndBishop.json';
-
-export default class GameView extends Component {
+class GameView extends Component {
     constructor(props) {
         super(props);
         const gameState = new GameState();
-        if (DEBUG && typeof DEBUG_GAME !== 'undefined') {
-            gameState.import(DEBUG_GAME);
+        if (props.gameData) {
+            gameState.import(props.gameData);
             gameState.resume();
-            this.props.history.push(`/game/${gameState.gameId}`);
-        } else {
-            gameState.newGame();
-            this.props.history.push(`/game/${gameState.gameId}`);
+            this.props.history.replace(`/game/${gameState.gameId}`);
+        } else if (!props.location.newGame && !props.gameId) {
+            const temporaryGameId = uuid();
+            this.props.history.replace({
+                pathname: `/game/${temporaryGameId}`,
+                newGame: true
+            });
+        } else if (props.location.newGame && props.gameId) {
+            gameState.newGame(props.gameId);
         }
 
         this.state = {
@@ -27,6 +32,7 @@ export default class GameView extends Component {
             settingsOpened: false,
             aiSettingsOpened: false
         };
+
         window.gameState = gameState;
         const { name, version, repository, author } = getPackageInfo();
         console.log(`${name} v${version} by ${author}`);
@@ -45,6 +51,33 @@ export default class GameView extends Component {
                 this.updateGameState(gameState);
             }
         }, ONE_SECOND);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.data) {
+            if (prevProps.data.loading && !this.props.data.loading) {
+                if (
+                    this.props.data.repository &&
+                    this.props.data.repository.object
+                ) {
+                    const gameData = JSON.parse(
+                        this.props.data.repository.object.text
+                    );
+                    console.log(gameData);
+                    gameState.import(gameData);
+                    gameState.resume();
+                    this.setState({ gameState });
+                } else {
+                    console.error('Game not found. New game created instead.');
+                    const temporaryGameId = uuid();
+                    gameState.newGame(temporaryGameId);
+                    this.props.history.replace({
+                        pathname: `/game/${temporaryGameId}`,
+                        newGame: true
+                    });
+                }
+            }
+        }
     }
 
     updateGameState = gameState => {
@@ -425,6 +458,27 @@ export default class GameView extends Component {
         );
     }
 }
+
+export default graphql(
+    gql`
+        query getGame($expression: String) {
+            repository(name: "chess-db", owner: "yvesgurcan") {
+                object(expression: $expression) {
+                    ... on Blob {
+                        text
+                    }
+                }
+            }
+        }
+    `,
+    {
+        skip: props =>
+            props.location.newGame || props.gameData || !props.gameId,
+        options: props => ({
+            variables: { expression: `master:${props.gameId}.json` }
+        })
+    }
+)(GameView);
 
 const View = styled.div`
     display: flex;
