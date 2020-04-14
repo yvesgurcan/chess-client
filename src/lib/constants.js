@@ -1,3 +1,13 @@
+export const DEBUG = location.hostname === 'localhost';
+
+export const GITHUB_GRAPHQL_API = 'https://api.github.com/graphql';
+export const GITHUB_REST_API = 'https://api.github.com';
+
+export const DATA_REPOSITORY = {
+    name: 'chess-db',
+    owner: 'yvesgurcan'
+};
+
 export const ONE_SECOND = 1000;
 
 export const BOARD_SIDE_SIZE = 7;

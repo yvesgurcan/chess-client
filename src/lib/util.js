@@ -1,5 +1,12 @@
 import { name, version, author, repository } from '../../package.json';
-import { BOARD_SIDE_SIZE } from './constants';
+import token from '../token';
+import {
+    DEBUG,
+    DATA_REPOSITORY,
+    BOARD_SIDE_SIZE,
+    GITHUB_REST_API
+} from './constants';
+// import DEBUG_TOKEN from '../token.ignore.js';
 
 export function supportsWebWorkers() {
     return typeof Worker !== 'undefined';
@@ -16,7 +23,19 @@ export function getPackageInfo() {
 }
 
 export async function saveGameRemotely(gameData) {
-    const response = await fetch();
+    const response = await fetch(
+        `${GITHUB_REST_API}/repos/${DATA_REPOSITORY.owner}/${DATA_REPOSITORY.name}/contents/${gameData.id}.json`,
+        {
+            method: 'PUT',
+            headers: {
+                authorization: `Bearer ${
+                    DEBUG && typeof DEBUG_TOKEN !== 'undefined'
+                        ? DEBUG_TOKEN
+                        : token
+                }`
+            }
+        }
+    );
     const data = response.json();
 }
 

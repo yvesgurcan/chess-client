@@ -6,6 +6,7 @@ import artificialIntelligence from '../models/ArtificialIntelligence';
 import GameLog from '../models/GameLog';
 import Piece from '../models/Piece';
 import {
+    DEBUG,
     BOARD_SIDE_SIZE,
     PLAYER1,
     PLAYER2,
@@ -33,8 +34,6 @@ import {
 } from '../lib/constants';
 
 momentDurationFormatSetup(moment);
-
-const DEBUG = location.hostname === 'localhost';
 
 /**
  * @class

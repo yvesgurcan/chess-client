@@ -6,17 +6,17 @@ import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 import token from '../token';
+import { DEBUG, GITHUB_GRAPHQL_API } from './lib/constants';
 import GameView from './views/GameView';
 import darkTheme from './themes/dark';
 import lightTheme from './themes/light';
 
-const DEBUG = location.hostname === 'localhost';
 // import DEBUG_GAME from '../test/fixtures/unused_kingBlackPawnAndBishop.json';
 // import DEBUG_TOKEN from '../token.ignore.js';
 
 // GitHub API v4
 const client = new ApolloClient({
-    uri: 'https://api.github.com/graphql',
+    uri: GITHUB_GRAPHQL_API,
     request: operation => {
         operation.setContext({
             headers: {

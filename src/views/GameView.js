@@ -6,7 +6,12 @@ import { graphql } from '@apollo/react-hoc';
 import { v4 as uuid } from 'uuid';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
-import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
+import {
+    DATA_REPOSITORY,
+    BOARD_SIDE_SIZE,
+    ONE_SECOND,
+    PLAYER_COLORS
+} from '../lib/constants';
 import { getPackageInfo } from '../lib/util';
 
 class GameView extends Component {
@@ -461,8 +466,8 @@ class GameView extends Component {
 
 export default graphql(
     gql`
-        query getGame($expression: String) {
-            repository(name: "chess-db", owner: "yvesgurcan") {
+        query getGame($expression: String, $name: String, $owner: String) {
+            repository(name: $name, owner: $owner) {
                 object(expression: $expression) {
                     ... on Blob {
                         text
@@ -475,7 +480,11 @@ export default graphql(
         skip: props =>
             props.location.newGame || props.gameData || !props.gameId,
         options: props => ({
-            variables: { expression: `master:${props.gameId}.json` }
+            variables: {
+                expression: `master:${props.gameId}.json`,
+                name: DATA_REPOSITORY.name,
+                owner: DATA_REPOSITORY.owner
+            }
         })
     }
 )(GameView);
