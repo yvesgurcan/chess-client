@@ -125,7 +125,11 @@ export default class GameState {
     /**
      * @returns {undefined}
      */
-    newGame = () => {
+    newGame = optionalGameId => {
+        if (optionalGameId) {
+            this.id = optionalGameId;
+        }
+
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
             [...LEFT_BACK_ROW_PIECES, ...RIGHT_BACK_ROW_PIECES].forEach(
