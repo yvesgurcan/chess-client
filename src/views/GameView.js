@@ -1,20 +1,13 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import gql from 'graphql-tag';
-import { graphql } from '@apollo/react-hoc';
 import { v4 as uuid } from 'uuid';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
-import {
-    DATA_REPOSITORY,
-    BOARD_SIDE_SIZE,
-    ONE_SECOND,
-    PLAYER_COLORS
-} from '../lib/constants';
-import { getPackageInfo } from '../lib/util';
+import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
+import { getPackageInfo, sendRequest } from '../lib/util';
 
-class GameView extends Component {
+export default class GameView extends Component {
     constructor(props) {
         super(props);
         const gameState = new GameState();
@@ -56,34 +49,45 @@ class GameView extends Component {
                 this.updateGameState(gameState);
             }
         }, ONE_SECOND);
+        this.loadGame();
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.data) {
-            if (prevProps.data.loading && !this.props.data.loading) {
-                if (
-                    this.props.data.repository &&
-                    this.props.data.repository.object
-                ) {
-                    const gameData = JSON.parse(
-                        this.props.data.repository.object.text
-                    );
-                    console.log(gameData);
-                    gameState.import(gameData);
-                    gameState.resume();
-                    this.setState({ gameState });
-                } else {
-                    console.error('Game not found. New game created instead.');
-                    const temporaryGameId = uuid();
-                    gameState.newGame(temporaryGameId);
-                    this.props.history.replace({
-                        pathname: `/game/${temporaryGameId}`,
-                        newGame: true
-                    });
-                }
+    loadGame = async () => {
+        if (!this.props.location.newGame && this.props.gameId) {
+            const result = await sendRequest([
+                { name: 'path', value: 'games' },
+                { name: 'fileId', value: this.props.gameId }
+            ]);
+            if (result && result.gameData) {
+                gameState.import(result.gameData);
+                gameState.resume();
+                this.setState({ gameState, oid: result.oid });
+            } else {
+                console.error('Game not found. New game created instead.');
+                const temporaryGameId = uuid();
+                gameState.newGame(temporaryGameId);
+                this.props.history.replace({
+                    pathname: `/game/${temporaryGameId}`,
+                    newGame: true
+                });
             }
         }
-    }
+    };
+
+    saveGame = async () => {
+        const result = await sendRequest(
+            [
+                { name: 'path', value: 'games' },
+                { name: 'fileId', value: this.state.gameState.gameId },
+                { name: 'content', value: gameState.export() },
+                { name: 'oid', value: this.state.oid }
+            ],
+            'save'
+        );
+        if (result.oid) {
+            this.setState({ oid: result.oid });
+        }
+    };
 
     updateGameState = gameState => {
         this.setState({ gameState });
@@ -103,6 +107,8 @@ class GameView extends Component {
                 // select
                 if (!moved) {
                     gameState.select({ x, y });
+                } else {
+                    this.saveGame();
                 }
                 // select
             } else {
@@ -463,31 +469,6 @@ class GameView extends Component {
         );
     }
 }
-
-export default graphql(
-    gql`
-        query getGame($expression: String, $name: String, $owner: String) {
-            repository(name: $name, owner: $owner) {
-                object(expression: $expression) {
-                    ... on Blob {
-                        text
-                    }
-                }
-            }
-        }
-    `,
-    {
-        skip: props =>
-            props.location.newGame || props.gameData || !props.gameId,
-        options: props => ({
-            variables: {
-                expression: `master:${props.gameId}.json`,
-                name: DATA_REPOSITORY.name,
-                owner: DATA_REPOSITORY.owner
-            }
-        })
-    }
-)(GameView);
 
 const View = styled.div`
     display: flex;

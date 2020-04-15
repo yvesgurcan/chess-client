@@ -1,7 +1,7 @@
 export const DEBUG = location.hostname === 'localhost';
 
-export const GITHUB_GRAPHQL_API = 'https://api.github.com/graphql';
-export const GITHUB_REST_API = 'https://api.github.com';
+export const CHESS_API =
+    'https://chess-function.netlify.com/.netlify/functions';
 
 export const DATA_REPOSITORY = {
     name: 'chess-db',

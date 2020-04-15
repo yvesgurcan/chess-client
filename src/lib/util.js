@@ -1,12 +1,6 @@
 import { name, version, author, repository } from '../../package.json';
-import token from '../token';
-import {
-    DEBUG,
-    DATA_REPOSITORY,
-    BOARD_SIDE_SIZE,
-    GITHUB_REST_API
-} from './constants';
-// import DEBUG_TOKEN from '../token.ignore.js';
+import { BOARD_SIDE_SIZE, CHESS_API } from './constants';
+import { useCallback } from 'react';
 
 export function supportsWebWorkers() {
     return typeof Worker !== 'undefined';
@@ -22,21 +16,34 @@ export function getPackageInfo() {
     return parsedPackageInfo;
 }
 
-export async function saveGameRemotely(gameData) {
-    const response = await fetch(
-        `${GITHUB_REST_API}/repos/${DATA_REPOSITORY.owner}/${DATA_REPOSITORY.name}/contents/${gameData.id}.json`,
-        {
-            method: 'PUT',
-            headers: {
-                authorization: `Bearer ${
-                    DEBUG && typeof DEBUG_TOKEN !== 'undefined'
-                        ? DEBUG_TOKEN
-                        : token
-                }`
-            }
+export async function sendRequest(parameters, endpoint = 'load') {
+    console.log(parameters);
+    const serializedParameters = parameters
+        .map(parameter => `${parameter.name}=${parameter.value}`)
+        .join('&');
+    try {
+        const response = await fetch(
+            `${CHESS_API}/${endpoint}?${serializedParameters}`
+        );
+
+        if (endpoint === 'load' && response) {
+            const data = await response.json();
+            const parsedData = JSON.parse(data.text);
+            const gameData = parsedData;
+            return { gameData, oid: data.oid };
         }
-    );
-    const data = response.json();
+
+        if (endpoint === 'save' && response) {
+            const data = await response.json();
+            console.log(data);
+            return { oid: data.oid };
+        }
+
+        return null;
+    } catch (error) {
+        console.error({ error });
+        return null;
+    }
 }
 
 export function visualizeBoard(gameState) {
