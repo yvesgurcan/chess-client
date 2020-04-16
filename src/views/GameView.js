@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
-import { v4 as uuid } from 'uuid';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
 import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
@@ -11,19 +10,42 @@ export default class GameView extends Component {
     constructor(props) {
         super(props);
         const gameState = new GameState();
+
+        let entrypoint = 'UNKNOWN';
+
         if (props.gameData) {
-            gameState.import(props.gameData);
-            gameState.resume();
-            this.props.history.replace(`/game/${gameState.gameId}`);
-        } else if (!props.location.newGame && !props.gameId) {
-            const temporaryGameId = uuid();
-            this.props.history.replace({
-                pathname: `/game/${temporaryGameId}`,
-                newGame: true
-            });
-        } else if (props.location.newGame && props.gameId) {
-            gameState.newGame(props.gameId);
+            entrypoint = 'LOCAL';
+        } else if (!props.gameId) {
+            entrypoint = 'NEW';
+        } else {
+            entrypoint = 'REMOTE';
         }
+
+        switch (entrypoint) {
+            default: {
+                console.error(`Unhandled entrypoint: ${entrypoint}`);
+                break;
+            }
+            case 'NEW': {
+                this.props.history.replace({
+                    pathname: `/game/${gameState.gameId}`
+                });
+                gameState.newGame();
+                break;
+            }
+            case 'LOCAL': {
+                gameState.import(props.gameData);
+                gameState.resume();
+                this.props.history.replace(`/game/${gameState.gameId}`);
+                break;
+            }
+            case 'REMOTE': {
+                this.loadGame();
+                break;
+            }
+        }
+
+        console.log(entrypoint);
 
         this.state = {
             gameState,
@@ -49,11 +71,10 @@ export default class GameView extends Component {
                 this.updateGameState(gameState);
             }
         }, ONE_SECOND);
-        this.loadGame();
     }
 
     loadGame = async () => {
-        if (!this.props.location.newGame && this.props.gameId) {
+        if (this.props.gameId) {
             const result = await sendRequest([
                 { name: 'fileId', value: this.props.gameId }
             ]);
@@ -63,10 +84,10 @@ export default class GameView extends Component {
                 this.setState({ gameState, oid: result.oid });
             } else {
                 console.error('Game not found. New game created instead.');
-                const temporaryGameId = uuid();
-                gameState.newGame(temporaryGameId);
+                gameState.newGame();
+                this.updateGameState(gameState);
                 this.props.history.replace({
-                    pathname: `/game/${temporaryGameId}`,
+                    pathname: `/game/${gameState.gameId}`,
                     newGame: true
                 });
             }

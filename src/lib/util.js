@@ -24,29 +24,63 @@ export async function sendRequest(
         .map(parameter => `${parameter.name}=${parameter.value}`)
         .join('&');
     try {
-        const response = await fetch(
-            `${CHESS_API}/${endpoint}?${serializedParameters}`,
-            {
-                method: method
+        const url = `${CHESS_API}/${endpoint}`;
+        const response = await fetch(`${url}?${serializedParameters}`, {
+            method: method
+        });
+
+        if (response) {
+            const { status } = response;
+            switch (endpoint) {
+                default: {
+                    console.error(`Unhandled endpoint: ${url}`);
+                    return;
+                }
+                case 'game': {
+                    switch (method) {
+                        default: {
+                            console.error(`Unhandled method: ${method} ${url}`);
+                            return;
+                        }
+                        case 'get': {
+                            switch (status) {
+                                default: {
+                                    console.warn(
+                                        `API responded with status code ${status}.`
+                                    );
+                                    return;
+                                }
+                                case 200: {
+                                    const data = await response.json();
+                                    const parsedData = JSON.parse(data.text);
+                                    const gameData = parsedData;
+                                    return { gameData, oid: data.oid };
+                                }
+                            }
+                        }
+                        case 'post': {
+                            switch (status) {
+                                default: {
+                                    console.warn(
+                                        `API responded with status code ${status}.`
+                                    );
+                                    return;
+                                }
+                                case 200: {
+                                    const data = await response.json();
+                                    return { oid: data.oid };
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        );
-
-        if (endpoint === 'load' && response) {
-            const data = await response.json();
-            const parsedData = JSON.parse(data.text);
-            const gameData = parsedData;
-            return { gameData, oid: data.oid };
         }
 
-        if (endpoint === 'save' && response) {
-            const data = await response.json();
-            return { oid: data.oid };
-        }
-
-        return null;
+        return;
     } catch (error) {
         console.error({ error });
-        return null;
+        return;
     }
 }
 

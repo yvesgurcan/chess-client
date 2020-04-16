@@ -25,6 +25,22 @@ ReactDOM.render(
                 <Switch>
                     <Route
                         exact
+                        path="/game/:gameId"
+                        component={props => (
+                            <GameView
+                                gameData={
+                                    DEBUG &&
+                                    typeof DEBUG_GAME !== 'undefined' &&
+                                    DEBUG_GAME
+                                }
+                                gameId={props.match.params.gameId}
+                                history={props.history}
+                                location={props.location}
+                            />
+                        )}
+                    />
+                    <Route
+                        exact
                         path="/game"
                         component={props => (
                             <GameView
@@ -48,22 +64,6 @@ ReactDOM.render(
                                     typeof DEBUG_GAME !== 'undefined' &&
                                     DEBUG_GAME
                                 }
-                                history={props.history}
-                                location={props.location}
-                            />
-                        )}
-                    />
-                    <Route
-                        exact
-                        path="/game/:gameId"
-                        component={props => (
-                            <GameView
-                                gameData={
-                                    DEBUG &&
-                                    typeof DEBUG_GAME !== 'undefined' &&
-                                    DEBUG_GAME
-                                }
-                                gameId={props.match.params.gameId}
                                 history={props.history}
                                 location={props.location}
                             />
