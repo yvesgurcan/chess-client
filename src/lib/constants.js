@@ -1,7 +1,8 @@
-export const DEBUG = location.hostname === 'localhost';
+export const DEBUG = false; //location.hostname === 'localhost';
 
-export const CHESS_API =
-    'https://chess-function.netlify.com/.netlify/functions';
+export const CHESS_API = DEBUG
+    ? 'http://localhost:9000'
+    : 'https://chess-function.netlify.com/.netlify/functions';
 
 export const DATA_REPOSITORY = {
     name: 'chess-db',

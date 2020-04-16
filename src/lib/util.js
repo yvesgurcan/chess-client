@@ -1,6 +1,5 @@
 import { name, version, author, repository } from '../../package.json';
 import { BOARD_SIDE_SIZE, CHESS_API } from './constants';
-import { useCallback } from 'react';
 
 export function supportsWebWorkers() {
     return typeof Worker !== 'undefined';
@@ -16,14 +15,20 @@ export function getPackageInfo() {
     return parsedPackageInfo;
 }
 
-export async function sendRequest(parameters, endpoint = 'load') {
-    console.log(parameters);
+export async function sendRequest(
+    parameters,
+    method = 'get',
+    endpoint = 'game'
+) {
     const serializedParameters = parameters
         .map(parameter => `${parameter.name}=${parameter.value}`)
         .join('&');
     try {
         const response = await fetch(
-            `${CHESS_API}/${endpoint}?${serializedParameters}`
+            `${CHESS_API}/${endpoint}?${serializedParameters}`,
+            {
+                method: method
+            }
         );
 
         if (endpoint === 'load' && response) {
@@ -35,7 +40,6 @@ export async function sendRequest(parameters, endpoint = 'load') {
 
         if (endpoint === 'save' && response) {
             const data = await response.json();
-            console.log(data);
             return { oid: data.oid };
         }
 

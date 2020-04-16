@@ -55,7 +55,6 @@ export default class GameView extends Component {
     loadGame = async () => {
         if (!this.props.location.newGame && this.props.gameId) {
             const result = await sendRequest([
-                { name: 'path', value: 'games' },
                 { name: 'fileId', value: this.props.gameId }
             ]);
             if (result && result.gameData) {
@@ -77,14 +76,13 @@ export default class GameView extends Component {
     saveGame = async () => {
         const result = await sendRequest(
             [
-                { name: 'path', value: 'games' },
                 { name: 'fileId', value: this.state.gameState.gameId },
                 { name: 'content', value: gameState.export() },
-                { name: 'oid', value: this.state.oid }
+                { name: 'oid', value: this.state.oid ? this.state.oid : '' }
             ],
-            'save'
+            'post'
         );
-        if (result.oid) {
+        if (result && result.oid) {
             this.setState({ oid: result.oid });
         }
     };
