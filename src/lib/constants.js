@@ -1,6 +1,7 @@
 export const DEBUG = location.hostname === 'localhost';
+export const DEBUG_BACKEND = DEBUG && false;
 
-export const CHESS_API = DEBUG
+export const CHESS_API = DEBUG_BACKEND
     ? 'http://localhost:9000'
     : 'https://chess-functions.netlify.app/.netlify/functions';
 
