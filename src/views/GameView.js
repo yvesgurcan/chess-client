@@ -45,8 +45,6 @@ export default class GameView extends Component {
             }
         }
 
-        console.log(entrypoint);
-
         this.state = {
             gameState,
             settingsOpened: false,
@@ -57,6 +55,7 @@ export default class GameView extends Component {
         const { name, version, repository, author } = getPackageInfo();
         console.log(`${name} v${version} by ${author}`);
         console.log(`repository: ${repository}`);
+        console.log(`game entrypoint: ${entrypoint}`);
     }
 
     componentDidMount() {
@@ -600,7 +599,7 @@ const Tomb = styled.div`
 
 const Board = styled.div`
     display: grid;
-    grid-template: repeat(10, calc(80vw / 10)) / repeat(10, calc(80vw / 10));
+    grid-template: repeat(10, calc(96vw / 10)) / repeat(10, calc(96vw / 10));
 
     @media screen and (orientation: landscape) {
         grid-template:
@@ -648,8 +647,8 @@ const HiddenFileLoader = styled.input.attrs({
 `;
 
 const Log = styled.div`
-    margin-top: 4rem;
-    margin-bottom: 4rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
     width: 95%;
     display: flex;
     flex-wrap: wrap;
