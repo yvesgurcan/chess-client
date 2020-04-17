@@ -41,6 +41,8 @@ module.exports = {
     },
     devServer: {
         overlay: true,
-        stats: 'minimal'
+        stats: 'minimal',
+        host: '0.0.0.0',
+        disableHostCheck: true
     }
 };
