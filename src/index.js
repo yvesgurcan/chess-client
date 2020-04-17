@@ -4,16 +4,22 @@ import { Switch } from 'react-router';
 import { HashRouter, Route } from 'react-router-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { DEBUG } from './lib/constants';
+import Home from './views/Home';
 import GameView from './views/GameView';
 import darkTheme from './themes/dark';
 import lightTheme from './themes/light';
 
-// import DEBUG_GAME from '../test/fixtures/unused_kingBlackPawnAndBishop.json';
+import DEBUG_GAME from '../test/fixtures/promoteWhite.json';
 
 const GlobalStyle = createGlobalStyle`
     body {
         margin: 0;
         background: ${props => props.theme.background1};
+    }
+
+    a {
+        text-decoration: none;
+        color: ${props => props.theme.link.normal};
     }
 `;
 
@@ -39,36 +45,7 @@ ReactDOM.render(
                             />
                         )}
                     />
-                    <Route
-                        exact
-                        path="/game"
-                        component={props => (
-                            <GameView
-                                gameData={
-                                    DEBUG &&
-                                    typeof DEBUG_GAME !== 'undefined' &&
-                                    DEBUG_GAME
-                                }
-                                history={props.history}
-                                location={props.location}
-                            />
-                        )}
-                    />
-                    <Route
-                        exact
-                        path="/game/new"
-                        component={props => (
-                            <GameView
-                                gameData={
-                                    DEBUG &&
-                                    typeof DEBUG_GAME !== 'undefined' &&
-                                    DEBUG_GAME
-                                }
-                                history={props.history}
-                                location={props.location}
-                            />
-                        )}
-                    />
+                    <Route path="/" component={Home} />
                 </Switch>
             </HashRouter>
         </div>
