@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Chrome debugger instance",
+            "type": "chrome",
+            "request": "launch",
+            "url": "http://localhost:8080",
+            "webRoot": "${workspaceFolder}/src"
+        },
+        {
+            "name": "Attach debugger to Chrome instance",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "urlFilter": "http://localhost:8080/*",
+            "webRoot": "${workspaceFolder}/src"
+        }
+    ]
+}
