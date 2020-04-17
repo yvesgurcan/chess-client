@@ -17,44 +17,28 @@
             "control": "Human"
         }
     ],
-    "currentTurn": 7,
+    "currentTurn": 6,
     "pieces": [
         {
             "id": "09002955-21ce-4b61-b39b-27fc27d1bdd3",
             "type": "pawn",
-            "x": 2,
-            "y": 2,
-            "player": 1,
-            "firstMove": true
-        },
-        {
-            "id": "2a87913b-69a0-41ea-82a4-a61b7e4bd488",
-            "type": "bishop",
             "x": 1,
-            "y": 3,
+            "y": 1,
             "player": 0,
-            "firstMove": false
-        },
-        {
-            "id": "2a87913b-69a0-41ea-82a4-a61b7e4bd48a",
-            "type": "bishop",
-            "x": 3,
-            "y": 3,
-            "player": 0,
-            "firstMove": false
+            "firstMove": true
         },
         {
             "id": "56bc0a51-74de-451b-afd9-6517d69b1b1f",
             "type": "king",
-            "x": 4,
-            "y": 0,
+            "x": 7,
+            "y": 7,
             "player": 1,
             "firstMove": true
         },
         {
             "id": "2860f2f4-41b0-4535-bacb-b58584a7eedd",
             "type": "king",
-            "x": 4,
+            "x": 0,
             "y": 7,
             "player": 0,
             "firstMove": true
