@@ -5,5 +5,8 @@ export default {
     background1: 'rgb(240, 240, 240)',
     background2: 'rgb(118, 118, 118)',
     color1: 'rgb(30, 30, 30)',
-    color2: 'rgb(250, 250, 250)'
+    color2: 'rgb(250, 250, 250)',
+    link: {
+        normal: 'rgb(44, 56, 135)'
+    }
 };
