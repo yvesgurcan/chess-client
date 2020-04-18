@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset='utf-8' />
-	<title>chess 1.0.0 | Documentation</title>
+	<title>chess 1.0.1 | Documentation</title>
 	<meta name='description' content='♞ Mobile-first Chess in JavaScript.'>
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 	<link href='assets/styles.min.css' rel='stylesheet' />
@@ -15,7 +15,7 @@
 			<div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link'>
 				<div class='px2'>
 					<h3 class='mb0 no-anchor'><code>chess</code></h3>
-					<div class='mb1'><code>1.0.0</code></div>
+					<div class='mb1'><code>1.0.1</code></div>
 					<input placeholder='Filter' id='filter-input' class='col12 block input' type='text' />
 					<div id="toc">
 						
@@ -252,111 +252,77 @@
 						
 						
 						<a
-								href='#singleton'
-								class="regular block">
-							<code>Singleton</code>
-							
+								href='#artificialintelligence'
+								class="regular block toggle-sibling">
+							<code>ArtificialIntelligence</code>
+							<span class='icon'>▾</span>
 						</a>
 						
 						
-						
-						
-						
-						<a
-								href='#init'
-								class="regular block">
-							<code>init</code>
+						<div class='toggle-target'>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#startgame'
-								class="regular block">
-							<code>startGame</code>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#sendrawcommand'
-								class="regular block">
-							<code>sendRawCommand</code>
+							<a
+									href='#artificialintelligenceisignoredmessage'
+									class='button-indent px1 quiet regular rounded block'>
+								<code>.isIgnoredMessage</code>
+							</a>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#onmessage'
-								class="regular block">
-							<code>onMessage</code>
+							<a
+									href='#artificialintelligenceresponseparser'
+									class='button-indent px1 quiet regular rounded block'>
+								<code>.responseParser</code>
+							</a>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#emitevent'
-								class="regular block">
-							<code>emitEvent</code>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#computenextmove'
-								class="regular block">
-							<code>computeNextMove</code>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#setoption'
-								class="regular block">
-							<code>setOption</code>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#isignoredmessage'
-								class="regular block">
-							<code>isIgnoredMessage</code>
+							<a
+									href='#artificialintelligenceinit'
+									class='button-indent regular block'>
+								<code>#init</code>
+							</a>
 							
-						</a>
-						
-						
-						
-						
-						
-						<a
-								href='#responseparser'
-								class="regular block">
-							<code>responseParser</code>
+							<a
+									href='#artificialintelligencestartgame'
+									class='button-indent regular block'>
+								<code>#startGame</code>
+							</a>
 							
-						</a>
-						
+							<a
+									href='#artificialintelligencesendrawcommand'
+									class='button-indent regular block'>
+								<code>#sendRawCommand</code>
+							</a>
+							
+							<a
+									href='#artificialintelligenceonmessage'
+									class='button-indent regular block'>
+								<code>#onMessage</code>
+							</a>
+							
+							<a
+									href='#artificialintelligenceemitevent'
+									class='button-indent regular block'>
+								<code>#emitEvent</code>
+							</a>
+							
+							<a
+									href='#artificialintelligencecomputenextmove'
+									class='button-indent regular block'>
+								<code>#computeNextMove</code>
+							</a>
+							
+							<a
+									href='#artificialintelligencesetoption'
+									class='button-indent regular block'>
+								<code>#setOption</code>
+							</a>
+							
+							
+							
+							
+						</div>
 						
 						
 					</div>
@@ -3565,7 +3531,7 @@
 				
 				
 				
-				<section id='singleton'class='mt2 mb2 px3 py1 keyline-top'>
+				<section id='artificialintelligence'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3573,9 +3539,9 @@
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#singleton'>
+		<a class='black' href='#artificialintelligence'>
 			<code>
-				Singleton
+				ArtificialIntelligence
 				<span class='gray'>()</span>
 			</code>
 		</a>
@@ -3609,6 +3575,75 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 
 	
+	<h4 class='caps quiet mb2 mt3'>Static Members</h4>
+	<div class="section-indent">
+  
+    <section id='artificialintelligenceisignoredmessage'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#artificialintelligenceisignoredmessage'>
+			<code>
+				isIgnoredMessage
+				<span class='gray'>(message)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Returns whether this event should be emitted or not.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>message</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
 
 	
 
@@ -3617,10 +3652,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='init'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligenceresponseparser'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3628,7 +3661,90 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#init'>
+		<a class='black' href='#artificialintelligenceresponseparser'>
+			<code>
+				responseParser
+				<span class='gray'>(message)</span>
+			</code>
+		</a>
+	</h3>
+
+	<p>Parses UCI output into an event.</p>
+
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>message</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+</div>
+
+	
+
+	
+	<h4 class='caps quiet mb2 mt3'>Instance Members</h4>
+	<div class="section-indent">
+  
+    <section id='artificialintelligenceinit'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#artificialintelligenceinit'>
 			<code>
 				init
 				<span class='gray'>($0)</span>
@@ -3722,10 +3838,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='startgame'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligencestartgame'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3733,7 +3847,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#startgame'>
+		<a class='black' href='#artificialintelligencestartgame'>
 			<code>
 				startGame
 				<span class='gray'>()</span>
@@ -3780,10 +3894,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='sendrawcommand'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligencesendrawcommand'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3791,7 +3903,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#sendrawcommand'>
+		<a class='black' href='#artificialintelligencesendrawcommand'>
 			<code>
 				sendRawCommand
 				<span class='gray'>(command)</span>
@@ -3857,10 +3969,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='onmessage'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligenceonmessage'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3868,7 +3978,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#onmessage'>
+		<a class='black' href='#artificialintelligenceonmessage'>
 			<code>
 				onMessage
 				<span class='gray'>(message)</span>
@@ -3934,10 +4044,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='emitevent'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligenceemitevent'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -3945,7 +4053,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#emitevent'>
+		<a class='black' href='#artificialintelligenceemitevent'>
 			<code>
 				emitEvent
 				<span class='gray'>($0)</span>
@@ -4035,10 +4143,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='computenextmove'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligencecomputenextmove'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -4046,7 +4152,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#computenextmove'>
+		<a class='black' href='#artificialintelligencecomputenextmove'>
 			<code>
 				computeNextMove
 				<span class='gray'>(move, fenstring)</span>
@@ -4122,10 +4228,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='setoption'class='mt2 mb2 px3 py1 keyline-top'>
+  
+    <section id='artificialintelligencesetoption'class='mt2 mb2 px3 py1 keyline-top'>
 
 	<div class='right py2'>
 		
@@ -4133,7 +4237,7 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	</div>
 
 	<h3 class='regular'>
-		<a class='black' href='#setoption'>
+		<a class='black' href='#artificialintelligencesetoption'>
 			<code>
 				setOption
 				<span class='gray'>($0)</span>
@@ -4214,152 +4318,8 @@ artificialIntelligence.init({ eventHandler });</code></pre>
 	
 </section>
 
-				
-				
-				
-				<section id='isignoredmessage'class='mt2 mb2 px3 py1 keyline-top'>
-
-	<div class='right py2'>
-		
-		
-	</div>
-
-	<h3 class='regular'>
-		<a class='black' href='#isignoredmessage'>
-			<code>
-				isIgnoredMessage
-				<span class='gray'>(message)</span>
-			</code>
-		</a>
-	</h3>
-
-	<p>Returns whether this event should be emitted or not.</p>
-
-	
-
-	
-	
-	
-	
-	
-	
-
-	
-	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
-		<thead class='fill-light'>
-		<th class='col-3 small caps quiet'>parameter</th>
-		<th class='col-3 small caps quiet'>type</th>
-		<th class='col-6 small caps quiet'>description</th>
-		</thead>
-		
-		<tr>
-			<td class='col-3 strong'><code>message</code></td>
-			<td class='col-3 quiet'>
-				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>
-				
-			</td>
-			<td class='col-6'></td>
-		</tr>
-		
-		
-	</table>
-	
-
-	
-
-	
-	
-	<h4 class='caps quiet mb1 mt3'>Returns</h4>
-	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
-	:
-	<span class='force-inline'>
-</span>
-	
-	
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-
-	
-</section>
-
-				
-				
-				
-				<section id='responseparser'class='mt2 mb2 px3 py1 keyline-top'>
-
-	<div class='right py2'>
-		
-		
-	</div>
-
-	<h3 class='regular'>
-		<a class='black' href='#responseparser'>
-			<code>
-				responseParser
-				<span class='gray'>(message)</span>
-			</code>
-		</a>
-	</h3>
-
-	<p>Parses UCI output into an event.</p>
-
-	
-
-	
-	
-	
-	
-	
-	
-
-	
-	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
-		<thead class='fill-light'>
-		<th class='col-3 small caps quiet'>parameter</th>
-		<th class='col-3 small caps quiet'>type</th>
-		<th class='col-6 small caps quiet'>description</th>
-		</thead>
-		
-		<tr>
-			<td class='col-3 strong'><code>message</code></td>
-			<td class='col-3 quiet'>
-				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-				
-			</td>
-			<td class='col-6'></td>
-		</tr>
-		
-		
-	</table>
-	
-
-	
-
-	
-	
-	<h4 class='caps quiet mb1 mt3'>Returns</h4>
-	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
-	:
-	<span class='force-inline'>
-</span>
-	
-	
-	
-
-	
-
-	
-
-	
+  
+</div>
 
 	
 
