@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
-import { getPackageInfo, supportsWebWorkers } from '../lib/util';
+import { getPackageInfo, supportsWebWorkers, pieceToFen } from '../lib/util';
 import artificialIntelligence from '../models/ArtificialIntelligence';
 import GameLog from '../models/GameLog';
 import Piece from '../models/Piece';
@@ -12,6 +12,7 @@ import {
     PLAYER2,
     HUMAN_PLAYER,
     AI_PLAYER,
+    FEN_ACTIVE_COLORS,
     PAWN,
     LEFT_BACK_ROW_PIECES,
     RIGHT_BACK_ROW_PIECES,
@@ -41,7 +42,7 @@ momentDurationFormatSetup(moment);
  */
 export default class GameState {
     practice = false;
-    constructor() {
+    constructor(artificialIntelligenceViewEventHandler) {
         this.gameId = uuid();
         this.gameStatus = ONGOING;
         this.gameStartedAt = moment();
@@ -70,6 +71,8 @@ export default class GameState {
             }
         ];
 
+        this.enPassantTarget = null;
+        this.halfmoveClock = 0;
         this.allowNoKing = false;
 
         this.gameLog = new GameLog();
@@ -83,6 +86,8 @@ export default class GameState {
         if (!webWorkersAreSupported) {
             return;
         }
+
+        this.artificialIntelligenceViewEventHandler = artificialIntelligenceViewEventHandler;
 
         this.artificialIntelligence = artificialIntelligence.init({
             eventHandler: this.handleArtificialIntelligenceEvent
@@ -101,6 +106,114 @@ export default class GameState {
      */
     get currentPlayerObject() {
         return this.players[this.currentPlayer];
+    }
+
+    get piecesSortedByRank() {
+        return this.pieces.sort((pieceA, pieceB) => {
+            if (pieceA.y > pieceB.y) {
+                return -1;
+            }
+
+            if (pieceA.y < pieceB.y) {
+                return 1;
+            }
+
+            if (pieceA.x > pieceB.x) {
+                return 1;
+            }
+
+            if (pieceA.x < pieceB.x) {
+                return -1;
+            }
+
+            return 0;
+        });
+    }
+
+    /**
+     * @returns {string}
+     */
+    get fenString() {
+        const castlingPieces = [];
+
+        const piecesWithFen = this.piecesSortedByRank.map(piece => {
+            if ([ROOK, KING].includes(piece.type)) {
+                castlingPieces.push(piece);
+            }
+
+            return {
+                fen: pieceToFen(piece),
+                x: piece.x,
+                y: piece.y
+            };
+        });
+
+        const piecesByRank = {};
+        piecesWithFen.forEach(piece => {
+            if (piecesByRank[piece.y]) {
+                piecesByRank[piece.y] = [...piecesByRank[piece.y], piece];
+            } else {
+                piecesByRank[piece.y] = [piece];
+            }
+        });
+
+        let fenBoard = [];
+        for (let i = 0; i <= BOARD_SIDE_SIZE; i++) {
+            const rankPieces = piecesByRank[i];
+            if (!rankPieces) {
+                fenBoard.push('8');
+                continue;
+            }
+
+            let rank = '';
+            rankPieces.forEach((piece, index) => {
+                let prevPiece = rankPieces[index - 1];
+                let nextPiece = rankPieces[index + 1];
+                let diffBefore = 0;
+                let diffAfter = 0;
+
+                if (prevPiece) {
+                    diffBefore = piece.x - prevPiece.x - 1;
+                } else {
+                    diffBefore = piece.x;
+                }
+
+                if (!nextPiece) {
+                    diffAfter = BOARD_SIDE_SIZE - piece.x;
+                }
+
+                rank += (diffBefore || '') + piece.fen + (diffAfter || '');
+            });
+
+            fenBoard.push(rank);
+        }
+
+        const activeColor = FEN_ACTIVE_COLORS[this.currentPlayer];
+
+        const castlingAvailability = this.fenCastlingAvailability(
+            castlingPieces
+        );
+
+        let enPassantTargetFen = '-';
+        if (this.enPassantTarget) {
+            enPassantTargetFen = [
+                String.fromCharCode(97 + this.enPassantTarget.x),
+                BOARD_SIDE_SIZE + 1 - this.enPassantTarget.y
+            ].join('');
+        }
+
+        const fullmoveNumber = Math.floor(this.currentTurn / 2) + 1;
+
+        const fenArray = [
+            fenBoard.join('/'),
+            activeColor,
+            castlingAvailability,
+            enPassantTargetFen,
+            this.halfmoveClock,
+            fullmoveNumber
+        ];
+
+        return fenArray.join(' ');
     }
 
     /**
@@ -127,27 +240,39 @@ export default class GameState {
     newGame = () => {
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
-            [...LEFT_BACK_ROW_PIECES, ...RIGHT_BACK_ROW_PIECES].forEach(
-                (type, index) => {
-                    const piece = new Piece({
-                        id: uuid(),
-                        x: index,
-                        y: player ? 0 : BOARD_SIDE_SIZE,
-                        player,
-                        type,
-                        firstMove:
-                            type === ROOK || type === KING ? true : undefined
+            [LEFT_BACK_ROW_PIECES, RIGHT_BACK_ROW_PIECES].forEach(
+                (side, sideIndex, sides) => {
+                    let startingX = 0;
+                    if (sides[sideIndex - 1]) {
+                        startingX = sides[sideIndex - 1].length * sideIndex;
+                    }
+                    side.forEach((type, index) => {
+                        const piece = new Piece({
+                            id: uuid(),
+                            x: startingX + index,
+                            y: player ? 0 : BOARD_SIDE_SIZE,
+                            player,
+                            type,
+                            firstMove:
+                                type === ROOK || type === KING
+                                    ? true
+                                    : undefined,
+                            queenSide: index === 0,
+                            kingSide: index !== 0
+                        });
+                        const pawn = new Piece({
+                            id: uuid(),
+                            x: startingX + index,
+                            y: player ? 1 : BOARD_SIDE_SIZE - 1,
+                            player,
+                            type: PAWN,
+                            firstMove: true,
+                            queenSide: index === 0,
+                            kingSide: index !== 0
+                        });
+                        pieces.push(pawn);
+                        pieces.push(piece);
                     });
-                    const pawn = new Piece({
-                        id: uuid(),
-                        x: index,
-                        y: player ? 1 : BOARD_SIDE_SIZE - 1,
-                        player,
-                        type: PAWN,
-                        firstMove: true
-                    });
-                    pieces.push(pawn);
-                    pieces.push(piece);
                 }
             );
         });
@@ -166,19 +291,24 @@ export default class GameState {
      */
     export = () => {
         const { version: gameVersion } = getPackageInfo();
-        return JSON.stringify({
-            gameVersion,
-            gameId: this.gameId,
-            gameSavedAt: moment(),
-            gameStartedAt: this.gameStartedAt,
-            gameEndedAt: this.gameEndedAt,
-            totalTimePlayed: this.totalTimePlayed,
-            players: this.players,
-            currentTurn: this.currentTurn,
-            pieces: this.pieces,
-            removedPieces: this.removedPieces,
-            moves: this.moves // should be done on game log instead
-        });
+        return JSON.stringify(
+            {
+                gameVersion,
+                gameId: this.gameId,
+                gameSavedAt: moment(),
+                gameStartedAt: this.gameStartedAt,
+                gameEndedAt: this.gameEndedAt,
+                totalTimePlayed: this.totalTimePlayed,
+                players: this.players,
+                currentTurn: this.currentTurn,
+                pieces: this.pieces,
+                removedPieces: this.removedPieces,
+                enPassantTarget: this.enPassantTarget,
+                moves: this.moves // should be done on game log instead
+            },
+            null,
+            '\t'
+        );
     };
 
     /**
@@ -228,6 +358,7 @@ export default class GameState {
         this.removedPieces = gameData.removedPieces;
         this.moves = gameData.moves && gameData.moves; // should be done on game log instead
         this.players = gameData.players;
+        this.enPassantTarget = gameData.enPassantTarget;
         this.allowNoKing = allowNoKing;
 
         if (!noConsoleOutput) {
@@ -244,6 +375,8 @@ export default class GameState {
 
         if (resumeGame) {
             this.resume();
+        } else {
+            this.startArtificialIntelligenceTurn();
         }
 
         // this is an additional check that is only meaningful if the imported file has been manipulated
@@ -472,6 +605,23 @@ export default class GameState {
         } else {
             return vectorY < 0 && vectorY >= -1 - firstMove && vectorX === 0;
         }
+    };
+
+    /**
+     * @returns {boolean}
+     */
+    isEnPassant = ({ x, y, vectorX, vectorY, direction }) => {
+        if (this.enPassantTarget) {
+            if (vectorY === direction && (vectorX === 1 || vectorX === -1)) {
+                let pawnToCaptureY = y - direction;
+                const enPassant = this.hasPieceAt({ x, y: pawnToCaptureY });
+                // TODO: Add logic to capture other piece
+                console.warn({ enPassant });
+                return enPassant;
+            }
+        }
+
+        return false;
     };
 
     /**
@@ -742,6 +892,13 @@ export default class GameState {
                         vectorX,
                         vectorY,
                         direction
+                    }) ||
+                    this.isEnPassant({
+                        x,
+                        y,
+                        vectorX,
+                        vectorY,
+                        direction
                     })
                 );
             }
@@ -984,6 +1141,26 @@ export default class GameState {
                         piece: { ...piece, firstMove: false }
                     });
 
+                    if (piece.type === PAWN && piece.firstMove) {
+                        const delta = Math.abs(piece.y - y);
+                        if (delta === 2) {
+                            const yTarget =
+                                this.currentPlayer === PLAYER1 ? y + 1 : y - 1;
+                            this.enPassantTarget = {
+                                x,
+                                y: yTarget
+                            };
+                        }
+                    } else if (this.enPassantTarget) {
+                        this.enPassantTarget = null;
+                    }
+
+                    if (piece.type === PAWN) {
+                        this.halfmoveClock = 0;
+                    } else {
+                        this.halfmoveClock += 1;
+                    }
+
                     return new Piece({ ...piece, x, y, firstMove: false });
                 } else {
                     // castling check
@@ -1005,6 +1182,7 @@ export default class GameState {
         });
 
         if (pieceToRemove) {
+            this.halfmoveClock = 0;
             this.removePiece(pieceToRemove);
         }
 
@@ -1070,16 +1248,19 @@ export default class GameState {
         if (this.currentPlayerObject.control === AI_PLAYER) {
             const {
                 initialized,
-                gameReady,
-                ready
+                gameReady
             } = this.artificialIntelligenceStatus;
             if (initialized && gameReady) {
+                this.artificialIntelligenceStatus.computingNextMove = true;
                 // give some time for humans to see what is going on in the case of two AIs playing against each other
                 setTimeout(() => {
                     this.artificialIntelligence.computeNextMove(
-                        this.gameLog.pureAlgebraicNotation
+                        this.gameLog.pureAlgebraicNotation,
+                        this.fenString
                     );
                 }, 1000);
+            } else {
+                console.error('AI is not ready.');
             }
         }
     };
@@ -1102,12 +1283,14 @@ export default class GameState {
                 // first ready
                 if (initialized && !gameReady) {
                     this.artificialIntelligenceStatus.gameReady = true;
+                    this.startArtificialIntelligenceTurn();
                 } else if (gameReady) {
                     this.startArtificialIntelligenceTurn();
                 }
                 break;
             }
             case STOCKFISH_EVENT_MOVE: {
+                this.artificialIntelligenceStatus.computingNextMove = false;
                 const parsedMove = this.gameLog.parsePureAlgebraicNotationToMove(
                     payload.move
                 );
@@ -1117,5 +1300,77 @@ export default class GameState {
                 break;
             }
         }
+
+        if (this.artificialIntelligenceViewEventHandler) {
+            this.artificialIntelligenceViewEventHandler(payload);
+        }
+    };
+
+    fenCastlingAvailability = pieces => {
+        let piecesByPlayer = [];
+        pieces.forEach(piece => {
+            if (piecesByPlayer[piece.player]) {
+                piecesByPlayer[piece.player] = [
+                    ...piecesByPlayer[piece.player],
+                    piece
+                ];
+            } else {
+                piecesByPlayer[piece.player] = [piece];
+            }
+        });
+
+        const castlingAvailabilityPerPlayer = piecesByPlayer.map(
+            playerPieces => {
+                let kingSide = pieceToFen({
+                    type: 'king',
+                    player: playerPieces[0].player
+                });
+                let queenSide = pieceToFen({
+                    type: 'queen',
+                    player: playerPieces[0].player
+                });
+                let hasKing = false;
+                let hasQueenRook = false;
+                let hasKingRook = false;
+                for (let i = 0; i < playerPieces.length; i++) {
+                    const piece = playerPieces[i];
+
+                    if (piece.type === KING) {
+                        hasKing = true;
+                        if (!piece.firstMove) {
+                            kingSide = '';
+                            queenSide = '';
+                            break;
+                        }
+                    }
+
+                    if (piece.type === ROOK) {
+                        if (piece.queenSide) {
+                            hasQueenRook = true;
+                            if (!piece.firstMove) {
+                                queenSide = '';
+                            }
+                        }
+
+                        if (piece.kingSide) {
+                            hasKingRook = true;
+                            if (!piece.firstMove) {
+                                kingSide = '';
+                            }
+                        }
+                    }
+                }
+
+                if (!hasKing) {
+                    return '';
+                }
+
+                return `${hasKingRook ? kingSide : ''}${
+                    hasQueenRook ? queenSide : ''
+                }`;
+            }
+        );
+
+        return castlingAvailabilityPerPlayer.join('') || '-';
     };
 }

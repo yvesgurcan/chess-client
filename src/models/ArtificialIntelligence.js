@@ -107,6 +107,11 @@ class ArtificialIntelligence {
             return true;
         }
 
+        // no need to let users clear hash table
+        if (message.name === 'ClearHash') {
+            return true;
+        }
+
         // available node time is not relevant to production
         // https://chess.stackexchange.com/questions/23155/how-to-use-nodestime-option-in-stockfish-10
         if (message.name === 'nodestime') {
@@ -346,9 +351,14 @@ class ArtificialIntelligence {
      * @returns {undefined}
      */
     computeNextMove(move, fenstring) {
-        this.sendRawCommand(
-            `position ${fenstring || 'startpos'} moves ${move}`
-        );
+        let command = '';
+        if (fenstring) {
+            command = `position fen ${fenstring}`;
+        } else {
+            command = `position startpos moves ${move}`;
+        }
+        console.log(command);
+        this.sendRawCommand(command);
         this.sendRawCommand(`go depth ${this.depth}`);
     }
 

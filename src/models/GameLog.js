@@ -3,7 +3,6 @@ import { BOARD_SIDE_SIZE } from '../lib/constants';
 
 export default class GameLog {
     constructor() {
-        this.fenString = '';
         this.pureAlgebraicNotation = '';
         this.moves = [];
         this.movesAlgebraicNotation = [];

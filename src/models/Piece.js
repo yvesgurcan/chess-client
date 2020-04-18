@@ -7,13 +7,15 @@ import {
 } from '../lib/constants';
 
 export default class Piece {
-    constructor({ id, type, x, y, player, firstMove }) {
+    constructor({ id, type, x, y, player, firstMove, queenSide, kingSide }) {
         this.id = id;
         this.type = type;
         this.x = x;
         this.y = y;
         this.player = player;
         this.firstMove = firstMove;
+        this.queenSide = queenSide;
+        this.kingSide = kingSide;
     }
 
     get debug() {
@@ -30,6 +32,7 @@ export default class Piece {
     }
 
     get canCastlePrerequisites() {
+        // TODO: Add requirement: Piece must be on the player's first rank
         return this.firstMove && [KING, ROOK].includes(this.type);
     }
 }

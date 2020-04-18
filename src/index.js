@@ -9,7 +9,7 @@ import GameView from './views/GameView';
 import darkTheme from './themes/dark';
 import lightTheme from './themes/light';
 
-import DEBUG_GAME from '../test/fixtures/promoteWhite.json';
+// import DEBUG_GAME from '../test/fixtures/promoteWhite.json';
 
 const GlobalStyle = createGlobalStyle`
     body {

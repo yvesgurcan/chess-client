@@ -44,17 +44,5 @@
             "firstMove": true
         }
     ],
-    "removedPieces": [
-        [],
-        [
-            {
-                "id": "231a0781-a99b-4af0-9580-19562fcd5c65",
-                "type": "knight",
-                "x": 2,
-                "y": 2,
-                "player": 1,
-                "firstMove": false
-            }
-        ]
-    ]
+    "removedPieces": [[], []]
 }

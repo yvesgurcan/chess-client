@@ -3,19 +3,26 @@ import styled from 'styled-components';
 import moment from 'moment';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
-import { BOARD_SIDE_SIZE, ONE_SECOND, PLAYER_COLORS } from '../lib/constants';
+import {
+    BOARD_SIDE_SIZE,
+    ONE_SECOND,
+    PLAYER_COLORS,
+    STOCKFISH_EVENT_MOVE
+} from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
 
 export default class GameView extends Component {
     constructor(props) {
         super(props);
-        const gameState = new GameState();
+        const gameState = new GameState(
+            this.saveGameOnArtificialIntelligenceMove
+        );
 
         let entrypoint = 'UNKNOWN';
 
         if (props.gameData) {
             entrypoint = 'LOCAL';
-        } else if (!props.gameId) {
+        } else if (!props.gameId || props.gameId === 'new') {
             entrypoint = 'NEW';
         } else {
             entrypoint = 'REMOTE';
@@ -107,6 +114,12 @@ export default class GameView extends Component {
         }
     };
 
+    saveGameOnArtificialIntelligenceMove = payload => {
+        if (payload.event === STOCKFISH_EVENT_MOVE) {
+            this.saveGame();
+        }
+    };
+
     updateGameState = gameState => {
         this.setState({ gameState });
     };
@@ -126,6 +139,7 @@ export default class GameView extends Component {
                 if (!moved) {
                     gameState.select({ x, y });
                 } else {
+                    console.log('yolo');
                     this.saveGame();
                 }
                 // select

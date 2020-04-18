@@ -15,6 +15,29 @@ export function getPackageInfo() {
     return parsedPackageInfo;
 }
 
+export function pieceToFen(piece) {
+    let letter = '';
+    switch (piece.type) {
+        default: {
+            letter = piece.type.substring(0, 1);
+            break;
+        }
+        case 'knight': {
+            letter = 'n';
+            break;
+        }
+    }
+
+    switch (piece.player) {
+        default: {
+            return letter;
+        }
+        case 0: {
+            return letter.toUpperCase();
+        }
+    }
+}
+
 export async function sendRequest(
     parameters,
     method = 'get',
@@ -128,13 +151,9 @@ export function visualizeBoard(gameState) {
             });
             let pieceId = '   ';
             if (piece) {
-                const { type, player } = piece;
-                if (piece.type === 'knight') {
-                    pieceId = type.substring(1, 2);
-                } else {
-                    pieceId = type.substring(0, 1);
-                }
-                const playerColor = player === 0 ? '\x1b[37m' : '\x1b[35m';
+                pieceId = pieceToFen(piece);
+                const playerColor =
+                    piece.player === 0 ? '\x1b[37m' : '\x1b[35m';
                 pieceId =
                     '\x1b[1m' +
                     playerColor +

@@ -18,6 +18,7 @@ export const PLAYER1 = 0;
 export const PLAYER2 = 1;
 
 export const PLAYER_COLORS = ['white', 'black'];
+export const FEN_ACTIVE_COLORS = ['w', 'b'];
 
 export const HUMAN_PLAYER = 'Human';
 export const AI_PLAYER = 'AI';
