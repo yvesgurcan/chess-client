@@ -1,6 +1,4 @@
-# Chess
-
-♞ JavaScript mobile-first chess.
+♞ JavaScript mobile-first chess client.
 
 -   [Play](https://chess.yvesgurcan.com)
 -   [Documentation](https://chess.yvesgurcan.com/doc)
