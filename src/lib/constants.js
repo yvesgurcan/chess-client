@@ -1,5 +1,5 @@
 export const DEBUG = location.hostname === 'localhost';
-export const DEBUG_BACKEND = DEBUG && false;
+export const DEBUG_BACKEND = DEBUG && true;
 
 export const CHESS_API = DEBUG_BACKEND
     ? 'http://localhost:9000'
@@ -65,6 +65,8 @@ export const STOCKFISH_RESULT_START_UCI_OK = 'uciok';
 
 export const STOCKFISH_COMMAND_IS_READY = 'isready';
 export const STOCKFISH_RESULT_ALIVE = 'readyok';
+
+export const STOCKFISH_COMMAND_GO = 'go';
 
 export const STOCKFISH_DEFAULT_DEPTH = 14;
 export const STOCKFISH_MIN_DEPTH = 1;

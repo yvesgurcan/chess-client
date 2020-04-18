@@ -3,6 +3,7 @@ import {
     STOCKFISH_COMMAND_START_UCI,
     STOCKFISH_RESULT_START_UCI_OK,
     STOCKFISH_COMMAND_IS_READY,
+    STOCKFISH_COMMAND_GO,
     STOCKFISH_RESULT_ALIVE,
     STOCKFISH_DEFAULT_DEPTH,
     STOCKFISH_MIN_DEPTH,
@@ -16,13 +17,12 @@ import {
     STOCKFISH_EVENT_MOVE
 } from '../lib/constants';
 
-const DEFAULT_DEBUG_LEVEL = 1; //location.hostname === 'localhost' ? 0 : 2;
+const DEFAULT_DEBUG_LEVEL = location.hostname === 'localhost' ? 0 : 2;
 
 let instance = null;
 
 /**
  * @class
- * Singleton
  * @example
  * const eventHandler = (payload) => console.log(payload);
  * artificialIntelligence.init({ eventHandler });
@@ -60,19 +60,6 @@ class ArtificialIntelligence {
         this.sendRawCommand(STOCKFISH_COMMAND_IS_READY);
     }
 
-    get fullOptions() {
-        return [
-            {
-                name: 'Depth',
-                value: this.depth,
-                type: 'spin',
-                min: STOCKFISH_MIN_DEPTH,
-                max: STOCKFISH_MAX_DEPTH
-            },
-            ...this.options
-        ];
-    }
-
     /**
      * Sends a command to Stockfish-js.
      * @param {string} command
@@ -108,7 +95,7 @@ class ArtificialIntelligence {
         }
 
         // no need to let users clear hash table
-        if (message.name === 'ClearHash') {
+        if (message.name === 'Clear Hash') {
             return true;
         }
 
@@ -252,8 +239,17 @@ class ArtificialIntelligence {
         };
     }
 
-    static sortOptions(options) {
-        return options.sort((optionA, optionB) => {
+    sortOptions(options) {
+        return [
+            {
+                name: 'Depth',
+                value: this.depth,
+                type: 'spin',
+                min: STOCKFISH_MIN_DEPTH,
+                max: STOCKFISH_MAX_DEPTH
+            },
+            ...options
+        ].sort((optionA, optionB) => {
             if (optionA.name === 'Skill Level') {
                 return -1;
             }
@@ -306,6 +302,15 @@ class ArtificialIntelligence {
                 if (parsedMessage.event === STOCKFISH_EVENT_GET_OPTION) {
                     const { event, ...option } = parsedMessage;
                     this.options = [...this.options, { ...option }];
+
+                    if (option.name === 'Skill Level') {
+                        let updatedOption = { ...option };
+                        const middle = Math.ceil(
+                            (updatedOption.max - updatedOption.min) / 2
+                        );
+                        updatedOption.value = middle;
+                        this.setOption(updatedOption);
+                    }
                 }
 
                 this.emitEvent(parsedMessage);
@@ -313,7 +318,7 @@ class ArtificialIntelligence {
                 return;
             }
             case STOCKFISH_RESULT_START_UCI_OK: {
-                this.options = ArtificialIntelligence.sortOptions(this.options);
+                this.options = this.sortOptions(this.options);
                 this.emitEvent({ event: STOCKFISH_EVENT_INIT, debugLevel: 1 });
                 return;
             }
@@ -357,21 +362,41 @@ class ArtificialIntelligence {
         } else {
             command = `position startpos moves ${move}`;
         }
-        console.log(command);
         this.sendRawCommand(command);
         this.sendRawCommand(`go depth ${this.depth}`);
+    }
+
+    getOption(name) {
+        return this.options.find(option => option.name === name);
     }
 
     /**
      * Changes an option of the chess engine.
      */
     setOption({ name, value }) {
+        let updated = false;
         if (name === 'Depth') {
             this.depth = value;
+            updated = true;
         } else {
-            this.sendRawCommand(
-                `setoption name ${name} value ${String(value)}`
-            );
+            const option = this.getOption(name);
+            if (option.value !== value) {
+                const command = `setoption name ${name} value ${String(value)}`;
+                this.sendRawCommand(command);
+                this.sendRawCommand(STOCKFISH_COMMAND_GO);
+                updated = true;
+            }
+        }
+
+        if (updated) {
+            for (let i = 0; i < this.options.length; i++) {
+                let updatedOption = this.options[i];
+                if (updatedOption.name === name) {
+                    updatedOption.value = value;
+                    this.options[i] = updatedOption;
+                    break;
+                }
+            }
         }
     }
 }

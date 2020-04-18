@@ -227,7 +227,7 @@ export default class GameState {
      * @returns {array}
      */
     get aiOptions() {
-        return this.artificialIntelligence.fullOptions;
+        return this.artificialIntelligence.options;
     }
 
     setArtificialIntelligenceOption(updatePayload) {
@@ -1290,19 +1290,22 @@ export default class GameState {
                 break;
             }
             case STOCKFISH_EVENT_MOVE: {
-                this.artificialIntelligenceStatus.computingNextMove = false;
-                const parsedMove = this.gameLog.parsePureAlgebraicNotationToMove(
-                    payload.move
-                );
-                const { from, to } = parsedMove;
-                this.select({ x: from.x, y: from.y });
-                this.moveSelectedPiece({ x: to.x, y: to.y });
+                if (this.currentPlayerObject.control === AI_PLAYER) {
+                    console.log('move');
+                    this.artificialIntelligenceStatus.computingNextMove = false;
+                    const parsedMove = this.gameLog.parsePureAlgebraicNotationToMove(
+                        payload.move
+                    );
+                    const { from, to } = parsedMove;
+                    this.select({ x: from.x, y: from.y });
+                    this.moveSelectedPiece({ x: to.x, y: to.y });
+
+                    if (this.artificialIntelligenceViewEventHandler) {
+                        this.artificialIntelligenceViewEventHandler(payload);
+                    }
+                }
                 break;
             }
-        }
-
-        if (this.artificialIntelligenceViewEventHandler) {
-            this.artificialIntelligenceViewEventHandler(payload);
         }
     };
 

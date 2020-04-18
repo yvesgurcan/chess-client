@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
+import Slider from '../components/input/Slider';
 import {
     BOARD_SIDE_SIZE,
     ONE_SECOND,
@@ -139,7 +140,6 @@ export default class GameView extends Component {
                 if (!moved) {
                     gameState.select({ x, y });
                 } else {
-                    console.log('yolo');
                     this.saveGame();
                 }
                 // select
@@ -330,7 +330,7 @@ export default class GameView extends Component {
                     <AISettingsMenuAnchor>
                         <AISettingsMenu>
                             {gameState.aiOptions.map(
-                                ({ name, value, type }) => {
+                                ({ name, value, type, min, max }) => {
                                     let nameComponent = <span>{name}:</span>;
                                     let valueComponent = String(value);
 
@@ -360,6 +360,27 @@ export default class GameView extends Component {
                                                 </span>
                                             );
                                             break;
+                                        }
+                                        case 'spin': {
+                                            valueComponent = (
+                                                <Slider
+                                                    onChange={({
+                                                        target: { value }
+                                                    }) => {
+                                                        this.state.gameState.setArtificialIntelligenceOption(
+                                                            {
+                                                                name,
+                                                                value: Math.floor(
+                                                                    value
+                                                                )
+                                                            }
+                                                        );
+                                                    }}
+                                                    value={value}
+                                                    min={min}
+                                                    max={max}
+                                                />
+                                            );
                                         }
                                     }
 
@@ -560,7 +581,7 @@ const SettingsMenuAnchor = styled.div`
 `;
 
 const AISettingsMenuAnchor = styled.div`
-    margin-left: -120px;
+    margin-left: -210px;
 `;
 
 const SettingsMenu = styled.div`
@@ -574,7 +595,7 @@ const SettingsMenu = styled.div`
 `;
 
 const AISettingsMenu = styled(SettingsMenu)`
-    width: 220px;
+    width: 310px;
 `;
 
 const SettingsItem = styled.div`
