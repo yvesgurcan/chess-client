@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset='utf-8' />
-	<title>chess 0.3.5 | Documentation</title>
+	<title>chess 1.0.0 | Documentation</title>
 	<meta name='description' content='♞ Mobile-first Chess in JavaScript.'>
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 	<link href='assets/styles.min.css' rel='stylesheet' />
@@ -15,7 +15,7 @@
 			<div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto fill-light dark-link'>
 				<div class='px2'>
 					<h3 class='mb0 no-anchor'><code>chess</code></h3>
-					<div class='mb1'><code>0.3.5</code></div>
+					<div class='mb1'><code>1.0.0</code></div>
 					<input placeholder='Filter' id='filter-input' class='col12 block input' type='text' />
 					<div id="toc">
 						
@@ -43,6 +43,12 @@
 									href='#gamestatecurrentplayerobject'
 									class='button-indent regular block'>
 								<code>#currentPlayerObject</code>
+							</a>
+							
+							<a
+									href='#gamestatefenstring'
+									class='button-indent regular block'>
+								<code>#fenString</code>
 							</a>
 							
 							<a
@@ -157,6 +163,12 @@
 									href='#gamestateispawnmoving'
 									class='button-indent regular block'>
 								<code>#isPawnMoving</code>
+							</a>
+							
+							<a
+									href='#gamestateisenpassant'
+									class='button-indent regular block'>
+								<code>#isEnPassant</code>
 							</a>
 							
 							<a
@@ -370,7 +382,7 @@
 		<a class='black' href='#gamestate'>
 			<code>
 				GameState
-				<span class='gray'>()</span>
+				<span class='gray'>(artificialIntelligenceViewEventHandler)</span>
 			</code>
 		</a>
 	</h3>
@@ -385,6 +397,25 @@
 	
 	
 
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>artificialIntelligenceViewEventHandler</code></td>
+			<td class='col-3 quiet'>
+				any
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+	</table>
 	
 
 	
@@ -502,6 +533,61 @@
 	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>
 	:
 	<span class='force-inline'>The object representation of the current player.
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestatefenstring'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestatefenstring'>
+			<code>
+				fenString
+				<span class='gray'>()</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+	:
+	<span class='force-inline'>
 </span>
 	
 	
@@ -2031,6 +2117,137 @@
 		
 		<tr>
   <td class='col-2 strong'>$0.firstMove</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.direction</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		
+		
+	</table>
+	
+
+	
+
+	
+	
+	<h4 class='caps quiet mb1 mt3'>Returns</h4>
+	<code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+	:
+	<span class='force-inline'>
+</span>
+	
+	
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+</section>
+
+  
+    <section id='gamestateisenpassant'class='mt2 mb2 px3 py1 keyline-top'>
+
+	<div class='right py2'>
+		
+		
+	</div>
+
+	<h3 class='regular'>
+		<a class='black' href='#gamestateisenpassant'>
+			<code>
+				isEnPassant
+				<span class='gray'>($0)</span>
+			</code>
+		</a>
+	</h3>
+
+	
+	
+
+	
+	
+	
+	
+	
+	
+
+	
+	<table class='table-light mt3 rounded keyline-all keyline-light overflow-hidden bg-cloudy-light'>
+		<thead class='fill-light'>
+		<th class='col-3 small caps quiet'>parameter</th>
+		<th class='col-3 small caps quiet'>type</th>
+		<th class='col-6 small caps quiet'>description</th>
+		</thead>
+		
+		<tr>
+			<td class='col-3 strong'><code>$0</code></td>
+			<td class='col-3 quiet'>
+				<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+				
+			</td>
+			<td class='col-6'></td>
+		</tr>
+		
+		
+		<tr>
+  <td class='col-2 strong'>$0.x</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.y</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorX</td>
+  <td class="col-2 quiet">
+    any
+    
+  </td>
+  <td class='col-8'></td>
+</tr>
+
+
+		
+		<tr>
+  <td class='col-2 strong'>$0.vectorY</td>
   <td class="col-2 quiet">
     any
     
