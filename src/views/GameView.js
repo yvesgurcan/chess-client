@@ -4,6 +4,8 @@ import moment from 'moment';
 import GameState from '../models/GameState';
 import icons from '../components/icons';
 import Slider from '../components/input/Slider';
+import Checkbox from '../components/input/Checkbox';
+import Dropdown from '../components/input/Dropdown';
 import {
     BOARD_SIDE_SIZE,
     ONE_SECOND,
@@ -330,33 +332,33 @@ export default class GameView extends Component {
                     <AISettingsMenuAnchor>
                         <AISettingsMenu>
                             {gameState.aiOptions.map(
-                                ({ name, value, type, min, max }) => {
-                                    let nameComponent = <span>{name}:</span>;
+                                ({ name, value, type, min, max, select }) => {
+                                    let nameComponent = (
+                                        <span>{name.replace(/_/g, ' ')}:</span>
+                                    );
                                     let valueComponent = String(value);
 
                                     switch (type) {
                                         default: {
                                             break;
                                         }
-                                        case 'button': {
-                                            nameComponent = <span>{name}</span>;
-                                            valueComponent = null;
-                                            break;
-                                        }
-
                                         case 'check': {
                                             valueComponent = (
-                                                <span
-                                                    onClick={() => {
-                                                        this.state.gameState.setArtificialIntelligenceOption(
-                                                            {
-                                                                name,
-                                                                value: !value
-                                                            }
-                                                        );
-                                                    }}
-                                                >
-                                                    {String(value)}
+                                                <span>
+                                                    <Checkbox
+                                                        onChange={() => {
+                                                            this.state.gameState.setArtificialIntelligenceOption(
+                                                                {
+                                                                    name,
+                                                                    value: !value
+                                                                }
+                                                            );
+                                                        }}
+                                                        checked={value}
+                                                    />{' '}
+                                                    {value
+                                                        ? 'Enabled'
+                                                        : 'Disabled'}
                                                 </span>
                                             );
                                             break;
@@ -380,6 +382,26 @@ export default class GameView extends Component {
                                                     min={min}
                                                     max={max}
                                                 />
+                                            );
+                                            break;
+                                        }
+                                        case 'combo': {
+                                            valueComponent = (
+                                                <Dropdown
+                                                    onChange={({
+                                                        target: { value }
+                                                    }) => {
+                                                        this.state.gameState.setArtificialIntelligenceOption(
+                                                            {
+                                                                name,
+                                                                value
+                                                            }
+                                                        );
+                                                    }}
+                                                    value={value}
+                                                >
+                                                    {select}
+                                                </Dropdown>
                                             );
                                         }
                                     }
@@ -598,7 +620,7 @@ const AISettingsMenu = styled(SettingsMenu)`
     width: 310px;
 `;
 
-const SettingsItem = styled.div`
+const SettingsItem = styled.label`
     display: flex;
     justify-content: space-between;
     text-transform: capitalize;

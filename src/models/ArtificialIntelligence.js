@@ -311,6 +311,12 @@ class ArtificialIntelligence {
                         updatedOption.value = middle;
                         this.setOption(updatedOption);
                     }
+
+                    if (option.name === 'Ponder') {
+                        let updatedOption = { ...option };
+                        updatedOption.value = false;
+                        this.setOption(updatedOption);
+                    }
                 }
 
                 this.emitEvent(parsedMessage);
@@ -386,6 +392,7 @@ class ArtificialIntelligence {
                 this.sendRawCommand(STOCKFISH_COMMAND_GO);
                 updated = true;
             }
+            console.log(option);
         }
 
         if (updated) {
