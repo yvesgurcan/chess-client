@@ -6,7 +6,6 @@
     "scripts": {
         "start": "npm run network-info; webpack-dev-server",
         "build": "webpack --mode production",
-        "preversion": "npm run test",
         "postversion": "npm run build && npm run docs && git add . && git commit -m 'New build' && git push",
         "test": "jest",
         "test:verbose": "jest --expand",
