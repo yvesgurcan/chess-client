@@ -1,14 +1,13 @@
 export const DEBUG = location.hostname === 'localhost';
 export const DEBUG_BACKEND = DEBUG && true;
 
+export const WEB_SOCKET_SERVER_URL = false
+    ? 'ws://localhost:3000'
+    : 'wss://chess-socket.herokuapp.com';
+
 export const CHESS_API = DEBUG_BACKEND
     ? 'http://localhost:9000'
     : 'https://chess-functions.netlify.app/.netlify/functions';
-
-export const DATA_REPOSITORY = {
-    name: 'chess-db',
-    owner: 'yvesgurcan'
-};
 
 export const ONE_SECOND = 1000;
 
@@ -79,3 +78,8 @@ export const STOCKFISH_EVENT_UNKNOWN = 'STOCKFISH_UNKNOWN';
 export const STOCKFISH_EVENT_GET_OPTION = 'STOCKFISH_GET_OPTION';
 export const STOCKFISH_EVENT_GET_DEPTH = 'STOCKFISH_GET_DEPTH';
 export const STOCKFISH_EVENT_MOVE = 'STOCKFISH_MOVE';
+
+/* Websocket */
+
+export const WEBSOCKET_EVENT_SELECT = 'WEBSOCKET_EVENT_SELECT';
+export const WEBSOCKET_EVENT_JOIN = 'WEBSOCKET_EVENT_JOIN';
