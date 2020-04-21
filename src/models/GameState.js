@@ -42,7 +42,7 @@ momentDurationFormatSetup(moment);
  */
 export default class GameState {
     practice = false;
-    constructor(artificialIntelligenceViewEventHandler) {
+    constructor({ artificialIntelligenceViewEventHandler, firstPlayerId }) {
         this.gameId = uuid();
         this.gameStatus = ONGOING;
         this.gameStartedAt = moment();
@@ -60,14 +60,14 @@ export default class GameState {
 
         this.players = [
             {
-                playerId: uuid(),
+                playerId: firstPlayerId,
                 color: PLAYER1,
                 control: HUMAN_PLAYER
             },
             {
-                playerId: uuid(),
+                playerId: webWorkersAreSupported ? null : uuid(),
                 color: PLAYER2,
-                control: webWorkersAreSupported ? AI_PLAYER : HUMAN_PLAYER
+                control: /*webWorkersAreSupported ? AI_PLAYER :*/ HUMAN_PLAYER
             }
         ];
 
@@ -237,7 +237,11 @@ export default class GameState {
     /**
      * @returns {undefined}
      */
-    newGame = () => {
+    newGame = ({ gameId } = {}) => {
+        if (gameId) {
+            this.gameId = gameId;
+        }
+
         let pieces = [];
         [PLAYER1, PLAYER2].forEach(player => {
             [LEFT_BACK_ROW_PIECES, RIGHT_BACK_ROW_PIECES].forEach(
@@ -457,7 +461,7 @@ export default class GameState {
 
         setTimeout(() => {
             this.unselect();
-        }, 1000);
+        }, 500);
         this.startArtificialIntelligenceTurn();
     };
 

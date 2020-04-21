@@ -1,7 +1,7 @@
 export const DEBUG = location.hostname === 'localhost';
 export const DEBUG_BACKEND = DEBUG && true;
 
-export const WEB_SOCKET_SERVER_URL = false
+export const WEB_SOCKET_SERVER_URL = DEBUG
     ? 'ws://localhost:3000'
     : 'wss://chess-socket.herokuapp.com';
 
@@ -81,5 +81,6 @@ export const STOCKFISH_EVENT_MOVE = 'STOCKFISH_MOVE';
 
 /* Websocket */
 
+export const MAX_SOCKET_CONNECTION_RETRIES = 3;
 export const WEBSOCKET_EVENT_SELECT = 'WEBSOCKET_EVENT_SELECT';
 export const WEBSOCKET_EVENT_JOIN = 'WEBSOCKET_EVENT_JOIN';

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import GameState from '../models/GameState';
+import GameSocket from '../models/GameSocket';
 import icons from '../components/icons';
 import Slider from '../components/input/Slider';
 import Checkbox from '../components/input/Checkbox';
@@ -10,17 +11,15 @@ import {
     BOARD_SIDE_SIZE,
     ONE_SECOND,
     PLAYER_COLORS,
-    STOCKFISH_EVENT_MOVE
+    STOCKFISH_EVENT_MOVE,
+    WEBSOCKET_EVENT_SELECT,
+    WEBSOCKET_EVENT_JOIN
 } from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
 
 export default class GameView extends Component {
     constructor(props) {
         super(props);
-        const gameState = new GameState(
-            this.saveGameOnArtificialIntelligenceMove
-        );
-
         let entrypoint = 'UNKNOWN';
 
         if (props.gameData) {
@@ -30,6 +29,17 @@ export default class GameView extends Component {
         } else {
             entrypoint = 'REMOTE';
         }
+
+        const gameState = new GameState({
+            artificialIntelligenceViewEventHandler: this
+                .saveGameOnArtificialIntelligenceMove,
+            firstPlayerId: props.userId
+        });
+
+        const gameSocket = new GameSocket();
+        gameSocket.init({ eventHandler: this.handleWebSocketMessage });
+        gameSocket.gameId = props.gameId;
+        gameSocket.playerId = props.userId;
 
         switch (entrypoint) {
             default: {
@@ -57,6 +67,7 @@ export default class GameView extends Component {
 
         this.state = {
             gameState,
+            gameSocket,
             settingsOpened: false,
             aiSettingsOpened: false
         };
@@ -88,12 +99,17 @@ export default class GameView extends Component {
                 { name: 'fileId', value: this.props.gameId }
             ]);
             if (result && result.gameData) {
+                const { gameState } = this.state;
                 gameState.import(result.gameData);
                 gameState.resume();
                 this.setState({ gameState, oid: result.oid });
             } else {
                 console.error('Game not found. New game created instead.');
-                gameState.newGame();
+
+                const { gameState, gameSocket } = this.state;
+                gameState.newGame({ gameId: this.props.gameId });
+                gameSocket.gameId = this.props.gameId;
+                gameSocket.playerId = this.props.userId;
                 this.updateGameState(gameState);
                 this.props.history.replace({
                     pathname: `/game/${gameState.gameId}`,
@@ -127,6 +143,50 @@ export default class GameView extends Component {
         this.setState({ gameState });
     };
 
+    handleWebSocketMessage = payload => {
+        if (payload.playerId === this.props.userId) {
+            return;
+        }
+
+        switch (payload.event) {
+            default: {
+                console.error('Unhandled payload', { payload });
+                return;
+            }
+            case WEBSOCKET_EVENT_JOIN: {
+                const { player1, player2 } = payload;
+                this.handleJoin({ player1, player2 });
+                return;
+            }
+            case WEBSOCKET_EVENT_SELECT: {
+                const { x, y } = payload;
+                this.handleSelect({ x, y });
+                return;
+            }
+        }
+    };
+
+    handleJoin(playersInfo) {
+        const { gameState } = this.state;
+        const { players } = gameState;
+        let updatedPlayers = [...players];
+        if (playersInfo.player1) {
+            updatedPlayers[0] = {
+                ...players[0],
+                playerId: players.player1
+            };
+        }
+
+        if (playersInfo.player2) {
+            updatedPlayers[1] = {
+                ...players[1],
+                playerId: players.player1
+            };
+        }
+
+        gameState.players = [...updatedPlayers];
+    }
+
     handleSelect = ({ x, y }) => {
         const { gameState } = this.state;
         const { selected } = gameState;
@@ -156,6 +216,17 @@ export default class GameView extends Component {
         // debug
         window.gameState = gameState;
         this.updateGameState(gameState);
+    };
+
+    handleSelectWithWebsocket = ({ x, y }) => {
+        this.handleSelect({ x, y });
+        const { gameSocket, gameState } = this.state;
+        gameSocket.sendMessage({
+            gameId: gameState.gameId,
+            playerId: this.props.userId,
+            x,
+            y
+        });
     };
 
     toggleSettingsMenu = settingsOpened => {
@@ -485,7 +556,7 @@ export default class GameView extends Component {
                             even={(x + y) % 2 === 0}
                             player={piece && piece.player}
                             onClick={() =>
-                                this.handleSelect({
+                                this.handleSelectWithWebsocket({
                                     x: adjustedX,
                                     y: adjustedY,
                                     piece

@@ -1,6 +1,6 @@
 {
     "name": "chess",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "description": "♞ Mobile-first Chess in JavaScript.",
     "main": "index.js",
     "scripts": {
@@ -18,7 +18,7 @@
     "license": "ISC",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yvesgurcan/chess"
+        "url": "https://github.com/yvesgurcan/chess-client"
     },
     "devDependencies": {
         "@babel/core": "^7.8.7",

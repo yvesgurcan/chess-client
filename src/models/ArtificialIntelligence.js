@@ -392,7 +392,6 @@ class ArtificialIntelligence {
                 this.sendRawCommand(STOCKFISH_COMMAND_GO);
                 updated = true;
             }
-            console.log(option);
         }
 
         if (updated) {
