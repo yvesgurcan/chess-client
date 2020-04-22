@@ -65,7 +65,7 @@ export default class GameState {
                 control: HUMAN_PLAYER
             },
             {
-                playerId: webWorkersAreSupported ? null : uuid(),
+                playerId: /*webWorkersAreSupported ? null :*/ null, //uuid(),
                 color: PLAYER2,
                 control: /*webWorkersAreSupported ? AI_PLAYER :*/ HUMAN_PLAYER
             }
@@ -428,25 +428,31 @@ export default class GameState {
         this.startArtificialIntelligenceTurn();
     };
 
-    togglePlayerControl(playerColor) {
-        const player = this.players[playerColor];
-        let updatedControl = player.control;
-        switch (player.control) {
-            case HUMAN_PLAYER: {
-                if (!supportsWebWorkers()) {
-                    return;
-                }
-
-                updatedControl = AI_PLAYER;
-                break;
-            }
-            case AI_PLAYER: {
-                updatedControl = HUMAN_PLAYER;
-                break;
-            }
+    setPlayerControl(playerColor, playerId) {
+        if (playerId !== AI_PLAYER) {
+            this.players[playerColor].control = HUMAN_PLAYER;
+            this.players[playerColor].playerId = playerId;
+            return;
         }
 
-        this.players[playerColor].control = updatedControl;
+        this.players[playerColor].control = AI_PLAYER;
+        this.players[playerColor].playerId = null;
+    }
+
+    removePlayer(playerId) {
+        const updatedPlayers = this.players.map(player => {
+            if (player.playerId !== playerId) {
+                return { ...player };
+            }
+
+            return {
+                ...player,
+                playerId: null,
+                control: HUMAN_PLAYER
+            };
+        });
+
+        this.players = [...updatedPlayers];
     }
 
     /**

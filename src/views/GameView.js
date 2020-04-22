@@ -4,22 +4,28 @@ import moment from 'moment';
 import GameState from '../models/GameState';
 import GameSocket from '../models/GameSocket';
 import icons from '../components/icons';
-import Slider from '../components/input/Slider';
-import Checkbox from '../components/input/Checkbox';
-import Dropdown from '../components/input/Dropdown';
+import Slider from '../components/Slider';
+import Checkbox from '../components/Checkbox';
+import Dropdown from '../components/Dropdown';
+import Button from '../components/Button';
 import {
+    YOU,
+    HUMAN_PLAYER,
+    AI_PLAYER,
     BOARD_SIDE_SIZE,
     ONE_SECOND,
     PLAYER_COLORS,
     STOCKFISH_EVENT_MOVE,
     WEBSOCKET_EVENT_SELECT,
-    WEBSOCKET_EVENT_JOIN
+    WEBSOCKET_EVENT_JOIN,
+    WEBSOCKET_EVENT_DISCONNECTED
 } from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
 
 export default class GameView extends Component {
     constructor(props) {
         super(props);
+
         let entrypoint = 'UNKNOWN';
 
         if (props.gameData) {
@@ -30,16 +36,19 @@ export default class GameView extends Component {
             entrypoint = 'REMOTE';
         }
 
-        const gameState = new GameState({
-            artificialIntelligenceViewEventHandler: this
-                .saveGameOnArtificialIntelligenceMove,
-            firstPlayerId: props.userId
-        });
-
-        const gameSocket = new GameSocket();
-        gameSocket.init({ eventHandler: this.handleWebSocketMessage });
-        gameSocket.gameId = props.gameId;
-        gameSocket.playerId = props.userId;
+        let gameState = null;
+        if (entrypoint === 'NEW') {
+            gameState = new GameState({
+                artificialIntelligenceViewEventHandler: this
+                    .saveGameOnArtificialIntelligenceMove,
+                firstPlayerId: props.userId
+            });
+        } else {
+            gameState = new GameState({
+                artificialIntelligenceViewEventHandler: this
+                    .saveGameOnArtificialIntelligenceMove
+            });
+        }
 
         switch (entrypoint) {
             default: {
@@ -65,11 +74,18 @@ export default class GameView extends Component {
             }
         }
 
+        const gameSocket = new GameSocket();
+        gameSocket.init({ eventHandler: this.handleWebSocketMessage });
+        gameSocket.gameId = props.gameId;
+        gameSocket.playerId = props.userId;
+
         this.state = {
             gameState,
             gameSocket,
             settingsOpened: false,
-            aiSettingsOpened: false
+            aiSettingsOpened: false,
+            offlineMode: false,
+            spectators: []
         };
 
         window.gameState = gameState;
@@ -140,6 +156,11 @@ export default class GameView extends Component {
     };
 
     updateGameState = gameState => {
+        if (!gameState) {
+            console.error("Can't update gameState: object is falsy.");
+            return;
+        }
+
         this.setState({ gameState });
     };
 
@@ -154,8 +175,14 @@ export default class GameView extends Component {
                 return;
             }
             case WEBSOCKET_EVENT_JOIN: {
-                const { player1, player2 } = payload;
-                this.handleJoin({ player1, player2 });
+                this.handleJoin(payload);
+                return;
+            }
+            case WEBSOCKET_EVENT_DISCONNECTED: {
+                const { gameState } = this.state;
+                gameState.removePlayer(payload.playerId);
+                this.updateGameState(gameState);
+                this.removeSpectators(payload.playerId);
                 return;
             }
             case WEBSOCKET_EVENT_SELECT: {
@@ -166,25 +193,47 @@ export default class GameView extends Component {
         }
     };
 
-    handleJoin(playersInfo) {
+    handleJoin({ player1, player2, spectators }) {
         const { gameState } = this.state;
         const { players } = gameState;
+
+        let updateGameState = false;
         let updatedPlayers = [...players];
-        if (playersInfo.player1) {
+
+        if (player1 !== players[0].playerId) {
             updatedPlayers[0] = {
                 ...players[0],
-                playerId: players.player1
+                playerId: player1
             };
+            updateGameState = true;
         }
 
-        if (playersInfo.player2) {
+        if (player2 !== players[1].playerId) {
             updatedPlayers[1] = {
                 ...players[1],
-                playerId: players.player1
+                playerId: player2
             };
+            updateGameState = true;
         }
 
-        gameState.players = [...updatedPlayers];
+        if (spectators !== this.state.spectators) {
+            this.setState({ spectators });
+        }
+
+        if (updateGameState) {
+            gameState.players = [...updatedPlayers];
+            this.updateGameState(gameState);
+        }
+    }
+
+    removeSpectators(spectatorToRemove) {
+        const updatedSpectators = [...this.state.spectators].filter(
+            spectator => spectator !== spectatorToRemove
+        );
+
+        if (updatedSpectators.length !== this.state.spectators.length) {
+            this.setState({ spectators: updatedSpectators });
+        }
     }
 
     handleSelect = ({ x, y }) => {
@@ -311,11 +360,11 @@ export default class GameView extends Component {
         const { gameState } = this.state;
         return (
             <GameStats>
-                <CurrentTurn>#{String(gameState.currentTurn + 1)}:</CurrentTurn>
                 <CurrentPlayer player={gameState.currentPlayer}>
                     {gameState.currentPlayer ? 'Black' : 'White'}
                 </CurrentPlayer>
                 <TimePlayed>
+                    ⏱️{' '}
                     {gameState.totalTimePlayed.format('hh:mm:ss', {
                         trim: false
                     })}
@@ -347,27 +396,78 @@ export default class GameView extends Component {
 
     renderSettingsMenu = () => {
         if (this.state.settingsOpened) {
+            const connectedPlayers = [
+                ...this.state.gameState.players
+                    .filter(player => player.playerId)
+                    .map(player => ({
+                        value: player.playerId,
+                        colorIndex: player.color,
+                        role: PLAYER_COLORS[player.color]
+                    })),
+                ...this.state.spectators.map(spectatorId => ({
+                    value: spectatorId,
+                    role: 'spectator'
+                }))
+            ];
             return (
                 <div>
                     <SettingsMenuAnchor>
                         <SettingsMenu>
                             {PLAYER_COLORS.map((colorString, index) => (
-                                <SettingsItem
-                                    key={colorString}
-                                    onClick={() => {
-                                        this.state.gameState.togglePlayerControl(
-                                            index
-                                        );
-                                        this.updateGameState(
-                                            this.state.gameState
-                                        );
-                                    }}
-                                >
+                                <SettingsItem key={colorString}>
                                     <span>{colorString}:</span>{' '}
-                                    {
-                                        this.state.gameState.players[index]
-                                            .control
-                                    }
+                                    <SettingDropdown
+                                        value={
+                                            this.state.gameState.players[index]
+                                                .playerId ||
+                                            this.state.gameState.players[index]
+                                                .control
+                                        }
+                                        onChange={({ target: { value } }) => {
+                                            this.state.gameState.setPlayerControl(
+                                                index,
+                                                value
+                                            );
+                                            this.updateGameState(
+                                                this.state.gameState
+                                            );
+                                            if (
+                                                this.state.spectators.includes(
+                                                    value
+                                                )
+                                            ) {
+                                                this.removeSpectators(value);
+                                            }
+                                        }}
+                                    >
+                                        {[
+                                            ...[...connectedPlayers].map(
+                                                player => ({
+                                                    value: player.value,
+                                                    text: `${
+                                                        player.colorIndex ===
+                                                            index ||
+                                                        connectedPlayers.filter(
+                                                            pl =>
+                                                                pl.colorIndex !==
+                                                                undefined
+                                                        ).length === 1
+                                                            ? ''
+                                                            : `${player.role}: `
+                                                    }${
+                                                        player.value ===
+                                                        this.props.userId
+                                                            ? connectedPlayers.length ===
+                                                              1
+                                                                ? HUMAN_PLAYER
+                                                                : YOU
+                                                            : player.value
+                                                    }`
+                                                })
+                                            ),
+                                            AI_PLAYER
+                                        ]}
+                                    </SettingDropdown>
                                 </SettingsItem>
                             ))}
                             <SettingsItem>
@@ -376,15 +476,20 @@ export default class GameView extends Component {
                             <SettingsItem>
                                 <span>Offline mode:</span> Disabled
                             </SettingsItem>
-                            <SettingsItem onClick={this.exportGame}>
-                                <span>Save:</span> &gt;&gt;
-                            </SettingsItem>
-                            <SettingsItem onClick={this.handleImportGame}>
-                                <span>Load:</span> &lt;&lt;
-                            </SettingsItem>
+                            <SettingsItemBase>
+                                <Button onClick={this.exportGame}>
+                                    Export Game
+                                </Button>
+                                <Button onClick={this.handleImportGame}>
+                                    Import Game
+                                </Button>
+                            </SettingsItemBase>
                         </SettingsMenu>
                     </SettingsMenuAnchor>
-                    <HiddenFileLoader onChange={this.importGame} />
+                    <HiddenFileLoader
+                        onChange={this.importGame}
+                        accept="application/json"
+                    />
                 </div>
             );
         }
@@ -458,7 +563,7 @@ export default class GameView extends Component {
                                         }
                                         case 'combo': {
                                             valueComponent = (
-                                                <Dropdown
+                                                <SettingDropdown
                                                     onChange={({
                                                         target: { value }
                                                     }) => {
@@ -472,7 +577,7 @@ export default class GameView extends Component {
                                                     value={value}
                                                 >
                                                     {select}
-                                                </Dropdown>
+                                                </SettingDropdown>
                                             );
                                         }
                                     }
@@ -644,15 +749,12 @@ const GameStats = styled.div`
     font-size: 18px;
 `;
 
-const CurrentTurn = styled.div`
-    margin-right: 2px;
-`;
-
 const CurrentPlayer = styled.div`
     text-transform: uppercase;
     font-weight: bold;
     color: ${props => (props.player ? 'black' : 'white')};
     width: 60px;
+    margin-left: 11px;
     margin-right: 20px;
 `;
 
@@ -660,9 +762,6 @@ const TimePlayed = styled.div`
     background: hsla(200, 40%, 60%, 80%);
     padding: 4px 8px;
     border-radius: 4px;
-    &::before {
-        content: "⏱️  ";
-    }
 `;
 
 const OpenSettings = styled.button`
@@ -673,54 +772,62 @@ const OpenSettings = styled.button`
     cursor: pointer;
     background: none;
     border: none;
-    --bg: rgba(0,0,0,0.5);
+    --bg: rgba(0, 0, 0, 0.5);
     border-bottom: 2px solid var(--bg);
-    &:hover{
+    &:hover {
         --bg: red;
     }
-    ${props =>
-        props.open &&
-        `
-        margin: -1px;
-        margin-left: 9px;
-        border-bottom: 4px solid var(--bg);
-        `};
+    ${props => props.open && '--bg: red;'}
 `;
 
 const SettingsMenuAnchor = styled.div`
-    margin-left: -60px;
+    margin-left: -117px;
 `;
 
 const AISettingsMenuAnchor = styled.div`
-    margin-left: -210px;
+    margin-left: -197px;
 `;
 
 const SettingsMenu = styled.div`
-    width: 160px;
+    width: 240px;
     position: absolute;
     margin-top: -10px;
     padding: 10px;
     background: ${props => props.theme.background2};
+    opacity: 0.95;
     color: ${props => props.theme.color2};
     border: 1px solid black;
     z-index: 1;
 `;
 
 const AISettingsMenu = styled(SettingsMenu)`
-    width: 310px;
+    width: 320px;
 `;
 
-const SettingsItem = styled.label`
+const settingItemsCommon = `
     display: flex;
     justify-content: space-between;
     text-transform: capitalize;
     cursor: pointer;
     font-family: sans-serif;
     padding: 2px;
+`;
+
+const SettingsItemBase = styled.div`
+    ${settingItemsCommon}
+    justify-content: space-around;
+`;
+
+const SettingsItem = styled.label`
+    ${settingItemsCommon}
     &:hover {
         background: lightblue;
         color: black;
     }
+`;
+
+const SettingDropdown = styled(Dropdown)`
+    width: 130px;
 `;
 
 const Wrapper = styled.div`
@@ -782,7 +889,6 @@ const Side = styled.div`
     justify-content: center;
     align-items: center;
     font-family: monospace;
-    text-transform: uppercase;
     opacity: 0.8;
     ${props =>
         props.border ? `border-${props.border}: 1px solid black;` : null}
