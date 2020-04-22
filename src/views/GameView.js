@@ -631,6 +631,8 @@ const GameStats = styled.div`
     justify-content: center;
     align-items: center;
     text-align: center;
+    font-family: sans-serif;
+    letter-spacing: 1px;
     flex-wrap: wrap;
     margin: 10px;
     padding: 10px;
@@ -654,18 +656,34 @@ const CurrentPlayer = styled.div`
     margin-right: 20px;
 `;
 
-const TimePlayed = styled.div``;
+const TimePlayed = styled.div`
+    background: hsla(200, 40%, 60%, 80%);
+    padding: 4px 8px;
+    border-radius: 4px;
+    &::before {
+        content: "⏱️  ";
+    }
+`;
 
-const OpenSettings = styled.div`
+const OpenSettings = styled.button`
     font-size: 14px;
     margin-left: 10px;
     box-sizing: border-box;
+    padding: 2px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    --bg: rgba(0,0,0,0.5);
+    border-bottom: 2px solid var(--bg);
+    &:hover{
+        --bg: red;
+    }
     ${props =>
         props.open &&
         `
         margin: -1px;
         margin-left: 9px;
-        border: 1px inset white;
+        border-bottom: 4px solid var(--bg);
         `};
 `;
 
@@ -685,6 +703,7 @@ const SettingsMenu = styled.div`
     background: ${props => props.theme.background2};
     color: ${props => props.theme.color2};
     border: 1px solid black;
+    z-index: 1;
 `;
 
 const AISettingsMenu = styled(SettingsMenu)`
@@ -695,6 +714,13 @@ const SettingsItem = styled.label`
     display: flex;
     justify-content: space-between;
     text-transform: capitalize;
+    cursor: pointer;
+    font-family: sans-serif;
+    padding: 2px;
+    &:hover {
+        background: lightblue;
+        color: black;
+    }
 `;
 
 const Wrapper = styled.div`
@@ -708,7 +734,7 @@ const Graveyard = styled.div`
     display: flex;
     flex-wrap: wrap;
     min-height: 4vw;
-    background: rgb(118, 118, 118);
+    background: rgba(118, 118, 118, 0.5);
     padding: 1vh;
     border: 1px solid black;
 
@@ -755,6 +781,9 @@ const Side = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    font-family: monospace;
+    text-transform: uppercase;
+    opacity: 0.8;
     ${props =>
         props.border ? `border-${props.border}: 1px solid black;` : null}
     font-size: 14px;

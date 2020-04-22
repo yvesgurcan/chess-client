@@ -21,6 +21,8 @@ Computer Chess wiki: http://computer-chess.org/doku.php
 
 ## Contribute
 
+Install dependancies and run the application with `npm i && npm start`.
+
 ### Setup
 
 You know the drill. `npm i` and all that :)
