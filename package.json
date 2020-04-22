@@ -44,5 +44,7 @@
         "webpack-cli": "^3.3.11",
         "webpack-dev-server": "^3.10.3"
     },
-    "dependencies": {}
+    "dependencies": {
+        "babel-loader": "^8.1.0"
+    }
 }
