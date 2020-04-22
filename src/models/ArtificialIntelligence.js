@@ -1,4 +1,5 @@
 import {
+    STOCKFISH_DEFAULT_DEBUG_LEVEL,
     STOCKFISH_URL,
     STOCKFISH_COMMAND_START_UCI,
     STOCKFISH_RESULT_START_UCI_OK,
@@ -16,8 +17,6 @@ import {
     STOCKFISH_EVENT_GET_DEPTH,
     STOCKFISH_EVENT_MOVE
 } from '../lib/constants';
-
-const DEFAULT_DEBUG_LEVEL = location.hostname === 'localhost' ? 0 : 2;
 
 let instance = null;
 
@@ -38,7 +37,10 @@ class ArtificialIntelligence {
      * Initializes Stockfish-js.
      * @returns {instance}
      */
-    init({ eventHandler = () => {}, debugLevel = DEFAULT_DEBUG_LEVEL }) {
+    init({
+        eventHandler = () => {},
+        debugLevel = STOCKFISH_DEFAULT_DEBUG_LEVEL
+    }) {
         this.debugLevel = debugLevel;
         this.eventHandler = eventHandler;
         this.worker = new Worker(STOCKFISH_URL);

@@ -1,5 +1,10 @@
+/* Debug */
+
 export const DEBUG = location.hostname === 'localhost';
 export const DEBUG_BACKEND = DEBUG && true;
+export const STOCKFISH_DEFAULT_DEBUG_LEVEL = DEBUG ? 0 : 2;
+
+/* Services */
 
 export const WEB_SOCKET_SERVER_URL = DEBUG
     ? 'ws://localhost:3000'
@@ -8,6 +13,8 @@ export const WEB_SOCKET_SERVER_URL = DEBUG
 export const CHESS_API = DEBUG_BACKEND
     ? 'http://localhost:9000'
     : 'https://chess-functions.netlify.app/.netlify/functions';
+
+/* Game State */
 
 export const ONE_SECOND = 1000;
 
