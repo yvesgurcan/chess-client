@@ -1,10 +1,4 @@
-import {
-    BOARD_SIDE_SIZE,
-    PLAYER_COLORS,
-    PIECE_VALUES,
-    KING,
-    ROOK
-} from '../lib/constants';
+import { BOARD_SIDE_SIZE, PLAYER_COLORS, KING, ROOK } from '../lib/constants';
 
 export default class Piece {
     constructor({ id, type, x, y, player, firstMove, queenSide, kingSide }) {
@@ -25,10 +19,6 @@ export default class Piece {
             xColumn: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'][this.x],
             yRow: BOARD_SIDE_SIZE - this.y + 1
         };
-    }
-
-    get value() {
-        return PIECE_VALUES[this.type] || 0;
     }
 
     get canCastlePrerequisites() {

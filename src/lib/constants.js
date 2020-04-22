@@ -16,10 +16,6 @@ export const CHESS_API = DEBUG_BACKEND
 
 /* Game State */
 
-export const ONE_SECOND = 1000;
-
-export const BOARD_SIDE_SIZE = 7;
-
 export const PLAYER1 = 0;
 export const PLAYER2 = 1;
 
@@ -29,20 +25,14 @@ export const FEN_ACTIVE_COLORS = ['w', 'b'];
 export const HUMAN_PLAYER = 'Human';
 export const AI_PLAYER = 'AI';
 
+export const YOU = 'You';
+
 export const KING = 'king';
 export const QUEEN = 'queen';
 export const ROOK = 'rook';
 export const KNIGHT = 'knight';
 export const BISHOP = 'bishop';
 export const PAWN = 'pawn';
-
-export const PIECE_VALUES = {
-    [QUEEN]: 9,
-    [ROOK]: 5,
-    [KNIGHT]: 3,
-    [BISHOP]: 3,
-    [PAWN]: 1
-};
 
 export const KING_AREA = 9;
 
@@ -62,6 +52,10 @@ export const CHECKMATE = 'checkmate';
 
 export const KINGSIDE = 'kingside';
 export const QUEENSIDE = 'queenside';
+
+export const ONE_SECOND = 1000;
+
+export const BOARD_SIDE_SIZE = 7;
 
 /* Stockfish */
 
@@ -91,3 +85,4 @@ export const STOCKFISH_EVENT_MOVE = 'STOCKFISH_MOVE';
 export const MAX_SOCKET_CONNECTION_RETRIES = 3;
 export const WEBSOCKET_EVENT_SELECT = 'WEBSOCKET_EVENT_SELECT';
 export const WEBSOCKET_EVENT_JOIN = 'WEBSOCKET_EVENT_JOIN';
+export const WEBSOCKET_EVENT_DISCONNECTED = 'WEBSOCKET_EVENT_DISCONNECTED';
