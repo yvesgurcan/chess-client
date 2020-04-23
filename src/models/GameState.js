@@ -1311,7 +1311,11 @@ export default class GameState {
                     this.moveSelectedPiece({ x: to.x, y: to.y });
 
                     if (this.artificialIntelligenceViewEventHandler) {
-                        this.artificialIntelligenceViewEventHandler(payload);
+                        this.artificialIntelligenceViewEventHandler({
+                            ...payload,
+                            from,
+                            to
+                        });
                     }
                 }
                 break;

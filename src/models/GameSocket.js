@@ -1,5 +1,6 @@
 import {
     WEB_SOCKET_SERVER_URL,
+    WEBSOCKET_EVENT_JOIN,
     MAX_SOCKET_CONNECTION_RETRIES
 } from '../lib/constants';
 
@@ -23,7 +24,7 @@ export default class GameSocket {
     onOpen() {
         console.info('GameSocket server has opened the connection.');
         this.connectionRetries = 0;
-        this.sendMessage({ join: this.gameId, playerId: this.playerId });
+        this.sendMessage({ event: WEBSOCKET_EVENT_JOIN });
     }
 
     onClose(event) {
@@ -58,7 +59,11 @@ export default class GameSocket {
     }
 
     sendMessage(payload) {
-        const parsedPayload = JSON.stringify(payload);
+        const parsedPayload = JSON.stringify({
+            gameId: this.gameId,
+            playerId: this.playerId,
+            ...payload
+        });
         this.socket.send(parsedPayload);
     }
 }

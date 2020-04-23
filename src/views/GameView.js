@@ -16,9 +16,10 @@ import {
     ONE_SECOND,
     PLAYER_COLORS,
     STOCKFISH_EVENT_MOVE,
-    WEBSOCKET_EVENT_SELECT,
     WEBSOCKET_EVENT_JOIN,
-    WEBSOCKET_EVENT_DISCONNECTED
+    WEBSOCKET_EVENT_DISCONNECTED,
+    WEBSOCKET_EVENT_SELECT,
+    WEBSOCKET_EVENT_SET_OPTION
 } from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
 
@@ -152,6 +153,8 @@ export default class GameView extends Component {
     saveGameOnArtificialIntelligenceMove = payload => {
         if (payload.event === STOCKFISH_EVENT_MOVE) {
             this.saveGame();
+            this.handleSelectWithWebsocket(payload.from);
+            this.handleSelectWithWebsocket(payload.to);
         }
     };
 
@@ -182,13 +185,40 @@ export default class GameView extends Component {
                 const { gameState } = this.state;
                 gameState.removePlayer(payload.playerId);
                 this.updateGameState(gameState);
-                this.removeSpectators(payload.playerId);
+                this.removeSpectator(payload.playerId);
+
                 return;
             }
             case WEBSOCKET_EVENT_SELECT: {
                 const { x, y } = payload;
                 this.handleSelect({ x, y });
                 return;
+            }
+            case WEBSOCKET_EVENT_SET_OPTION: {
+                const { gameState, spectators } = this.state;
+                const { value } = payload;
+
+                const previousPlayerId =
+                    gameState.players[value.colorIndex].playerId;
+
+                gameState.setPlayerControl(value.colorIndex, value.playerId);
+
+                this.updateGameState(gameState);
+
+                const updatedPlayers = gameState.players;
+
+                if (spectators.includes(value.playerId)) {
+                    this.removeSpectator(value.playerId);
+                }
+
+                if (
+                    previousPlayerId &&
+                    !updatedPlayers
+                        .map(player => player.playerId)
+                        .includes(previousPlayerId)
+                ) {
+                    this.addSpectator(previousPlayerId);
+                }
             }
         }
     };
@@ -226,7 +256,7 @@ export default class GameView extends Component {
         }
     }
 
-    removeSpectators(spectatorToRemove) {
+    removeSpectator(spectatorToRemove) {
         const updatedSpectators = [...this.state.spectators].filter(
             spectator => spectator !== spectatorToRemove
         );
@@ -234,6 +264,11 @@ export default class GameView extends Component {
         if (updatedSpectators.length !== this.state.spectators.length) {
             this.setState({ spectators: updatedSpectators });
         }
+    }
+
+    addSpectator(spectatorToAdd) {
+        const updatedSpectators = [...this.state.spectators, spectatorToAdd];
+        this.setState({ spectators: updatedSpectators });
     }
 
     handleSelect = ({ x, y }) => {
@@ -271,12 +306,20 @@ export default class GameView extends Component {
         this.handleSelect({ x, y });
         const { gameSocket, gameState } = this.state;
         gameSocket.sendMessage({
-            gameId: gameState.gameId,
-            playerId: this.props.userId,
+            event: WEBSOCKET_EVENT_SELECT,
             x,
             y
         });
     };
+
+    handleUpdateOptionWithWebsocket({ name, value }) {
+        const { gameSocket } = this.state;
+        gameSocket.sendMessage({
+            event: WEBSOCKET_EVENT_SET_OPTION,
+            name,
+            value
+        });
+    }
 
     toggleSettingsMenu = settingsOpened => {
         this.setState({ settingsOpened, aiSettingsOpened: false });
@@ -396,7 +439,7 @@ export default class GameView extends Component {
 
     renderSettingsMenu = () => {
         if (this.state.settingsOpened) {
-            const connectedPlayers = [
+            let connectedPlayers = [
                 ...this.state.gameState.players
                     .filter(player => player.playerId)
                     .map(player => ({
@@ -409,62 +452,123 @@ export default class GameView extends Component {
                     role: 'spectator'
                 }))
             ];
+            const getRole = (colorIndex, player) => {
+                return player.colorIndex === colorIndex ||
+                    connectedPlayers.filter(pl => pl.colorIndex !== undefined)
+                        .length === 1 ||
+                    (this.state.gameState.players[0].playerId ===
+                        this.state.gameState.players[1].playerId &&
+                        this.state.spectators.length === 0)
+                    ? ''
+                    : `${player.role}: `;
+            };
+            const getName = (colorIndex, player) => {
+                return player.value === this.props.userId
+                    ? (this.state.spectators.length === 0 &&
+                          connectedPlayers.filter(
+                              pl => pl.colorIndex !== undefined
+                          ).length === 1) ||
+                      (this.state.gameState.players[0].playerId ===
+                          this.state.gameState.players[1].playerId &&
+                          this.state.spectators.length === 0)
+                        ? HUMAN_PLAYER
+                        : YOU
+                    : player.value;
+            };
             return (
                 <div>
                     <SettingsMenuAnchor>
                         <SettingsMenu>
-                            {PLAYER_COLORS.map((colorString, index) => (
+                            {PLAYER_COLORS.map((colorString, colorIndex) => (
                                 <SettingsItem key={colorString}>
                                     <span>{colorString}:</span>{' '}
                                     <SettingDropdown
                                         value={
-                                            this.state.gameState.players[index]
-                                                .playerId ||
-                                            this.state.gameState.players[index]
-                                                .control
+                                            this.state.gameState.players[
+                                                colorIndex
+                                            ].playerId ||
+                                            this.state.gameState.players[
+                                                colorIndex
+                                            ].control
                                         }
-                                        onChange={({ target: { value } }) => {
+                                        onChange={({
+                                            target: { value: playerId }
+                                        }) => {
+                                            const previousPlayerId = this.state
+                                                .gameState.players[colorIndex]
+                                                .playerId;
+
                                             this.state.gameState.setPlayerControl(
-                                                index,
-                                                value
+                                                colorIndex,
+                                                playerId
                                             );
+
                                             this.updateGameState(
                                                 this.state.gameState
                                             );
+
+                                            const updatedPlayers = this.state
+                                                .gameState.players;
+
                                             if (
                                                 this.state.spectators.includes(
-                                                    value
+                                                    playerId
                                                 )
                                             ) {
-                                                this.removeSpectators(value);
+                                                this.removeSpectator(playerId);
                                             }
+
+                                            if (
+                                                previousPlayerId &&
+                                                !updatedPlayers
+                                                    .map(
+                                                        player =>
+                                                            player.playerId
+                                                    )
+                                                    .includes(previousPlayerId)
+                                            ) {
+                                                this.addSpectator(
+                                                    previousPlayerId
+                                                );
+                                            }
+
+                                            this.handleUpdateOptionWithWebsocket(
+                                                {
+                                                    name: 'setPlayerControl',
+                                                    value: {
+                                                        colorIndex,
+                                                        playerId
+                                                    }
+                                                }
+                                            );
                                         }}
                                     >
                                         {[
-                                            ...[...connectedPlayers].map(
-                                                player => ({
+                                            ...[...connectedPlayers]
+                                                .map(player => ({
                                                     value: player.value,
-                                                    text: `${
-                                                        player.colorIndex ===
-                                                            index ||
-                                                        connectedPlayers.filter(
-                                                            pl =>
-                                                                pl.colorIndex !==
-                                                                undefined
-                                                        ).length === 1
-                                                            ? ''
-                                                            : `${player.role}: `
-                                                    }${
-                                                        player.value ===
-                                                        this.props.userId
-                                                            ? connectedPlayers.length ===
-                                                              1
-                                                                ? HUMAN_PLAYER
-                                                                : YOU
-                                                            : player.value
-                                                    }`
-                                                })
-                                            ),
+                                                    text: `${getRole(
+                                                        colorIndex,
+                                                        player
+                                                    )}${getName(
+                                                        colorIndex,
+                                                        player
+                                                    )}`
+                                                }))
+                                                .reduce(
+                                                    (unique, player) =>
+                                                        unique
+                                                            .map(pl => pl.text)
+                                                            .includes(
+                                                                player.text
+                                                            )
+                                                            ? unique
+                                                            : [
+                                                                  ...unique,
+                                                                  player
+                                                              ],
+                                                    []
+                                                ),
                                             AI_PLAYER
                                         ]}
                                     </SettingDropdown>
