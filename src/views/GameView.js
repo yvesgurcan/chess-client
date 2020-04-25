@@ -19,7 +19,8 @@ import {
     WEBSOCKET_EVENT_JOIN,
     WEBSOCKET_EVENT_DISCONNECTED,
     WEBSOCKET_EVENT_SELECT,
-    WEBSOCKET_EVENT_SET_OPTION
+    WEBSOCKET_EVENT_SET_OPTION,
+    WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION
 } from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
 
@@ -167,6 +168,14 @@ export default class GameView extends Component {
         this.setState({ gameState });
     };
 
+    sendWebSocketAIOptionUpdate = updatedAIOption => {
+        const { gameSocket } = this.state;
+        gameSocket.sendMessage({
+            event: WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION,
+            ...updatedAIOption
+        });
+    };
+
     handleWebSocketMessage = payload => {
         if (payload.playerId === this.props.userId) {
             return;
@@ -195,30 +204,14 @@ export default class GameView extends Component {
                 return;
             }
             case WEBSOCKET_EVENT_SET_OPTION: {
-                const { gameState, spectators } = this.state;
-                const { value } = payload;
-
-                const previousPlayerId =
-                    gameState.players[value.colorIndex].playerId;
-
-                gameState.setPlayerControl(value.colorIndex, value.playerId);
-
-                this.updateGameState(gameState);
-
-                const updatedPlayers = gameState.players;
-
-                if (spectators.includes(value.playerId)) {
-                    this.removeSpectator(value.playerId);
-                }
-
-                if (
-                    previousPlayerId &&
-                    !updatedPlayers
-                        .map(player => player.playerId)
-                        .includes(previousPlayerId)
-                ) {
-                    this.addSpectator(previousPlayerId);
-                }
+                const { name, value } = payload;
+                this.handleSetOption({ name, value });
+                return;
+            }
+            case WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION: {
+                const { name, value } = payload;
+                this.handleSetAIOption({ name, value });
+                return;
             }
         }
     };
@@ -255,6 +248,40 @@ export default class GameView extends Component {
             this.updateGameState(gameState);
         }
     }
+
+    handleSetOption = payload => {
+        const { gameState, spectators } = this.state;
+        const { value } = payload;
+
+        const previousPlayerId = gameState.players[value.colorIndex].playerId;
+
+        gameState.setPlayerControl(value.colorIndex, value.playerId);
+
+        this.updateGameState(gameState);
+
+        const updatedPlayers = gameState.players;
+
+        if (spectators.includes(value.playerId)) {
+            this.removeSpectator(value.playerId);
+        }
+
+        if (
+            previousPlayerId &&
+            !updatedPlayers
+                .map(player => player.playerId)
+                .includes(previousPlayerId)
+        ) {
+            this.addSpectator(previousPlayerId);
+        }
+    };
+
+    handleSetAIOption = ({ name, value }) => {
+        const { gameState } = this.state;
+        gameState.setArtificialIntelligenceOption({
+            name,
+            value
+        });
+    };
 
     removeSpectator(spectatorToRemove) {
         const updatedSpectators = [...this.state.spectators].filter(
@@ -627,7 +654,16 @@ export default class GameView extends Component {
                                                 <span>
                                                     <Checkbox
                                                         onChange={() => {
-                                                            this.state.gameState.setArtificialIntelligenceOption(
+                                                            const {
+                                                                gameState
+                                                            } = this.state;
+                                                            gameState.setArtificialIntelligenceOption(
+                                                                {
+                                                                    name,
+                                                                    value: !value
+                                                                }
+                                                            );
+                                                            this.sendWebSocketAIOptionUpdate(
                                                                 {
                                                                     name,
                                                                     value: !value
@@ -649,12 +685,23 @@ export default class GameView extends Component {
                                                     onChange={({
                                                         target: { value }
                                                     }) => {
-                                                        this.state.gameState.setArtificialIntelligenceOption(
+                                                        const {
+                                                            gameState
+                                                        } = this.state;
+                                                        const roundedDownValue = Math.floor(
+                                                            value
+                                                        );
+                                                        gameState.setArtificialIntelligenceOption(
                                                             {
                                                                 name,
-                                                                value: Math.floor(
-                                                                    value
-                                                                )
+                                                                value: roundedDownValue
+                                                            }
+                                                        );
+
+                                                        this.sendWebSocketAIOptionUpdate(
+                                                            {
+                                                                name,
+                                                                value: roundedDownValue
                                                             }
                                                         );
                                                     }}
@@ -671,7 +718,17 @@ export default class GameView extends Component {
                                                     onChange={({
                                                         target: { value }
                                                     }) => {
-                                                        this.state.gameState.setArtificialIntelligenceOption(
+                                                        const {
+                                                            gameState
+                                                        } = this.state;
+                                                        gameState.setArtificialIntelligenceOption(
+                                                            {
+                                                                name,
+                                                                value
+                                                            }
+                                                        );
+
+                                                        this.sendWebSocketAIOptionUpdate(
                                                             {
                                                                 name,
                                                                 value
