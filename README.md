@@ -19,10 +19,16 @@ Stockfish relies on the [universal chess interface (UCI) protocol](http://wbec-r
 
 Computer Chess wiki: http://computer-chess.org/doku.php
 
-## Contribute
+## Development
 
-Install dependancies and run the application with `npm i && npm start`.
+Install project dependencies:
 
-### Setup
+  npm i
 
-You know the drill. `npm i` and all that :)
+Run development server:
+ 
+  npm start
+ 
+Bump version and create new build
+
+  npm version
