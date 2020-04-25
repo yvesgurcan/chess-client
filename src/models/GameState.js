@@ -1301,7 +1301,6 @@ export default class GameState {
             }
             case STOCKFISH_EVENT_MOVE: {
                 if (this.currentPlayerObject.control === AI_PLAYER) {
-                    console.log('move');
                     this.artificialIntelligenceStatus.computingNextMove = false;
                     const parsedMove = this.gameLog.parsePureAlgebraicNotationToMove(
                         payload.move
