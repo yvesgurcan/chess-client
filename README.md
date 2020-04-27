@@ -25,13 +25,13 @@ Computer Chess wiki: http://computer-chess.org/doku.php
 
 Install project dependencies:
 
-npm i
+    npm i
 
 ### Run development server
 
 Run development server:
 
-npm start
+    npm start
 
 ### Run functions
 
@@ -45,4 +45,4 @@ Please follow the instructions in the [`chess-socket`](https://github.com/yvesgu
 
 Bump version and create new build
 
-npm version
+    npm version patch
