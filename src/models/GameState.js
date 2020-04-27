@@ -308,7 +308,6 @@ export default class GameState {
      */
     export = () => {
         const { version: gameVersion } = getPackageInfo();
-        console.log(this.aiSettings);
         return JSON.stringify(
             {
                 gameVersion,
