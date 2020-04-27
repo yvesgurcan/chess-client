@@ -638,7 +638,7 @@ export default class GameView extends Component {
                 <div>
                     <AISettingsMenuAnchor>
                         <AISettingsMenu>
-                            {gameState.aiOptions.map(
+                            {gameState.aiSettings.map(
                                 ({ name, value, type, min, max, select }) => {
                                     let nameComponent = (
                                         <span>{name.replace(/_/g, ' ')}:</span>

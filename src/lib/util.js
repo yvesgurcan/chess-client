@@ -49,7 +49,7 @@ export async function sendRequest(
     try {
         const url = `${CHESS_API}/${endpoint}`;
         const response = await fetch(`${url}?${serializedParameters}`, {
-            method: method
+            method
         });
 
         if (response) {

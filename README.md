@@ -21,14 +21,28 @@ Computer Chess wiki: http://computer-chess.org/doku.php
 
 ## Development
 
+### Install dependencies
+
 Install project dependencies:
 
-  npm i
+npm i
+
+### Run development server
 
 Run development server:
- 
-  npm start
- 
+
+npm start
+
+### Run functions
+
+Please follow the instructions in the [`chess-functions`](https://github.com/yvesgurcan/chess-functions) repository.
+
+### Run WebSocket server
+
+Please follow the instructions in the [`chess-socket`](https://github.com/yvesgurcan/chess-socket) repository.
+
+### Create a build
+
 Bump version and create new build
 
-  npm version
+npm version

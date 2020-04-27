@@ -80,7 +80,7 @@ export default class GameState {
         this.artificialIntelligenceStatus = {
             initialized: false,
             gameReady: false,
-            ready: false
+            queueSettingUpdate: []
         };
 
         if (!webWorkersAreSupported) {
@@ -226,8 +226,21 @@ export default class GameState {
     /**
      * @returns {array}
      */
-    get aiOptions() {
+    get aiSettings() {
         return this.artificialIntelligence.options;
+    }
+
+    /*
+     * If the Artificial Intelligence is not ready, the update will be queued.
+     */
+    set aiSettings(settings) {
+        if (this.artificialIntelligenceStatus.initialized) {
+            settings.map(setting =>
+                this.setArtificialIntelligenceOption(setting)
+            );
+        } else {
+            this.artificialIntelligenceStatus.queueSettingUpdate = settings;
+        }
     }
 
     setArtificialIntelligenceOption(updatePayload) {
@@ -295,6 +308,7 @@ export default class GameState {
      */
     export = () => {
         const { version: gameVersion } = getPackageInfo();
+        console.log(this.aiSettings);
         return JSON.stringify(
             {
                 gameVersion,
@@ -308,7 +322,12 @@ export default class GameState {
                 pieces: this.pieces,
                 removedPieces: this.removedPieces,
                 enPassantTarget: this.enPassantTarget,
-                moves: this.moves // should be done on game log instead
+                moves: this.moves, // should be done on game log instead
+                allowNoKing: this.allowNoKing,
+                aiSettings: this.aiSettings.map(setting => ({
+                    name: setting.name,
+                    value: setting.value
+                }))
             },
             null,
             '\t'
@@ -322,11 +341,7 @@ export default class GameState {
      */
     import = (
         unparsedGameData,
-        {
-            resumeGame = false,
-            allowNoKing = false,
-            noConsoleOutput = false
-        } = {}
+        { resumeGame = false, noConsoleOutput = false } = {}
     ) => {
         let gameData = null;
 
@@ -340,10 +355,6 @@ export default class GameState {
             console.warn('Import data is empty.');
             return;
         }
-
-        // TODO: Check if there is at least one king.
-        // TODO: Check if pieces overlap. Throw an error if they do.
-        // TODO: Check if pieces are within the board.
 
         this.gameVersion = gameData.gameVersion;
         this.gameId = gameData.gameId;
@@ -363,7 +374,8 @@ export default class GameState {
         this.moves = gameData.moves && gameData.moves; // should be done on game log instead
         this.players = gameData.players;
         this.enPassantTarget = gameData.enPassantTarget;
-        this.allowNoKing = allowNoKing;
+        this.allowNoKing = gameData.allowNoKing;
+        this.aiSettings = gameData.aiSettings;
 
         if (!noConsoleOutput) {
             console.log(
@@ -1279,7 +1291,7 @@ export default class GameState {
         const {
             initialized,
             gameReady,
-            ready
+            queueSettingUpdate
         } = this.artificialIntelligenceStatus;
         switch (payload.event) {
             default: {
@@ -1296,6 +1308,11 @@ export default class GameState {
                     this.startArtificialIntelligenceTurn();
                 } else if (gameReady) {
                     this.startArtificialIntelligenceTurn();
+                }
+
+                if (queueSettingUpdate) {
+                    this.aiSettings = queueSettingUpdate;
+                    this.artificialIntelligenceStatus.queueSettingUpdate = [];
                 }
                 break;
             }

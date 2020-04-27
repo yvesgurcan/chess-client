@@ -1,16 +1,16 @@
 /* Debug */
 
 export const DEBUG = location.hostname === 'localhost';
-export const DEBUG_BACKEND = DEBUG && true;
+export const DEBUG_WEBSOCKET = DEBUG && false;
 export const STOCKFISH_DEFAULT_DEBUG_LEVEL = DEBUG ? 0 : 2;
 
 /* Services */
 
-export const WEB_SOCKET_SERVER_URL = DEBUG
+export const WEB_SOCKET_SERVER_URL = DEBUG_WEBSOCKET
     ? 'ws://localhost:3000'
     : 'wss://chess-socket.herokuapp.com';
 
-export const CHESS_API = DEBUG_BACKEND
+export const CHESS_API = DEBUG
     ? 'http://localhost:9000'
     : 'https://chess-functions.netlify.app/.netlify/functions';
 

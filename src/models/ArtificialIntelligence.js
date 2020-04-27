@@ -388,6 +388,11 @@ class ArtificialIntelligence {
             updated = true;
         } else {
             const option = this.getOption(name);
+            if (!option) {
+                console.error(`Option '${name}' not found.`);
+                return;
+            }
+
             if (option.value !== value) {
                 const command = `setoption name ${name} value ${String(value)}`;
                 this.sendRawCommand(command);

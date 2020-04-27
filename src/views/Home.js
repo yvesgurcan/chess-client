@@ -23,7 +23,7 @@ export default () => {
                     />
                 </div>
                 <ExternalMenuItem href={packageInfo.repository}>
-                    Source code
+                    Source Code
                 </ExternalMenuItem>
             </Menu>
         </View>
