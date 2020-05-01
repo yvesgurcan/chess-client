@@ -23,6 +23,7 @@ import {
     WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION
 } from '../lib/constants';
 import { getPackageInfo, sendRequest } from '../lib/util';
+import themes from '../themes';
 
 export default class GameView extends Component {
     constructor(props) {
@@ -489,7 +490,7 @@ export default class GameView extends Component {
                     ? ''
                     : `${player.role}: `;
             };
-            const getName = (colorIndex, player) => {
+            const getName = (_, player) => {
                 return player.value === this.props.userId
                     ? (this.state.spectators.length === 0 &&
                           connectedPlayers.filter(
@@ -606,6 +607,22 @@ export default class GameView extends Component {
                             </SettingsItem>
                             <SettingsItem>
                                 <span>Offline mode:</span> Disabled
+                            </SettingsItem>
+                            <SettingsItem>
+                                <span>Theme:</span>{' '}
+                                <SettingDropdown
+                                    value={this.props.themeIndex}
+                                    onChange={({ target: { value } }) =>
+                                        this.props.setThemeIndex(value)
+                                    }
+                                >
+                                    {[
+                                        ...themes.map((theme, index) => ({
+                                            value: index,
+                                            text: theme.name
+                                        }))
+                                    ]}
+                                </SettingDropdown>
                             </SettingsItem>
                             <SettingsItemBase>
                                 <Button onClick={this.exportGame}>

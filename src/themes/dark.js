@@ -1,5 +1,5 @@
 export default {
-    name: 'dark',
+    name: 'Dark',
     evenSquareBackground: 'rgb(210, 210, 210)',
     oddSquareBackground: 'rgb(150, 150, 150)',
     background1: 'rgb(40, 40, 40)',

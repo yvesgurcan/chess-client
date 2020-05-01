@@ -6,13 +6,13 @@ import { v4 as uuid } from 'uuid';
 import { DEBUG } from './lib/constants';
 import Home from './views/Home';
 import GameView from './views/GameView';
-import darkTheme from './themes/dark';
-import lightTheme from './themes/light';
+import themes from './themes';
 
 export default () => {
+    const [themeIndex, setThemeIndex] = useState(0);
     const [userId] = useState(uuid());
     return (
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={themes[themeIndex]}>
             <div>
                 <GlobalStyle />
                 <HashRouter>
@@ -20,7 +20,7 @@ export default () => {
                         <Route
                             exact
                             path="/game/:gameId"
-                            component={props => (
+                            render={props => (
                                 <GameView
                                     userId={userId}
                                     gameData={
@@ -31,12 +31,14 @@ export default () => {
                                     gameId={props.match.params.gameId}
                                     history={props.history}
                                     location={props.location}
+                                    themeIndex={themeIndex}
+                                    setThemeIndex={setThemeIndex}
                                 />
                             )}
                         />
                         <Route
                             path="/"
-                            component={() => <Home userId={userId} />}
+                            render={() => <Home userId={userId} />}
                         />
                     </Switch>
                 </HashRouter>

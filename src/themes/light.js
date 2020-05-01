@@ -1,5 +1,5 @@
 export default {
-    name: 'light',
+    name: 'Light',
     evenSquareBackground: 'rgb(210, 210, 210)',
     oddSquareBackground: 'rgb(150, 150, 150)',
     background1: 'rgb(240, 240, 240)',
