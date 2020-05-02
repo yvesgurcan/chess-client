@@ -243,9 +243,9 @@ export default class GameState {
         }
     }
 
-    setArtificialIntelligenceOption(updatePayload) {
+    setArtificialIntelligenceOption = updatePayload => {
         return this.artificialIntelligence.setOption(updatePayload);
-    }
+    };
 
     /**
      * @returns {undefined}

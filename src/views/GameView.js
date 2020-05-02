@@ -1,20 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import moment from 'moment';
-import GameState from '../models/GameState';
-import GameSocket from '../models/GameSocket';
-import icons from '../components/icons';
-import Slider from '../components/Slider';
-import Checkbox from '../components/Checkbox';
-import Dropdown from '../components/Dropdown';
-import Button from '../components/Button';
 import {
-    YOU,
-    HUMAN_PLAYER,
-    AI_PLAYER,
     BOARD_SIDE_SIZE,
     ONE_SECOND,
-    PLAYER_COLORS,
     STOCKFISH_EVENT_MOVE,
     WEBSOCKET_EVENT_JOIN,
     WEBSOCKET_EVENT_DISCONNECTED,
@@ -22,8 +10,13 @@ import {
     WEBSOCKET_EVENT_SET_OPTION,
     WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION
 } from '../lib/constants';
+import GameState from '../models/GameState';
+import GameSocket from '../models/GameSocket';
+import SettingsMenu from '../components/SettingsMenu';
+import AISettingsMenu from '../components/AISettingsMenu';
+import icons from '../components/icons';
+
 import { getPackageInfo, sendRequest } from '../lib/util';
-import themes from '../themes';
 
 export default class GameView extends Component {
     constructor(props) {
@@ -169,14 +162,6 @@ export default class GameView extends Component {
         this.setState({ gameState });
     };
 
-    sendWebSocketAIOptionUpdate = updatedAIOption => {
-        const { gameSocket } = this.state;
-        gameSocket.sendMessage({
-            event: WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION,
-            ...updatedAIOption
-        });
-    };
-
     handleWebSocketMessage = payload => {
         if (payload.playerId === this.props.userId) {
             return;
@@ -284,7 +269,7 @@ export default class GameView extends Component {
         });
     };
 
-    removeSpectator(spectatorToRemove) {
+    removeSpectator = spectatorToRemove => {
         const updatedSpectators = [...this.state.spectators].filter(
             spectator => spectator !== spectatorToRemove
         );
@@ -292,12 +277,12 @@ export default class GameView extends Component {
         if (updatedSpectators.length !== this.state.spectators.length) {
             this.setState({ spectators: updatedSpectators });
         }
-    }
+    };
 
-    addSpectator(spectatorToAdd) {
+    addSpectator = spectatorToAdd => {
         const updatedSpectators = [...this.state.spectators, spectatorToAdd];
         this.setState({ spectators: updatedSpectators });
-    }
+    };
 
     handleSelect = ({ x, y }) => {
         const { gameState } = this.state;
@@ -332,7 +317,7 @@ export default class GameView extends Component {
 
     handleSelectWithWebsocket = ({ x, y }) => {
         this.handleSelect({ x, y });
-        const { gameSocket, gameState } = this.state;
+        const { gameSocket } = this.state;
         gameSocket.sendMessage({
             event: WEBSOCKET_EVENT_SELECT,
             x,
@@ -340,14 +325,22 @@ export default class GameView extends Component {
         });
     };
 
-    handleUpdateOptionWithWebsocket({ name, value }) {
+    handleUpdateOptionWithWebsocket = ({ name, value }) => {
         const { gameSocket } = this.state;
         gameSocket.sendMessage({
             event: WEBSOCKET_EVENT_SET_OPTION,
             name,
             value
         });
-    }
+    };
+
+    handleUpdateAIOptionWithWebsocket = updatedAIOption => {
+        const { gameSocket } = this.state;
+        gameSocket.sendMessage({
+            event: WEBSOCKET_EVENT_SET_ARTIFICIAL_INTELLIGENCE_OPTION,
+            ...updatedAIOption
+        });
+    };
 
     toggleSettingsMenu = settingsOpened => {
         this.setState({ settingsOpened, aiSettingsOpened: false });
@@ -370,39 +363,6 @@ export default class GameView extends Component {
         }
 
         gameState.unselect();
-        this.updateGameState(gameState);
-    };
-
-    exportGame = () => {
-        const defaultFileName = `chess-${gameState.gameId}-${moment().format(
-            'YYYY-MM-DD-HH-mm-ss'
-        )}`;
-        const fileName = prompt(
-            'Enter a name for your saved game.',
-            defaultFileName
-        );
-
-        if (!fileName) {
-            return;
-        }
-
-        const game = gameState.export();
-        const gameBlob = new Blob([game], { type: 'application/json' });
-        const virtualLink = document.createElement('a');
-        virtualLink.download = fileName;
-        virtualLink.href = URL.createObjectURL(gameBlob);
-        virtualLink.click();
-    };
-
-    handleImportGame = () => {
-        const fileInput = document.getElementById('load-file-input');
-        fileInput.click();
-    };
-
-    importGame = async event => {
-        const file = event.target.files[0];
-        const gameToImport = await file.text();
-        gameState.import(gameToImport);
         this.updateGameState(gameState);
     };
 
@@ -463,318 +423,6 @@ export default class GameView extends Component {
                 )}
             </GameStats>
         );
-    };
-
-    renderSettingsMenu = () => {
-        if (this.state.settingsOpened) {
-            let connectedPlayers = [
-                ...this.state.gameState.players
-                    .filter(player => player.playerId)
-                    .map(player => ({
-                        value: player.playerId,
-                        colorIndex: player.color,
-                        role: PLAYER_COLORS[player.color]
-                    })),
-                ...this.state.spectators.map(spectatorId => ({
-                    value: spectatorId,
-                    role: 'spectator'
-                }))
-            ];
-            const getRole = (colorIndex, player) => {
-                return player.colorIndex === colorIndex ||
-                    connectedPlayers.filter(pl => pl.colorIndex !== undefined)
-                        .length === 1 ||
-                    (this.state.gameState.players[0].playerId ===
-                        this.state.gameState.players[1].playerId &&
-                        this.state.spectators.length === 0)
-                    ? ''
-                    : `${player.role}: `;
-            };
-            const getName = (_, player) => {
-                return player.value === this.props.userId
-                    ? (this.state.spectators.length === 0 &&
-                          connectedPlayers.filter(
-                              pl => pl.colorIndex !== undefined
-                          ).length === 1) ||
-                      (this.state.gameState.players[0].playerId ===
-                          this.state.gameState.players[1].playerId &&
-                          this.state.spectators.length === 0)
-                        ? HUMAN_PLAYER
-                        : YOU
-                    : player.value;
-            };
-            return (
-                <div>
-                    <SettingsMenuAnchor>
-                        <SettingsMenu>
-                            {PLAYER_COLORS.map((colorString, colorIndex) => (
-                                <SettingsItem key={colorString}>
-                                    <span>{colorString}:</span>{' '}
-                                    <SettingDropdown
-                                        value={
-                                            this.state.gameState.players[
-                                                colorIndex
-                                            ].playerId ||
-                                            this.state.gameState.players[
-                                                colorIndex
-                                            ].control
-                                        }
-                                        onChange={({
-                                            target: { value: playerId }
-                                        }) => {
-                                            const previousPlayerId = this.state
-                                                .gameState.players[colorIndex]
-                                                .playerId;
-
-                                            this.state.gameState.setPlayerControl(
-                                                colorIndex,
-                                                playerId
-                                            );
-
-                                            this.updateGameState(
-                                                this.state.gameState
-                                            );
-
-                                            const updatedPlayers = this.state
-                                                .gameState.players;
-
-                                            if (
-                                                this.state.spectators.includes(
-                                                    playerId
-                                                )
-                                            ) {
-                                                this.removeSpectator(playerId);
-                                            }
-
-                                            if (
-                                                previousPlayerId &&
-                                                !updatedPlayers
-                                                    .map(
-                                                        player =>
-                                                            player.playerId
-                                                    )
-                                                    .includes(previousPlayerId)
-                                            ) {
-                                                this.addSpectator(
-                                                    previousPlayerId
-                                                );
-                                            }
-
-                                            this.handleUpdateOptionWithWebsocket(
-                                                {
-                                                    name: 'setPlayerControl',
-                                                    value: {
-                                                        colorIndex,
-                                                        playerId
-                                                    }
-                                                }
-                                            );
-                                        }}
-                                    >
-                                        {[
-                                            ...[...connectedPlayers]
-                                                .map(player => ({
-                                                    value: player.value,
-                                                    text: `${getRole(
-                                                        colorIndex,
-                                                        player
-                                                    )}${getName(
-                                                        colorIndex,
-                                                        player
-                                                    )}`
-                                                }))
-                                                .reduce(
-                                                    (unique, player) =>
-                                                        unique
-                                                            .map(pl => pl.text)
-                                                            .includes(
-                                                                player.text
-                                                            )
-                                                            ? unique
-                                                            : [
-                                                                  ...unique,
-                                                                  player
-                                                              ],
-                                                    []
-                                                ),
-                                            AI_PLAYER
-                                        ]}
-                                    </SettingDropdown>
-                                </SettingsItem>
-                            ))}
-                            <SettingsItem>
-                                <span>Time limit:</span> None
-                            </SettingsItem>
-                            <SettingsItem>
-                                <span>Offline mode:</span> Disabled
-                            </SettingsItem>
-                            <SettingsItem>
-                                <span>Theme:</span>{' '}
-                                <SettingDropdown
-                                    value={this.props.themeIndex}
-                                    onChange={({ target: { value } }) =>
-                                        this.props.setThemeIndex(value)
-                                    }
-                                >
-                                    {[
-                                        ...themes.map((theme, index) => ({
-                                            value: index,
-                                            text: theme.name
-                                        }))
-                                    ]}
-                                </SettingDropdown>
-                            </SettingsItem>
-                            <SettingsItemBase>
-                                <Button onClick={this.exportGame}>
-                                    Export Game
-                                </Button>
-                                <Button onClick={this.handleImportGame}>
-                                    Import Game
-                                </Button>
-                            </SettingsItemBase>
-                        </SettingsMenu>
-                    </SettingsMenuAnchor>
-                    <HiddenFileLoader
-                        onChange={this.importGame}
-                        accept="application/json"
-                    />
-                </div>
-            );
-        }
-
-        return null;
-    };
-
-    renderAISettingsMenu = () => {
-        if (!this.state.gameState.artificialIntelligenceStatus.initialized) {
-            return;
-        }
-
-        if (this.state.aiSettingsOpened) {
-            return (
-                <div>
-                    <AISettingsMenuAnchor>
-                        <AISettingsMenu>
-                            {gameState.aiSettings.map(
-                                ({ name, value, type, min, max, select }) => {
-                                    let nameComponent = (
-                                        <span>{name.replace(/_/g, ' ')}:</span>
-                                    );
-                                    let valueComponent = String(value);
-
-                                    switch (type) {
-                                        default: {
-                                            break;
-                                        }
-                                        case 'check': {
-                                            valueComponent = (
-                                                <span>
-                                                    <Checkbox
-                                                        onChange={() => {
-                                                            const {
-                                                                gameState
-                                                            } = this.state;
-                                                            gameState.setArtificialIntelligenceOption(
-                                                                {
-                                                                    name,
-                                                                    value: !value
-                                                                }
-                                                            );
-                                                            this.sendWebSocketAIOptionUpdate(
-                                                                {
-                                                                    name,
-                                                                    value: !value
-                                                                }
-                                                            );
-                                                        }}
-                                                        checked={value}
-                                                    />{' '}
-                                                    {value
-                                                        ? 'Enabled'
-                                                        : 'Disabled'}
-                                                </span>
-                                            );
-                                            break;
-                                        }
-                                        case 'spin': {
-                                            valueComponent = (
-                                                <Slider
-                                                    onChange={({
-                                                        target: { value }
-                                                    }) => {
-                                                        const {
-                                                            gameState
-                                                        } = this.state;
-                                                        const roundedDownValue = Math.floor(
-                                                            value
-                                                        );
-                                                        gameState.setArtificialIntelligenceOption(
-                                                            {
-                                                                name,
-                                                                value: roundedDownValue
-                                                            }
-                                                        );
-
-                                                        this.sendWebSocketAIOptionUpdate(
-                                                            {
-                                                                name,
-                                                                value: roundedDownValue
-                                                            }
-                                                        );
-                                                    }}
-                                                    value={value}
-                                                    min={min}
-                                                    max={max}
-                                                />
-                                            );
-                                            break;
-                                        }
-                                        case 'combo': {
-                                            valueComponent = (
-                                                <SettingDropdown
-                                                    onChange={({
-                                                        target: { value }
-                                                    }) => {
-                                                        const {
-                                                            gameState
-                                                        } = this.state;
-                                                        gameState.setArtificialIntelligenceOption(
-                                                            {
-                                                                name,
-                                                                value
-                                                            }
-                                                        );
-
-                                                        this.sendWebSocketAIOptionUpdate(
-                                                            {
-                                                                name,
-                                                                value
-                                                            }
-                                                        );
-                                                    }}
-                                                    value={value}
-                                                >
-                                                    {select}
-                                                </SettingDropdown>
-                                            );
-                                        }
-                                    }
-
-                                    return (
-                                        <SettingsItem key={name}>
-                                            {nameComponent}
-                                            {valueComponent}
-                                        </SettingsItem>
-                                    );
-                                }
-                            )}
-                        </AISettingsMenu>
-                    </AISettingsMenuAnchor>
-                </div>
-            );
-        }
-
-        return null;
     };
 
     renderGraveyard = player => {
@@ -886,8 +534,27 @@ export default class GameView extends Component {
         return (
             <View>
                 {this.renderGameStats()}
-                {this.renderSettingsMenu()}
-                {this.renderAISettingsMenu()}
+                <SettingsMenu
+                    userId={this.props.userId}
+                    gameState={this.state.gameState}
+                    spectators={this.state.spectators}
+                    settingsOpened={this.state.settingsOpened}
+                    handleUpdateOptionWithWebsocket={
+                        this.handleUpdateOptionWithWebsocket
+                    }
+                    themeIndex={this.props.themeIndex}
+                    setThemeIndex={this.props.setThemeIndex}
+                    updateGameState={this.updateGameState}
+                    removeSpectator={this.removeSpectator}
+                    addSpectator={this.addSpectator}
+                />
+                <AISettingsMenu
+                    gameState={this.state.gameState}
+                    aiSettingsOpened={this.state.aiSettingsOpened}
+                    handleUpdateAIOptionWithWebsocket={
+                        this.handleUpdateAIOptionWithWebsocket
+                    }
+                />
                 <Wrapper>
                     <Graveyard>{this.renderGraveyard(0)}</Graveyard>
                     <Board>{this.renderSquares()}</Board>
@@ -956,56 +623,6 @@ const OpenSettings = styled.button`
         --bg: red;
     }
     ${props => props.open && '--bg: red;'}
-`;
-
-const SettingsMenuAnchor = styled.div`
-    margin-left: -117px;
-`;
-
-const AISettingsMenuAnchor = styled.div`
-    margin-left: -197px;
-`;
-
-const SettingsMenu = styled.div`
-    width: 240px;
-    position: absolute;
-    margin-top: -10px;
-    padding: 10px;
-    background: ${props => props.theme.background2};
-    opacity: 0.95;
-    color: ${props => props.theme.color2};
-    border: 1px solid black;
-    z-index: 1;
-`;
-
-const AISettingsMenu = styled(SettingsMenu)`
-    width: 320px;
-`;
-
-const settingItemsCommon = `
-    display: flex;
-    justify-content: space-between;
-    text-transform: capitalize;
-    cursor: pointer;
-    font-family: sans-serif;
-    padding: 2px;
-`;
-
-const SettingsItemBase = styled.div`
-    ${settingItemsCommon}
-    justify-content: space-around;
-`;
-
-const SettingsItem = styled.label`
-    ${settingItemsCommon}
-    &:hover {
-        background: lightblue;
-        color: black;
-    }
-`;
-
-const SettingDropdown = styled(Dropdown)`
-    width: 130px;
 `;
 
 const Wrapper = styled.div`
@@ -1078,13 +695,6 @@ const IconContainer = styled.div`
         width: 100%;
         height: 100%;
     }
-`;
-
-const HiddenFileLoader = styled.input.attrs({
-    type: 'file',
-    id: 'load-file-input'
-})`
-    display: none;
 `;
 
 const Log = styled.div`
