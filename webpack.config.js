@@ -13,7 +13,8 @@ module.exports = {
             cleanOnceBeforeBuildPatterns: [
                 'main.*.js',
                 'vendors~main.*.js',
-                'runtime.*.js'
+                'runtime.*.js',
+                'index.html'
             ]
         }),
         new HtmlWebpackPlugin({
