@@ -1,9 +1,6 @@
+import { useState, useEffect } from 'react';
 import { name, version, author, repository } from '../../package.json';
 import { BOARD_SIDE_SIZE, CHESS_API } from './constants';
-
-export function supportsWebWorkers() {
-    return typeof Worker !== 'undefined';
-}
 
 export function getPackageInfo() {
     const parsedPackageInfo = {
@@ -13,29 +10,6 @@ export function getPackageInfo() {
         author
     };
     return parsedPackageInfo;
-}
-
-export function pieceToFen(piece) {
-    let letter = '';
-    switch (piece.type) {
-        default: {
-            letter = piece.type.substring(0, 1);
-            break;
-        }
-        case 'knight': {
-            letter = 'n';
-            break;
-        }
-    }
-
-    switch (piece.player) {
-        default: {
-            return letter;
-        }
-        case 0: {
-            return letter.toUpperCase();
-        }
-    }
 }
 
 export async function sendRequest(
@@ -104,6 +78,89 @@ export async function sendRequest(
     } catch (error) {
         console.error({ error });
         return;
+    }
+}
+
+const isServiceWorkerRegistered = async () => {
+    if (navigator.serviceWorker) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        return !!registrations.length > 0;
+    }
+
+    return false;
+};
+
+const registerServiceWorker = () => {
+    return navigator.serviceWorker.register('/service-worker.js');
+};
+
+const unregisterServiceWorker = async () => {
+    if (navigator.serviceWorker) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+            registration.unregister();
+        }
+    }
+};
+
+export function useServiceWorker() {
+    const [serviceWorkEnabled, setServiceWorkEnabled] = useState(false);
+
+    useEffect(() => {
+        async function getServiceWorkerRegistration() {
+            const serviceWorkerRegistered = await isServiceWorkerRegistered();
+            setServiceWorkEnabled(serviceWorkerRegistered);
+        }
+
+        getServiceWorkerRegistration();
+    }, [serviceWorkEnabled]);
+
+    const handleEnableServiceWorker = async enableServiceWorker => {
+        if (enableServiceWorker) {
+            try {
+                await registerServiceWorker();
+                setServiceWorkEnabled(true);
+            } catch (error) {
+                console.error({ error });
+            }
+            return;
+        }
+
+        try {
+            await unregisterServiceWorker();
+            setServiceWorkEnabled(false);
+        } catch (error) {
+            console.error({ error });
+        }
+    };
+
+    return [serviceWorkEnabled, handleEnableServiceWorker];
+}
+
+export function supportsWebWorkers() {
+    return typeof Worker !== 'undefined';
+}
+
+export function pieceToFen(piece) {
+    let letter = '';
+    switch (piece.type) {
+        default: {
+            letter = piece.type.substring(0, 1);
+            break;
+        }
+        case 'knight': {
+            letter = 'n';
+            break;
+        }
+    }
+
+    switch (piece.player) {
+        default: {
+            return letter;
+        }
+        case 0: {
+            return letter.toUpperCase();
+        }
     }
 }
 

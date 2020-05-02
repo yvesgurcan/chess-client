@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 import { YOU, HUMAN_PLAYER, AI_PLAYER, PLAYER_COLORS } from '../lib/constants';
-import useServiceWorker from './ServiceWorker';
+import { useServiceWorker } from '../lib/util';
 import SettingsMenuBase from './SettingsMenuBase';
 import SettingDropdown from './SettingDropdown';
 import Button from './Button';
