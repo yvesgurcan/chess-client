@@ -23,7 +23,14 @@ module.exports = {
         }),
         new GenerateSW({
             skipWaiting: true,
-            maximumFileSizeToCacheInBytes: 99999999999
+            maximumFileSizeToCacheInBytes: 9999999999,
+            runtimeCaching: [
+                // The AI is a WebWorker
+                {
+                    urlPattern: /stockfish.js/,
+                    handler: 'CacheFirst'
+                }
+            ]
         })
     ],
     module: {
