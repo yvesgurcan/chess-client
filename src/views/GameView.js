@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import {
-    BOARD_SIDE_SIZE,
     ONE_SECOND,
     STOCKFISH_EVENT_MOVE,
     WEBSOCKET_EVENT_JOIN,
@@ -12,9 +11,10 @@ import {
 } from '../lib/constants';
 import GameState from '../models/GameState';
 import GameSocket from '../models/GameSocket';
-import SettingsMenu from '../components/SettingsMenu';
-import AISettingsMenu from '../components/AISettingsMenu';
-import icons from '../components/icons';
+import GameStats from '../components/GameStats';
+import Board from '../components/Board';
+import Graveyard from '../components/Graveyard';
+import Log from '../components/Log';
 
 import { getPackageInfo, sendRequest } from '../lib/util';
 
@@ -32,19 +32,11 @@ export default class GameView extends Component {
             entrypoint = 'REMOTE';
         }
 
-        let gameState = null;
-        if (entrypoint === 'NEW') {
-            gameState = new GameState({
-                artificialIntelligenceViewEventHandler: this
-                    .saveGameOnArtificialIntelligenceMove,
-                firstPlayerId: props.userId
-            });
-        } else {
-            gameState = new GameState({
-                artificialIntelligenceViewEventHandler: this
-                    .saveGameOnArtificialIntelligenceMove
-            });
-        }
+        const gameState = new GameState({
+            artificialIntelligenceViewEventHandler: this
+                .saveGameOnArtificialIntelligenceMove,
+            firstPlayerId: props.userId
+        });
 
         switch (entrypoint) {
             default: {
@@ -342,224 +334,41 @@ export default class GameView extends Component {
         });
     };
 
-    toggleSettingsMenu = settingsOpened => {
-        this.setState({ settingsOpened, aiSettingsOpened: false });
-        if (settingsOpened) {
-            gameState.pause();
-        } else {
-            gameState.resume();
-        }
-
-        gameState.unselect();
-        this.updateGameState(gameState);
-    };
-
-    toggleAISettingsMenu = aiSettingsOpened => {
-        this.setState({ aiSettingsOpened, settingsOpened: false });
-        if (aiSettingsOpened) {
-            gameState.pause();
-        } else {
-            gameState.resume();
-        }
-
-        gameState.unselect();
-        this.updateGameState(gameState);
-    };
-
-    renderPieceIcon = ({ type, player }) => {
-        if (!type) {
-            return null;
-        }
-
-        const Icon = icons[type];
-
-        if (Icon) {
-            return (
-                <IconContainer title={type}>
-                    <Icon
-                        color1={player ? 'black' : 'white'}
-                        color2={player ? 'white' : 'black'}
-                    />
-                </IconContainer>
-            );
-        }
-
-        return type;
-    };
-
-    renderGameStats = () => {
-        const { gameState } = this.state;
-        return (
-            <GameStats>
-                <CurrentPlayer player={gameState.currentPlayer}>
-                    {gameState.currentPlayer ? 'Black' : 'White'}
-                </CurrentPlayer>
-                <TimePlayed>
-                    ⏱️{' '}
-                    {gameState.totalTimePlayed.format('hh:mm:ss', {
-                        trim: false
-                    })}
-                </TimePlayed>
-                <OpenSettings
-                    open={this.state.settingsOpened}
-                    onClick={() =>
-                        this.toggleSettingsMenu(!this.state.settingsOpened)
-                    }
-                >
-                    ⚙️
-                </OpenSettings>
-                {this.state.gameState.artificialIntelligenceStatus
-                    .initialized && (
-                    <OpenSettings
-                        open={this.state.aiSettingsOpened}
-                        onClick={() =>
-                            this.toggleAISettingsMenu(
-                                !this.state.aiSettingsOpened
-                            )
-                        }
-                    >
-                        🤖
-                    </OpenSettings>
-                )}
-            </GameStats>
-        );
-    };
-
-    renderGraveyard = player => {
-        const { gameState } = this.state;
-        return gameState.removedPieces[player].map(piece => (
-            <Tomb key={piece.id}>{this.renderPieceIcon(piece)}</Tomb>
-        ));
-    };
-
-    renderSquares = () => {
-        const { gameState } = this.state;
-        let squares = [];
-        for (let y = 0; y <= BOARD_SIDE_SIZE + 2; y++) {
-            for (let x = 0; x <= BOARD_SIDE_SIZE + 2; x++) {
-                // corners
-                if (
-                    (x === 0 && y === 0) ||
-                    (x === BOARD_SIDE_SIZE + 2 && y === BOARD_SIDE_SIZE + 2) ||
-                    (x === BOARD_SIDE_SIZE + 2 && y === 0) ||
-                    (x === 0 && y === BOARD_SIDE_SIZE + 2)
-                ) {
-                    squares.push(<Side key={`${x}-${y}`} />);
-                    // first column
-                } else if (x === 0) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border="right">
-                            {BOARD_SIDE_SIZE + 2 - y}
-                        </Side>
-                    );
-                    // last column
-                } else if (x === BOARD_SIDE_SIZE + 2) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border="left">
-                            {BOARD_SIDE_SIZE + 2 - y}
-                        </Side>
-                    );
-                    // first row
-                } else if (y === 0) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border="bottom">
-                            {String.fromCharCode(96 + x)}
-                        </Side>
-                    );
-                    // last row
-                } else if (y === BOARD_SIDE_SIZE + 2) {
-                    squares.push(
-                        <Side key={`${x}-${y}`} border="top">
-                            {String.fromCharCode(96 + x)}
-                        </Side>
-                    );
-                    // everything else
-                } else {
-                    const adjustedX = x - 1;
-                    const adjustedY = y - 1;
-                    const piece = gameState.getPieceAt({
-                        x: adjustedX,
-                        y: adjustedY
-                    });
-                    squares.push(
-                        <Square
-                            key={`${x}-${y}`}
-                            even={(x + y) % 2 === 0}
-                            player={piece && piece.player}
-                            onClick={() =>
-                                this.handleSelectWithWebsocket({
-                                    x: adjustedX,
-                                    y: adjustedY,
-                                    piece
-                                })
-                            }
-                            selected={gameState.isSelectedSquare({
-                                x: adjustedX,
-                                y: adjustedY
-                            })}
-                        >
-                            {this.renderPieceIcon({ ...piece })}
-                        </Square>
-                    );
-                }
-            }
-        }
-
-        return squares;
-    };
-
-    renderLog = () => {
-        if (!this.state.gameState.log.length) {
-            return;
-        }
-
-        return (
-            <Log>
-                {this.state.gameState.log.map(
-                    ({ id, string, piece, player, endGame }) => (
-                        <LogEntry key={id}>
-                            <LogIconContainer>
-                                {this.renderPieceIcon({ ...piece, player })}
-                            </LogIconContainer>
-                            {string}
-                            {endGame && 'X'}
-                        </LogEntry>
-                    )
-                )}
-            </Log>
-        );
-    };
-
     render() {
         return (
             <View>
-                {this.renderGameStats()}
-                <SettingsMenu
+                <GameStats
                     userId={this.props.userId}
                     gameState={this.state.gameState}
+                    updateGameState={this.updateGameState}
                     spectators={this.state.spectators}
-                    settingsOpened={this.state.settingsOpened}
+                    removeSpectator={this.removeSpectator}
+                    addSpectator={this.addSpectator}
+                    themeIndex={this.props.themeIndex}
+                    setThemeIndex={this.props.setThemeIndex}
                     handleUpdateOptionWithWebsocket={
                         this.handleUpdateOptionWithWebsocket
                     }
-                    themeIndex={this.props.themeIndex}
-                    setThemeIndex={this.props.setThemeIndex}
-                    updateGameState={this.updateGameState}
-                    removeSpectator={this.removeSpectator}
-                    addSpectator={this.addSpectator}
-                />
-                <AISettingsMenu
-                    gameState={this.state.gameState}
-                    aiSettingsOpened={this.state.aiSettingsOpened}
                     handleUpdateAIOptionWithWebsocket={
                         this.handleUpdateAIOptionWithWebsocket
                     }
                 />
                 <Wrapper>
-                    <Graveyard>{this.renderGraveyard(0)}</Graveyard>
-                    <Board>{this.renderSquares()}</Board>
-                    <Graveyard>{this.renderGraveyard(1)}</Graveyard>
-                    {this.renderLog()}
+                    <Graveyard
+                        gameState={this.state.gameState}
+                        colorIndex={0}
+                    />
+                    <Board
+                        gameState={this.state.gameState}
+                        handleSelectWithWebsocket={
+                            this.handleSelectWithWebsocket
+                        }
+                    />
+                    <Graveyard
+                        gameState={this.state.gameState}
+                        colorIndex={1}
+                    />
+                    <Log gameState={this.state.gameState} />
                 </Wrapper>
             </View>
         );
@@ -576,151 +385,8 @@ const View = styled.div`
     color: ${props => props.theme.color1};
 `;
 
-const GameStats = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-family: sans-serif;
-    letter-spacing: 1px;
-    flex-wrap: wrap;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    background: ${props => props.theme.background2};
-    color: ${props => props.theme.color2};
-    min-height: 40px;
-    box-sizing: border-box;
-    font-size: 18px;
-`;
-
-const CurrentPlayer = styled.div`
-    text-transform: uppercase;
-    font-weight: bold;
-    color: ${props => (props.player ? 'black' : 'white')};
-    width: 60px;
-    margin-left: 11px;
-    margin-right: 20px;
-`;
-
-const TimePlayed = styled.div`
-    background: hsla(200, 40%, 60%, 80%);
-    padding: 4px 8px;
-    border-radius: 4px;
-`;
-
-const OpenSettings = styled.button`
-    font-size: 14px;
-    margin-left: 10px;
-    box-sizing: border-box;
-    padding: 2px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    --bg: rgba(0, 0, 0, 0.5);
-    border-bottom: 2px solid var(--bg);
-    &:hover {
-        --bg: red;
-    }
-    ${props => props.open && '--bg: red;'}
-`;
-
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`;
-
-const Graveyard = styled.div`
-    width: 95%;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 4vw;
-    background: rgba(118, 118, 118, 0.5);
-    padding: 1vh;
-    border: 1px solid black;
-
-    @media screen and (orientation: landscape) {
-        min-height: 4vh;
-    }
-`;
-
-const Tomb = styled.div`
-    width: 4vw;
-
-    @media screen and (orientation: landscape) {
-        width: 4vh;
-    }
-`;
-
-const Board = styled.div`
-    display: grid;
-    grid-template: repeat(10, calc(96vw / 10)) / repeat(10, calc(96vw / 10));
-
-    @media screen and (orientation: landscape) {
-        grid-template:
-            repeat(10, calc((80vh - 5rem) / 10)) /
-            repeat(10, calc((80vh - 5rem) / 10));
-    }
-`;
-
-const Square = styled.div`
-    background: ${props =>
-        props.selected
-            ? 'green'
-            : props.even
-            ? props.theme.evenSquareBackground
-            : props.theme.oddSquareBackground};
-    color: ${props => (props.player ? 'black' : 'white')};
-    text-shadow: 0 0 2px ${props => (props.player ? 'white' : 'black')};
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-`;
-
-const Side = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: monospace;
-    opacity: 0.8;
-    ${props =>
-        props.border ? `border-${props.border}: 1px solid black;` : null}
-    font-size: 14px;
-`;
-
-const IconContainer = styled.div`
-    svg {
-        width: 100%;
-        height: 100%;
-    }
-`;
-
-const Log = styled.div`
-    margin-top: 2.5rem;
-    margin-bottom: 1rem;
-    width: 95%;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    align-items: space-between;
-    background: rgb(118, 118, 118);
-    padding: 10px;
-    border: 1px solid black;
-    max-height: 35vh;
-
-    @media screen and (orientation: landscape) {
-        max-height: 35vw;
-    }
-`;
-
-const LogEntry = styled.div`
-    display: flex;
-    align-items: center;
-    padding: 0.05rem;
-`;
-
-const LogIconContainer = styled.div`
-    width: 2.75vh;
 `;

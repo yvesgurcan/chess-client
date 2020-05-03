@@ -57,11 +57,11 @@ const aiSettingInputs = {
 
 export default ({
     gameState,
-    aiSettingsOpened,
+    settingsOpened,
     handleUpdateAIOptionWithWebsocket
 }) => {
     if (
-        !aiSettingsOpened ||
+        !settingsOpened ||
         !gameState.artificialIntelligenceStatus.initialized
     ) {
         return null;
