@@ -4,12 +4,13 @@ import { HashRouter, Route } from 'react-router-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import { DEBUG } from './lib/constants';
+import useLocalStorage from './lib/useLocalStorage';
 import Home from './views/Home';
 import GameView from './views/GameView';
 import themes from './themes';
 
 export default () => {
-    const [themeIndex, setThemeIndex] = useState(0);
+    const [themeIndex, setThemeIndex] = useLocalStorage('themeIndex', 0);
     const [userId] = useState(uuid());
     return (
         <ThemeProvider theme={themes[themeIndex]}>
