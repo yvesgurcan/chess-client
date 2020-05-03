@@ -14,12 +14,17 @@ export const CHESS_API = DEBUG
     ? 'http://localhost:9000'
     : 'https://chess-functions.netlify.app/.netlify/functions';
 
+/* Local Storage */
+
+export const LOCAL_STORAGE_PREFIX = 'chessjs-';
+
 /* Game State */
 
 export const PLAYER1 = 0;
 export const PLAYER2 = 1;
 
 export const PLAYER_COLORS = ['white', 'black'];
+export const PLAYER_COLORS_INVERTED = ['black', 'white'];
 export const FEN_ACTIVE_COLORS = ['w', 'b'];
 
 export const HUMAN_PLAYER = 'Human';
