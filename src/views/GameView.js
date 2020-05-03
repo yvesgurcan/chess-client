@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
+import { getPackageInfo, sendRequest } from '../lib/util';
 import {
     ONE_SECOND,
     STOCKFISH_EVENT_MOVE,
@@ -15,8 +16,6 @@ import GameStats from '../components/GameStats';
 import Board from '../components/Board';
 import Graveyard from '../components/Graveyard';
 import Log from '../components/Log';
-
-import { getPackageInfo, sendRequest } from '../lib/util';
 
 export default class GameView extends Component {
     constructor(props) {
