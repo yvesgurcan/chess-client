@@ -13,7 +13,7 @@ export default () => {
     const [themeIndex, setThemeIndex] = useLocalStorage('themeIndex', 0);
     const [user] = useUser();
     return (
-        <ThemeProvider theme={themes[themeIndex]}>
+        <ThemeProvider theme={themes[themeIndex || 0]}>
             <div>
                 <GlobalStyle />
                 <HashRouter>
