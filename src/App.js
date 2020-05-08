@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Switch } from 'react-router';
 import { HashRouter, Route } from 'react-router-dom';
 import { ThemeProvider, createGlobalStyle } from 'styled-components';
-import { v4 as uuid } from 'uuid';
 import { DEBUG } from './lib/constants';
 import useLocalStorage from './lib/useLocalStorage';
+import useUser from './lib/useUser';
 import Home from './views/Home';
 import GameView from './views/GameView';
 import themes from './themes';
 
 export default () => {
     const [themeIndex, setThemeIndex] = useLocalStorage('themeIndex', 0);
-    const [userId] = useState(uuid());
+    const [user] = useUser();
     return (
         <ThemeProvider theme={themes[themeIndex]}>
             <div>
@@ -23,7 +23,7 @@ export default () => {
                             path="/game/:gameId"
                             render={props => (
                                 <GameView
-                                    userId={userId}
+                                    userId={user && user.userId}
                                     gameData={
                                         DEBUG &&
                                         typeof DEBUG_GAME !== 'undefined' &&
@@ -39,7 +39,7 @@ export default () => {
                         />
                         <Route
                             path="/"
-                            render={() => <Home userId={userId} />}
+                            render={() => <Home userId={user && user.userId} />}
                         />
                     </Switch>
                 </HashRouter>

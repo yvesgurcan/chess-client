@@ -9,17 +9,19 @@ export default (key, defaultValue) => {
             const value = await localStorage.getItem(
                 `${LOCAL_STORAGE_PREFIX}${key}`
             );
-            if (value !== null) {
-                setItem(value);
-            }
+
+            setItem(JSON.parse(value));
         }
 
         getLocalStorageValue();
-    }, [item]);
+    }, []);
 
     const setLocalStorageValue = async value => {
         try {
-            await localStorage.setItem(`${LOCAL_STORAGE_PREFIX}${key}`, value);
+            await localStorage.setItem(
+                `${LOCAL_STORAGE_PREFIX}${key}`,
+                JSON.stringify(value)
+            );
             setItem(value);
         } catch (error) {
             console.error({ error });
