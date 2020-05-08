@@ -70,6 +70,44 @@ export async function sendRequest(
                         }
                     }
                 }
+                case 'user': {
+                    switch (method) {
+                        default: {
+                            console.error(`Unhandled method: ${method} ${url}`);
+                            return;
+                        }
+                        case 'get': {
+                            switch (status) {
+                                default: {
+                                    console.warn(
+                                        `API responded with status code ${status}.`
+                                    );
+                                    return;
+                                }
+                                case 200: {
+                                    const data = await response.json();
+                                    const parsedData = JSON.parse(data.text);
+                                    const userData = parsedData;
+                                    return { userData, oid: data.oid };
+                                }
+                            }
+                        }
+                        case 'post': {
+                            switch (status) {
+                                default: {
+                                    console.warn(
+                                        `API responded with status code ${status}.`
+                                    );
+                                    return;
+                                }
+                                case 200: {
+                                    const data = await response.json();
+                                    return { oid: data.oid };
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
