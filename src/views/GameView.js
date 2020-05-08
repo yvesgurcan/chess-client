@@ -168,10 +168,8 @@ export default class GameView extends Component {
                 return;
             }
             case WEBSOCKET_EVENT_DISCONNECTED: {
-                const { gameState } = this.state;
-                gameState.removePlayer(payload.playerId);
-                this.updateGameState(gameState);
-                this.removeSpectator(payload.playerId);
+                const { playerId } = payload;
+                this.handleDisconnect({ playerId });
 
                 return;
             }
@@ -193,7 +191,9 @@ export default class GameView extends Component {
         }
     };
 
-    handleJoin({ player1, player2, spectators }) {
+    /* Actions received from WebSocket */
+
+    handleJoin = ({ player1, player2, spectators }) => {
         const { gameState } = this.state;
         const { players } = gameState;
 
@@ -224,7 +224,45 @@ export default class GameView extends Component {
             gameState.players = [...updatedPlayers];
             this.updateGameState(gameState);
         }
-    }
+    };
+
+    handleDisconnect = ({ playerId }) => {
+        const { gameState } = this.state;
+        gameState.removePlayer(playerId);
+        this.updateGameState(gameState);
+        this.removeSpectator(playerId);
+    };
+
+    handleSelect = ({ x, y }) => {
+        const { gameState } = this.state;
+        const { selected } = gameState;
+        if (selected) {
+            // unselect
+            if (selected.x === x && selected.y === y) {
+                gameState.unselect();
+                // move
+            } else if (selected.piece) {
+                const moved = gameState.moveSelectedPiece({ x, y });
+
+                // select
+                if (!moved) {
+                    gameState.select({ x, y });
+                } else {
+                    this.saveGame();
+                }
+                // select
+            } else {
+                gameState.select({ x, y });
+            }
+        } else {
+            // select
+            gameState.select({ x, y });
+        }
+
+        // debug
+        window.gameState = gameState;
+        this.updateGameState(gameState);
+    };
 
     handleSetOption = payload => {
         const { gameState, spectators } = this.state;
@@ -275,36 +313,7 @@ export default class GameView extends Component {
         this.setState({ spectators: updatedSpectators });
     };
 
-    handleSelect = ({ x, y }) => {
-        const { gameState } = this.state;
-        const { selected } = gameState;
-        if (selected) {
-            // unselect
-            if (selected.x === x && selected.y === y) {
-                gameState.unselect();
-                // move
-            } else if (selected.piece) {
-                const moved = gameState.moveSelectedPiece({ x, y });
-
-                // select
-                if (!moved) {
-                    gameState.select({ x, y });
-                } else {
-                    this.saveGame();
-                }
-                // select
-            } else {
-                gameState.select({ x, y });
-            }
-        } else {
-            // select
-            gameState.select({ x, y });
-        }
-
-        // debug
-        window.gameState = gameState;
-        this.updateGameState(gameState);
-    };
+    /* Actions sent to WebSocket */
 
     handleSelectWithWebsocket = ({ x, y }) => {
         this.handleSelect({ x, y });
