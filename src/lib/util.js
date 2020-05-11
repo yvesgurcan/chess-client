@@ -1,5 +1,7 @@
 import { name, version, author, repository } from '../../package.json';
-import { BOARD_SIDE_SIZE, CHESS_API } from './constants';
+import { CHESS_API } from './constants';
+import pieceToFenImport from './pieceToFen';
+import visualizeBoardImport from './visualizeBoard';
 
 export function getPackageInfo() {
     const parsedPackageInfo = {
@@ -122,107 +124,6 @@ export function supportsWebWorkers() {
     return typeof Worker !== 'undefined';
 }
 
-export function pieceToFen(piece) {
-    let letter = '';
-    switch (piece.type) {
-        default: {
-            letter = piece.type.substring(0, 1);
-            break;
-        }
-        case 'knight': {
-            letter = 'n';
-            break;
-        }
-    }
+export const pieceToFen = pieceToFenImport;
 
-    switch (piece.player) {
-        default: {
-            return letter;
-        }
-        case 0: {
-            return letter.toUpperCase();
-        }
-    }
-}
-
-export function visualizeBoard(gameState) {
-    let squares = [];
-    squares.push([
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---'
-    ]);
-    squares.push([
-        '   ',
-        ' 0 ',
-        ' 1 ',
-        ' 2 ',
-        ' 3 ',
-        ' 4 ',
-        ' 5 ',
-        ' 6 ',
-        ' 7 '
-    ]);
-    for (let y = 0; y <= BOARD_SIDE_SIZE; y++) {
-        let line = [];
-        squares.push([
-            '---',
-            '---',
-            '---',
-            '---',
-            '---',
-            '---',
-            '---',
-            '---',
-            '---'
-        ]);
-        for (let x = 0; x <= BOARD_SIDE_SIZE; x++) {
-            const piece = gameState.getPieceAt({
-                x,
-                y
-            });
-            let pieceId = '   ';
-            if (piece) {
-                pieceId = pieceToFen(piece);
-                const playerColor =
-                    piece.player === 0 ? '\x1b[37m' : '\x1b[35m';
-                pieceId =
-                    '\x1b[1m' +
-                    playerColor +
-                    ' ' +
-                    pieceId +
-                    ' \x1b[0m\x1b[33m';
-            }
-
-            line.push(pieceId);
-            if (x === BOARD_SIDE_SIZE) {
-                squares.push([` ${y} `, ...line]);
-                line = [];
-            }
-        }
-    }
-    squares.push([
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---',
-        '---'
-    ]);
-
-    return [
-        `\x1b[33mgameId: ${gameState.gameId}\n`,
-        '                    x\n',
-        squares.map(line => '|' + line.join('|') + '|').join('\n'),
-        '\x1b[0m'
-    ].join('');
-}
+export const visualizeBoard = visualizeBoardImport;

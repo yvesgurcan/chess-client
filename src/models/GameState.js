@@ -42,7 +42,10 @@ momentDurationFormatSetup(moment);
  */
 export default class GameState {
     practice = false;
-    constructor({ artificialIntelligenceViewEventHandler, firstPlayerId }) {
+    constructor({
+        artificialIntelligenceViewEventHandler,
+        firstPlayerId
+    } = {}) {
         this.gameId = uuid();
         this.gameStatus = ONGOING;
         this.gameStartedAt = moment();

@@ -1,0 +1,72 @@
+{
+    "gameVersion": "0.0.14",
+    "gameId": "bishopWhiteCapture",
+    "gameSavedAt": "2020-03-19T03:19:33.995Z",
+    "gameStartedAt": "2020-03-19T03:19:22.108Z",
+    "gameEndedAt": null,
+    "totalTimePlayed": "PT0S",
+    "players": [
+        { "playerId": "6d43da42-3ade-4812-aeac-86146b5e5ef6", "color": 0 },
+        { "playerId": "2d49bba5-73c2-4e99-aff6-092608500cb3", "color": 1 }
+    ],
+    "currentTurn": 0,
+    "pieces": [
+        {
+            "id": "4236648f-e5b1-4e1f-986b-17640904fe35",
+            "type": "bishop",
+            "x": 3,
+            "y": 3,
+            "player": 0
+        },
+        {
+            "id": "8d8489aa-e7ef-448c-87e2-620c6cd149d6",
+            "type": "king",
+            "x": 0,
+            "y": 7,
+            "player": 0,
+            "firstMove": true
+        },
+        {
+            "id": "aba1fcfe-9423-42bb-94ce-814b6beb6a45",
+            "type": "pawn",
+            "x": 6,
+            "y": 0,
+            "player": 1,
+            "firstMove": false
+        },
+        {
+            "id": "4d803be1-b12a-452a-b9ea-053790d6aef9",
+            "type": "pawn",
+            "x": 7,
+            "y": 7,
+            "player": 1,
+            "firstMove": false
+        },
+        {
+            "id": "449cb087-e503-415c-ae7a-1d4ec4b9c85d",
+            "type": "pawn",
+            "x": 0,
+            "y": 6,
+            "player": 1,
+            "firstMove": false
+        },
+        {
+            "id": "3d2d8d8b-7f18-45bc-9ef1-df58e06005f4",
+            "type": "pawn",
+            "x": 0,
+            "y": 0,
+            "player": 1,
+            "firstMove": false
+        },
+        {
+            "id": "ae33ae8c-a56a-4dcc-b085-beca08a65095",
+            "type": "king",
+            "x": 7,
+            "y": 0,
+            "player": 1,
+            "firstMove": true
+        }
+    ],
+    "removedPieces": [[], []],
+    "moves": []
+}

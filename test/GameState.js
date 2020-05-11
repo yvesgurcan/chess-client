@@ -16,6 +16,7 @@ import pawnWhiteCapture from './fixtures/pawnWhiteCapture';
 import knightWhiteMove from './fixtures/knightWhiteMove';
 import knightWhiteCapture from './fixtures/knightWhiteCapture';
 import bishopWhiteMove from './fixtures/bishopWhiteMove';
+import bishopWhiteCapture from './fixtures/bishopWhiteCapture';
 import bishopWhiteOppositeMove from './fixtures/bishopWhiteOppositeMove';
 import kingWhite from './fixtures/kingWhite';
 import kingWhiteCheckmate from './fixtures/kingWhiteCheckmate';
@@ -58,27 +59,31 @@ expect.extend({
 
         const board = this.expand ? visualizeBoard(gameState) : '';
 
+        const diffString = diff(expected, received, {
+            expand: this.expand
+        });
+
         const message = pass
-            ? () =>
-                  this.utils.matcherHint(
-                      'coordinatesToBe',
-                      undefined,
-                      undefined,
-                      options
-                  ) +
-                  '\n\n' +
-                  (diffString &&
-                      `Expected: not ${this.utils.printExpected(
-                          displayExpected
-                      )}\n` +
-                          `Received: ${this.utils.printReceived(
-                              displayReceived
-                          )}\n\n` +
-                          board)
+            ? () => {
+                  return (
+                      this.utils.matcherHint(
+                          'coordinatesToBe',
+                          undefined,
+                          undefined,
+                          options
+                      ) +
+                      '\n\n' +
+                      (diffString &&
+                          `Expected: not ${this.utils.printExpected(
+                              displayExpected
+                          )}\n` +
+                              `Received: ${this.utils.printReceived(
+                                  displayReceived
+                              )}\n\n` +
+                              board)
+                  );
+              }
             : () => {
-                  const diffString = diff(expected, received, {
-                      expand: this.expand
-                  });
                   return (
                       this.utils.matcherHint(
                           'coordinatesToBe',
@@ -145,7 +150,7 @@ describe('Chess', function () {
             expect(gameState.gameId).not.toBe(undefined);
         });
 
-        test('Status is ongoing', function () {
+        test('Game status is ongoing', function () {
             expect(gameState.gameStatus).toBe(ONGOING);
         });
 
@@ -165,7 +170,7 @@ describe('Chess', function () {
             expect(gameState.currentTurn).toBe(0);
         });
 
-        test('Current player to be white player', function () {
+        test('Current player is white player', function () {
             expect(gameState.currentPlayer).toBe(PLAYER1);
         });
 
@@ -177,7 +182,7 @@ describe('Chess', function () {
             expect(gameState.removedPieces).toEqual([[], []]);
         });
 
-        test('Has a player object with two elements', function () {
+        test('Has a players object with two elements', function () {
             expect(gameState.players.length).toBe(2);
         });
     });
@@ -462,6 +467,26 @@ describe('Chess', function () {
                 checkSelectAndMove(gameState, { piece, x: 0, y: 0 });
             });
 
+            test('White bishop can capture to northeast', function () {
+                const piece = initTestGame(gameState, bishopWhiteCapture)[0];
+                checkSelectAndCapture(gameState, { piece, x: 6, y: 0 });
+            });
+
+            test('White bishop can capture to southeast', function () {
+                const piece = initTestGame(gameState, bishopWhiteCapture)[0];
+                checkSelectAndCapture(gameState, { piece, x: 7, y: 7 });
+            });
+
+            test('White bishop can capture to southwest', function () {
+                const piece = initTestGame(gameState, bishopWhiteCapture)[0];
+                checkSelectAndCapture(gameState, { piece, x: 0, y: 6 });
+            });
+
+            test('White bishop can capture to northwest', function () {
+                const piece = initTestGame(gameState, bishopWhiteCapture)[0];
+                checkSelectAndCapture(gameState, { piece, x: 0, y: 0 });
+            });
+
             test('White bishop on opposite color is selectable', function () {
                 const piece = initTestGame(
                     gameState,
@@ -495,6 +520,38 @@ describe('Chess', function () {
             });
 
             test('White bishop on opposite color can move to northwest', function () {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 1, y: 0 });
+            });
+
+            test('White bishop on opposite color can capture to northeast', function () {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 7, y: 0 });
+            });
+
+            test('White bishop on opposite color can capture to southeast', function () {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 7, y: 6 });
+            });
+
+            test('White bishop on opposite color can capture to southwest', function () {
+                const piece = initTestGame(
+                    gameState,
+                    bishopWhiteOppositeMove
+                )[0];
+                checkSelectAndMove(gameState, { piece, x: 0, y: 7 });
+            });
+
+            test('White bishop on opposite color can capture to northwest', function () {
                 const piece = initTestGame(
                     gameState,
                     bishopWhiteOppositeMove

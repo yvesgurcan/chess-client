@@ -6,12 +6,15 @@
     "scripts": {
         "start": "npm run network-info; webpack-dev-server",
         "build": "webpack --mode production",
+        "preversion": "npm run test:verbose",
         "postversion": "npm run build && npm run docs && git add . && git commit -m 'New build' && git push",
         "test": "jest",
         "test:verbose": "jest --expand",
         "docs": "documentation build src/models/GameState.js -f html -o doc --theme ./node_modules/documentation-theme-light/default_theme",
         "docs:watch": "documentation serve --watch src/models/GameState.js --theme ./node_modules/documentation-theme-light/default_theme",
-        "network-info": "echo \"ℹ ｢wds｣ Running on local network at http:/\" | tr \"\n\" \"/\"; ifconfig | grep \"inet \" | grep -Fv 127.0.0.1 | awk '{print $2}'"
+        "network-info": "echo \"ℹ ｢wds｣ Running on local network at http:/\" | tr \"\n\" \"/\"; ifconfig | grep \"inet \" | grep -Fv 127.0.0.1 | awk '{print $2}'",
+        "board": "node src/lib/visualizeBoardScript",
+        "id": "node src/lib/generateId"
     },
     "author": "Yves Gurcan",
     "license": "MIT",
