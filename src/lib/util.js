@@ -1,5 +1,5 @@
 import { name, version, author, repository } from '../../package.json';
-import { CHESS_API } from './constants';
+import { CHESS_API, BOARD_SIDE_SIZE } from './constants';
 
 export function getPackageInfo() {
     const parsedPackageInfo = {
