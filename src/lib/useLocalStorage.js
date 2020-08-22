@@ -5,8 +5,8 @@ export default (key, defaultValue) => {
     const [item, setItem] = useState(defaultValue);
 
     useEffect(() => {
-        async function getLocalStorageValue() {
-            const value = await localStorage.getItem(
+        function getLocalStorageValue() {
+            const value = localStorage.getItem(
                 `${LOCAL_STORAGE_PREFIX}${key}`
             );
 
@@ -16,9 +16,9 @@ export default (key, defaultValue) => {
         getLocalStorageValue();
     }, []);
 
-    const setLocalStorageValue = async value => {
+    const setLocalStorageValue = value => {
         try {
-            await localStorage.setItem(
+            localStorage.setItem(
                 `${LOCAL_STORAGE_PREFIX}${key}`,
                 JSON.stringify(value)
             );
